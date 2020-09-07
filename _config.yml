@@ -4,8 +4,8 @@
 title:               dias Diaz
 tagline:             'Computer Science adventures'
 description:         'I am a student at Georgia Tech in the OMSSC. I studied at the University of Georgia for undergrad earning an Economics degree. I have completed the Lv1 CFA Exam and am making a wild turn. I am also pretty dumb. expect easy to follow language.'
-url:                 'calmcoconut.github.io'
-baseurl:             'diasDiaz'
+url:                 'https://calmcoconut.github.io'
+baseurl:             '/diasDiaz'
 
 # About/contact
 author:
