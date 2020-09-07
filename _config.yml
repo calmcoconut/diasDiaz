@@ -1,21 +1,21 @@
 # Built with Jekyll 3.6.0
 
 # Setup
-title:               dias Diaz 
+title:               dias Diaz
 tagline:             'Computer Science adventures'
 description:         'I am a student at Georgia Tech in the OMSSC. I studied at the University of Georgia for undergrad earning an Economics degree. I have completed the Lv1 CFA Exam and am making a wild turn. I am also pretty dumb. expect easy to follow language.'
-url:                 ''
-baseurl:             ''
+url:                 'calmcoconut.github.io'
+baseurl:             'diasDiaz'
 
 # About/contact
-author:              
-  name:              Alejandro Diaz 
+author:
+  name:              Alejandro Diaz
   url:               https://twitter.com/greetingsfriend
   email:             diaz.alejandro772@gmail.com
   portfolio:         https://calmcoconut.github.io/Alejandro-Diaz-Portfolio/
   twitter:           greetingsfriend
   github:            calmcoconut
-  linkedin:          diazjalejandro 
+  linkedin:          diazjalejandro
 
 # Color scheme. Options: red, orange, magenta, cyan, blue, brown
 color-scheme: magenta
@@ -55,7 +55,6 @@ exclude:
   - Gemfile.lock
   - backstop_data
   - backstop.json
-
 # Theme
 # (Used for local or custom-server deployments)
 # Uncomment the `theme` line if using the Ed. theme gem on your own computer or server.
