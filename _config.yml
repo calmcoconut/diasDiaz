@@ -1,20 +1,24 @@
 # Built with Jekyll 3.6.0
 
 # Setup
-title:               Ed.
-tagline:             'a jekyll theme for minimal editions'
-description:         'Ed is a Jekyll theme designed for textual editors based on minimal computing principles, and focused on legibility and flexibility.'
-url:                 'http://minicomp.github.io'
-baseurl:             '/ed'
+title:               dias Diaz 
+tagline:             'Computer Science adventures'
+description:         'I am a student at Georgia Tech in the OMSSC. I studied at the University of Georgia for undergrad earning an Economics degree. I have completed the Lv1 CFA Exam and am making a wild turn. I am also pretty dumb. expect easy to follow language.'
+url:                 ''
+baseurl:             ''
 
 # About/contact
-author:
-  name:              Alex Gil
-  url:               https://twitter.com/elotroalex
-  email:             colibri.alex@gmail.com
+author:              
+  name:              Alejandro Diaz 
+  url:               https://twitter.com/greetingsfriend
+  email:             diaz.alejandro772@gmail.com
+  portfolio:         https://calmcoconut.github.io/Alejandro-Diaz-Portfolio/
+  twitter:           greetingsfriend
+  github:            calmcoconut
+  linkedin:          diazjalejandro 
 
 # Color scheme. Options: red, orange, magenta, cyan, blue, brown
-color-scheme:
+color-scheme: magenta
 
 # Permalinks
 permalink: pretty
@@ -39,6 +43,8 @@ kramdown:
   toc_levels:     1..6
   smart_quotes:   lsquo,rsquo,ldquo,rdquo
   enable_coderay: false
+  math_engine: mathjax
+  syntax_highlighter: rouge
 
 # Exclusions from the final site
 exclude:
@@ -60,3 +66,11 @@ exclude:
 # (Used only for GitHub deployments)
 # See https://help.github.com/en/articles/adding-a-jekyll-theme-to-your-github-pages-site
 remote_theme: minicomp/ed
+
+lsi: false
+safe: true
+source:
+incremental: false
+highlighter: rouge
+gist:
+    noscript: false

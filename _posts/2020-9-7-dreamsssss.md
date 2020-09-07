@@ -1,9 +1,9 @@
 ---
-layout: poem
-title: Dreams
-author: Langston Hughes
-editor: Alex Gil
-source: Project Guttenberg
+layout: post
+title: testing
+subtitle: testing
+author: testing
+tag: testing
 ---
 
 - Hold fast to dreams

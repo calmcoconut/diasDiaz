@@ -25,9 +25,9 @@ kramdown:
   enable_coderay: false
 
 # Setup
-title:               Ed.
-tagline:             'A Jekyll theme for minimal editions'
-description:         'Ed is a Jekyll theme designed for textual editors based on minimal computing principles, and focused on legibility and flexibility.'
+title:               dias Diaz
+tagline:             'Computer Science Masters student' 
+description:         'I am a student at Georgia Tech in the OMSSC. I studied at the University of Georgia for undergrad earning an Economics degree. I've completed the Lv1 CFA Exam and am making a wild turn.<br> I am also pretty dumb. expect easy to follow language.'
 url:                 https://github.com/minicomp/ed
 baseurl:             '/ed'
 

@@ -1,6 +1,6 @@
 ---
 layout: default
-title: "Ed."
+title: dias Diaz 
 ---
 <div class="introduction">
   <h1>hi.</h1>
@@ -20,15 +20,15 @@ title: "Ed."
 <hr>
 
 <div class="toc">
-  <h2>sample texts</h2>
-  <ul class="texts">
-  {% for item in site.texts %}
+  <h2>posts</h2>
+  <ol class="texts">
+  {% for post in site.posts %}
 
     <li class="text-title">
-      <a href="{{ site.baseurl }}{{ item.url }}">
-        {{ item.title }}
+      <a href="{{ site.baseurl }}{{ post.url }}">
+        {{ post.title }} {{post.date | date: '%m/%d/%y'}}
       </a>
     </li>
   {% endfor %}
-  </ul>
+  </ol>
 </div>
