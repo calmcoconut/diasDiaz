@@ -34,7 +34,7 @@ tags: Jekyll githubPages wsl2
 <h4 id="choosing-a-theme">Choosing a theme</h4>
 <p>This is the fun part of the project. Jekyll has been around for a decent amount of time and the community is mature enough to be both helpful and provide loads of materials. Do a google search for Jekyll themes and you will find a ton. For this tutorial we will use <a href="https://jekyllthemes.io/">https://jekyllthemes.io/</a></p>
 <p>Now that you have found a theme you fancy click on the “Theme Name on GitHub” button on the right-hand side of the page. If you have never used GitHub before don’t be intimidated, it is at its core a file hosting site for developers.</p>
-<p>![A Screenshot of a theme]( “screenshot of a theme”)</p>
+<p><img src="https://images2.imgbox.com/a7/af/dUWXxup4_o.png" alt="A Screenshot of a theme" title="screenshot of a theme"></p>
 <h5 id="figuring-out-git">Figuring out Git</h5>
 <p>Ok I take it back; this next part may be a little intimidating. Open your terminal (if you are on Windows, open CMD and type WSL) and type the following git command:</p>
 <p><code>git --version</code></p>
@@ -51,7 +51,7 @@ tags: Jekyll githubPages wsl2
 <em>you should see Web after running the above. ls command just lists files</em><br>
 <code>ls</code></p>
 <p>Now you will <em>clone</em> the theme you selected from GitHub in the folder of your choosing. To do this, go back to the theme’s GitHub page and find CODE button and copy the link that appears when it is clicked.</p>
-<p>![ ]( “screenshot of code”)</p>
+<p><img src="https://images2.imgbox.com/70/c8/ZoW4oZUw_o.png" alt=" " title="screenshot of code"></p>
 <p><strong>make sure your terminal is at the right location (see the prompt’s address).</strong> and use the git clone command<br>
 <code>git clone [URL]</code><br>
 Typing the ls command should show a new folder with that projects default name.  We wont worry about changing the folder name for now. Let’s give our new site a test run.</p>
@@ -67,7 +67,8 @@ go to your web browser and go to<br>
 <a href="http://127.0.0.1:4000/">http://127.0.0.1:4000/</a><br>
 To stop the local server CTRL + C in your terminal</p>
 <h5 id="balmy-could-not-locate-gemfile">Balmy! <em>Could not locate Gemfile</em></h5>
-<p>Most themes have a Ruby configure file already, but if you run into this issue simply create one. We will do this through the terminal, but a note editor works the same if you save it in the folder as <strong>Gemfile</strong></p>
+<p><img src="https://images2.imgbox.com/2e/c7/HdGIL4F8_o.png" alt="" title="image of terminal"><br>
+Most themes have a Ruby configure file already, but if you run into this issue simply create one. We will do this through the terminal, but a note editor works the same if you save it in the folder as <strong>Gemfile</strong></p>
 <ul>
 <li><em>create the file</em><br>
 <code>nano Gemfile</code></li>
@@ -122,7 +123,7 @@ To stop the local server CTRL + C in your terminal</p>
 <h5 id="creating-the-repository">Creating the Repository</h5>
 <ol>
 <li>login to GitHub</li>
-<li>make a new repository by clicking <em>New</em> <br> ![ ]( “screenshot of code”)</li>
+<li>make a new repository by clicking <em>New</em> <br> <img src="https://images2.imgbox.com/8d/c1/x2p6EiZR_o.png" alt=" " title="screenshot of code"></li>
 <li>Name it what you’d like your site to be called (NOT the theme name)</li>
 <li>confirm with the <em>Create repository</em> button</li>
 </ol>
@@ -159,7 +160,8 @@ kramdown<span class="token punctuation">:</span>
   math_engine<span class="token punctuation">:</span> mathjax
   syntax_highlighter<span class="token punctuation">:</span> rouge
 </code></pre>
-<p>Exit and save the file as we have before.<br>
+<p>Exit and save the file as we have before. Mine looks like this now<br>
+<img src="https://images2.imgbox.com/fa/1d/wnkO57dk_o.png" alt="" title="Screenshot of code"><br>
 <strong>pushing to the web</strong><br>
 Almost Done. You got this.</p>
 <ol>
@@ -170,6 +172,7 @@ Almost Done. You got this.</p>
 <li>refreshing your GitHub repository page should now be populated with files. Jump to settings</li>
 <li>Scroll down to the GitHub Pages section and select Master where the None dropdown is. Save.</li>
 <li>This should generate a message and a link that looks like this.<br>
+<img src="https://images2.imgbox.com/d3/12/lOhwkuPW_o.png" alt="" title="screenshot of GitHub Pages settings"><br>
 Your site is ready to be published at <a href="https://calmcoconut.github.io/test/">https://calmcoconut.github.io/test/</a>.</li>
 <li>follow the link and try it out on your cellphone</li>
 </ol>
