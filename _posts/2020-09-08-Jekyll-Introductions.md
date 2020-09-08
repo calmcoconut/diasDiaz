@@ -3,6 +3,7 @@ layout: post
 title: Host A Static Website with GitHub Pages And Jekyll
 author: Alejandro Diaz
 tags: Jekyll githubPages wsl2
+description: Using Jekyll for a dynamic, fast, simple webpage
 ---
 <p>Jekyll is a great tool if you want the simplicity of a static website but with more complicated functionality. It offers a load of plugins and maintenance saving methods.</p>
 <p>The primary advantages are:</p>
