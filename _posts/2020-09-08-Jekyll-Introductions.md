@@ -1,8 +1,8 @@
 ---
 layout: post
-title: C Programming Barriers to Entry
+title: GitHub Pages with Jekyll's Static Web Framework
 author: Alejandro Diaz
-tags: C programming books
+tags: wsl wsl2 jekyll githubpages web
 ---
 
 <p>Jekyll is a great tool if you want the simplicity of a static website but with more complicated functionality. It offers a load of plugins and maintenance saving methods.</p>

@@ -2,7 +2,7 @@
 layout: post
 title: C Programming Barriers to Entry
 author: Alejandro Diaz
-tags: C programming books
+tags: C programming books beginner
 ---
 
 <p>C is one of the oldest programming languages still in use today. It’s attributed success comes from its “simplicity.” Weird to hear that when the likes of Python exisits.</p>
