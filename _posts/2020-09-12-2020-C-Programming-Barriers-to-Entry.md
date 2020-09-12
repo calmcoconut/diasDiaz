@@ -4,6 +4,7 @@ title: C Programming Barriers to Entry
 author: Alejandro Diaz
 tags: C programming books
 ---
+
 <p>C is one of the oldest programming languages still in use today. It’s attributed success comes from its “simplicity.” Weird to hear that when the likes of Python exisits.</p>
 <p>But it’s true, C for its time was one of the easier, and more robust languages available for developers. This grandpappy of language originates from 1972. It picked up steam from IBM’s decision to support it on its PC line of consumer computers.</p>
 <p>Then K &amp; R (Brian Kernighan and Dennis Ritchie) published what came to be known as the “C Bible”, <em>The C Programming Language</em> in 1978. This book was so influential that it became the pseudo standard of the language.</p>
