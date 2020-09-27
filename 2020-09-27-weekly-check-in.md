@@ -2,7 +2,7 @@
 layout: post
 title: Weekly Check-In 9-27-2020
 author: Alejandro Diaz
-tags: C C++ bash linear-algebra watson check-in
+tags: C C++ bash linear-algebra Watson check-in
 ---
 
 <p>A quick post to the site to let people know I am alive for the week of 9/21/2020 to 9/27.<br>
