@@ -5,7 +5,7 @@ author: Alejandro Diaz
 tags: OMSCS education georgia study studying HCI interaction human computer
 ---
 ### Takeaways
-* My initial experience as an entrant in the Online Master’s in Computer Science (OMSCS) offered by the Georgia Institute of Technology (GA TECH)
+* Human computer interaction (HCI) is a course offered by GA Tech’s OMSCS
 * Taking the course will equip you with design principles and techniques establish in the field
 
 ## What is HCI?
