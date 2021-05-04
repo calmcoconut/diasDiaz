@@ -1,45 +1,47 @@
 ---
 layout: post
-title: Initial Thoughts on the OMSCS
+title: Human-Computer Interaction (CS6750)
 author: Alejandro Diaz
-tags: OMSCS education georgia study studying
+tags: OMSCS education georgia study studying HCI interaction human computer
 ---
 ### Takeaways
 * My initial experience as an entrant in the Online Master’s in Computer Science (OMSCS) offered by the Georgia Institute of Technology (GA TECH)
-* The program is tough: expect 20 hours per course.
-* For my first semester, I fully immersed myself in academic literature, project documentation, and analysis
+* Taking the course will equip you with design principles and techniques establish in the field
 
-## Introduction
-A shipwreck of fear. An incredible sense of hopefulness. I completed my first semester at the Georgia Institute of Technology as a candidate for the Master’s program in Computer Science. I grew up somewhere where statistically, I did not have much of a chance of escaping poverty. Few friends from high school attended or completed college.  I was the first and only one in my family to achieve a bachelor's.  My father started working as a pre-teen in Mexico to support his family. The only man in a family of six sisters. My mother only years later received a GED. I am considerably thankful but have also been self-absorbed in some level of doubt. Who do I look to for advice? Was I even supposed to get this far? 
-Maybe you feel this way too.
+## What is HCI?
+The past decade has revealed a trend of embedding microprocessors in non-traditional applications. For example, a CPU in a refrigerator would be unheard of only a decade ago. The growing ubiquity of processing power has fueled the growth of the field of Human-computer interaction.
 
-Here I will discuss the program itself, my initial impressions, and how I have grown since the beginning of the semester.
+The course is valuable in exposing students to HCI and teaching them to adopt the principles and methods developed over the last century. The curriculum presents traditional computer interfaces (e.g., computers and smartphones) and non-traditional interfaces, such as human-computer interaction in education, VR, augmented reality, and wearables. 
 
-## The Program
-The Online M.S. CS (OMSCS) program offered by Ga Tech is unique in it extends the academic quality of an Ivy school to the public university system.
+The course moves on to teach how humans interact with computers and some common design pitfalls. If the class had a theme, perhaps it would be, "Designers should not design for designers, designers should design for the users." and, "You are NOT your user." The course stresses involving users to generate feedback in each step of the design process. It presents a methodology for the application of user-centered design both in research and in industry.
 
-The winning aspect for me was the practice of accessibility of education as a principal and the resources of notable professors in each field. Various institutions try to sell students a message of leadership and impact on the world. I believe OMSCS is one of the few programs that is practicing what they preach. The diversity of the program is incredible. One semester in, and already I have had the chance to network with some incredible members of my cohort, far removed from my home state of Georgia. The bridging of education with technology is what excited me when I joined the program
+## What did I learn in HCI?
+#### **The design lifecycle**
+The course emphasizes that the user should be involved in each step of the design lifecycle. The lifecycle consists of a non-linear model:
+1.	needfinding, 
+2.	design alternatives, 
+3.	prototyping, 
+4.	evaluation
 
+Each phase involves the user either directly or given by incorporating previous user feedback. For example, needfinding is done by identifying a user type, recruiting participants of that user type, then gathering data via interview, survey, think-aloud, etc.
 
-## My initial impressions
-It is an astonishing program. Allow me to state my bias now--- I wanted to go to Ga Tech as my graduate school since setting my eyes on computer science. 
-I was fortunate to meet a Ga Tech student interning with my team when I worked as a data analyst. He helped influence me. He told me about the school and what he learned. I needed to find a program that challenged me like that. Thanks to encouragement from my mentors, I tried applying. Without a formal computer science background, I was rejected. 
+#### **You are not your user and other principles of HCI**
+Principles of design are taught in the course, with the caveat that they cannot replace a user-centered approach. Nonetheless, the principles prove useful both for analyzing and coming up with interfaces. The principles discussed are those established by giants in the field such as Don Norman's discussion of discoverability (i.e., an interface should allow users to discover how to use it without fear of error) and the Feedback Gulfs.
+#### **User-centered design and Agile development**
+This portion of the course focused on adapting the user-centered design model to modern, quick-turnaround industries by adapting the lifecycle to Agile sprints. The literature in HCI backs this up with authors like Stephanie Chamberlain, Helen Sharp, and Neil Maiden making a case for an Agile, User-centered design chimera. The result is a user-centered product with a "caffeinated" design lifecycle that can thrive in time-sensitive projects familiar to the software industry.
 
-Devastated, I tried again. I earned additional Computer Science credits and worked to merit letters of recommendation from my professors and managers. This time I received a letter congratulating my acceptance into the program. However, there is a stipulation. Students must maintain a 3.0 GPA their first year or be automatically dropped from the program. In other words, you enter the program under academic prohibition.
+## What type of work to expect from HCI (6750)?
+- Plenty of writing assignments
+    - "M" assignments propagating students through the design lifecycle
+    - Final project involves solo investigation using the design lifecycle model (20-page paper)
+- Exploration of the literature in the field
+- Designing and executing needfinding, prototyping, and evaluation
 
-While initial registration and application were hectic, especially coinciding with covid, the school did not disappoint. Although the material and discussion are entirely online, I feel like I have made as many connections as I did in undergrad with double the course load. The courses go straight to the *meat and potatoes* of the subject they promise to teach. 
+## Why take this course?
+* You’re intrested in solid design principles from an academic perspective
+* You realize and embrace that software is an interdisciplinary field
+* You want a “soft” entrance to your master’s program focused on writing and not programming. Great to develop soft skills like communication
 
-Typically, there is an assumption that a master's program is more lenient than undergraduate programs. After all, schools are competing for YOU, not the other way around (have you heard any MBA radio ads lately?). Not the case here.
-
-To summarize the program so far: stimulating and **demanding**.
-
-## Growth
-I will be frank. I am a terrible writer. I wanted to get a *lenient* introduction to the program, so I selected some classes heavier in writing than programming to test the waters. I ended up registering for human-computer interaction and Knowledge-based AI, both taught by Professor David Joyner. Each class demanded an average of 20 hours of work every week. Reading academic literature, writing analysis, and solving problems using AI concepts ate away at any possibility of free time from my life.
-The biggest thing I can tell you is that my writing has improved significantly. My wife teases me all the time, “Your writing is *so* much better!” I have always been insecure about the way I write. It fills me with happiness. I could only achieve this because week after week, I wrote pages and pages of analysis.
-
-On top of this, I got familiar with Georgia tech standards when it comes to programming. The lectures hinted at high-level concepts to solve problems we were assigned (in the form of mini-project and AI programs), but the environment is sink or swim. The lectures and course materials only presented high-level thinking and general algorithms but no explicit code snippets. KBAI was particularly striking because the semester-long project was an AI agent capable of perceiving images for deliberation. In summary, I was nose-deep in reading documentation from libraries like OpenCV. I will write reviews for both courses, both here and on [OMSCentral](https://omscentral.com/courses).
-
-My next semester will be this fall. I am planning on taking an operating systems class.
 
 -Well, till next time space cowboy
 
