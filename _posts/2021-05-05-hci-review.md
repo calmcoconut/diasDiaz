@@ -25,7 +25,7 @@ The course emphasizes that the user should be involved in each step of the desig
 
 Each phase involves the user either directly or given by incorporating previous user feedback. For example, needfinding is done by identifying a user type, recruiting participants of that user type, then gathering data via interview, survey, think-aloud, etc.
 
-#### **You are not your user and other principles of HCI**
+#### **You are not your user, and other principles of HCI**
 Principles of design are taught in the course, with the caveat that they cannot replace a user-centered approach. Nonetheless, the principles prove useful both for analyzing and coming up with interfaces. The principles discussed are those established by giants in the field such as Don Norman's discussion of discoverability (i.e., an interface should allow users to discover how to use it without fear of error) and the Feedback Gulfs.
 #### **User-centered design and Agile development**
 This portion of the course focused on adapting the user-centered design model to modern, quick-turnaround industries by adapting the lifecycle to Agile sprints. The literature in HCI backs this up with authors like Stephanie Chamberlain, Helen Sharp, and Neil Maiden making a case for an Agile, User-centered design chimera. The result is a user-centered product with a "caffeinated" design lifecycle that can thrive in time-sensitive projects familiar to the software industry.
