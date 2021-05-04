@@ -6,7 +6,7 @@ tags: OMSCS education georgia study studying HCI interaction human computer
 ---
 ### Takeaways
 * Human computer interaction (HCI) is a course offered by GA Tech’s OMSCS
-* Taking the course will equip you with design principles and techniques establish in the field
+* Taking the course will equip you with design principles and techniques established in the field of HCI
 
 ## What is HCI?
 The past decade has revealed a trend of embedding microprocessors in non-traditional applications. For example, a CPU in a refrigerator would be unheard of only a decade ago. The growing ubiquity of processing power has fueled the growth of the field of Human-computer interaction.
