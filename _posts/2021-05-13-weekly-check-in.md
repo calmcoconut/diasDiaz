@@ -10,7 +10,7 @@ tags: OMSCS c headfirst head first dungeons dragons dnd
 * Had the first session of my new D&D campaign latex
 
 ## Courses and life takeaways
-I posted my thoughts and review for [Knowledge-Based AI](https://calmcoconut.github.io/diasDiaz/kbai-review/) and [Human-Computer Interaction](https://calmcoconut.github.io/diasDiaz/hci-review/) offered by Georgia’s Institute of Technology last week (ADD LINKS). This week I received final grades. I was cheered to see that I scored As in both classes. I don’t like to give myself much fanfare for accomplishments, but here I want to say with solid emphasis that I’m excited to start the program with a 4.0.
+I posted my thoughts and review for [Knowledge-Based AI](https://calmcoconut.github.io/diasDiaz/kbai-review/) and [Human-Computer Interaction](https://calmcoconut.github.io/diasDiaz/hci-review/) offered by Georgia’s Institute of Technology last week. This week I received final grades. I was cheered to see that I scored As in both classes. I don’t like to give myself much fanfare for accomplishments, but here I want to say with solid emphasis that I’m excited to start the program with a 4.0.
 
 In the previous articles, I discussed the courses themselves. Now, I would like to quickly discuss what going back to school for my post-graduate while working has taught me.
 
