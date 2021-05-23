@@ -4,7 +4,6 @@ title: The Inflation Question
 author: Alejandro Diaz
 tags: economics inflation discussion
 ---
-# The Inflation Question
 ## Introduction
 There has been more and more talk about the fear of rising inflation. That is, a fear of prices increasing because of an increase of the money supply. This topic is fueled by recent decisions from entities like Jerome Powell’s Federal Reserve and their policy of increasing the money supply through buybacks on US Treasuries and “alternative” means.
 
