@@ -30,7 +30,7 @@ The federal reserve has a targeted inflation rate of 2%. Why 2%? There is a mean
 
 Does this mean the economy experiences 2% inflation every year? No. not even close. The US economy (and most developed countries) has been experiencing near 0 inflation: a stall of inflation. Inflation has hovered around 0% for most developed countries for about a decade.
 
-Reduced inflation is a challenging economic problem because it reduces the incentive to invest or spend money. It also gives governmental organizations less room to maneuver (i.e., interest rates, swap rates), and it means that there has not been enough demand for goods to raise prices. There is a great many case study about Japan's near 40-year bout with near-0 inflation (I will not link any here. It is a fascinating topic to research).
+Reduced inflation is a challenging economic problem because it reduces the incentive to invest or spend money. It also gives governmental organizations less room to maneuver (i.e., interest rates, swap rates), and it means that there has not been enough demand for goods to raise prices. There is a great many case study about Japan's near 40-year bout with near-0 inflation (I will not link any here. It is a fascinating topic to research) (Source: [macrotrends](https://www.macrotrends.net/countries/JPN/japan/inflation-rate-cpi)).
 
 The frightening economic story is when there is deflation. The classic deflationary event was the Great Depression. Imagine being paid 3 to 10 percent of your money's value every year to hide it in your mattress. Sounds great? Yes. Ok, but when everyone is being paid to do the same, it is terrible because no one will want to spend money (Those with money will effectively have more money doing nothing)!
 
@@ -46,7 +46,7 @@ As wages grow, consumers will have more money in their pockets. More money means
 ## Conclusion
 After reading this *opinion article*, you should come away knowing that anyone who tells you to fear the current inflationary environment is just trying to drive panic or clicks. The current inflationary environment is **good** for the economy, not threatening. The shocks occurring now in particular sectors (housing) are **NOT entirely** because of the Federal Reserve’s policies! They are a result of too many buyers in markets with not enough products!
 
-I will leave you with this. 1980’s America had an inflation rate of above 10%! Today we have an inflation rate of **under** 2%.
+I will leave you with this. 1980’s America had an inflation rate of above 10%! Today we have an inflation rate of **under** 2% (Source:[FRED](https://fred.stlouisfed.org/series/FPCPITOTLZGUSA)).
 
 
 -- Alex
