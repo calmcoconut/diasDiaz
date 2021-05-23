@@ -45,7 +45,7 @@ As wages grow, consumers will have more money in their pockets. More money means
 ## Conclusion
 After reading this *opinion article*, you should come away knowing that anyone who tells you to fear the current inflationary environment is just trying to drive panic or clicks. The current inflationary environment is **good** for the economy, not threatening. The shocks occurring now in particular sectors (housing) are **NOT entirely** because of the Federal Reserve’s policies! They are a result of too many buyers in markets with not enough products!
 
-I will leave you with this. 1980’s America had an inflation rate of above 10%! Today we have an inflation rate of **under** 2% (Source:[FRED](https://fred.stlouisfed.org/series/FPCPITOTLZGUSA)).
+I will leave you with this. 1980’s America had an inflation rate of above 10%! Today we have an average inflation rate of **under** 2% (Source:[FRED](https://fred.stlouisfed.org/series/FPCPITOTLZGUSA)).
 
 
 -- Alex
