@@ -8,7 +8,7 @@ There has been more and more talk about the fear of rising inflation. That is, a
 
 Here, I will pitch my view on modern inflation and why you needn't fear talks of soaring prices.
 
-**DISCLAIMER:** *This article is not an academic article, it is an opinion piece. Nonetheless, I would not share my opinion if I thought it was valueless. I simply have a undergraduate in economics*
+**DISCLAIMER:** *This article is not an academic piece, it is an opinion piece. Nonetheless, I would not share my opinion if I thought it was valueless. I simply have a undergraduate in economics*
 
 ## 1. The money supply is not the primary reason inflation
 Articles in the media and popular memes have associated the rise of prices with the printing of money. Yet, prices have been rising, but not at the same rate.
