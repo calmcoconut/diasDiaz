@@ -14,7 +14,7 @@ Here, I will pitch my view on modern inflation and why you needn't fear talks of
 ## 1. The money supply is not the primary reason inflation
 Articles in the media and popular memes have associated the rise of prices with the printing of money. Yet, prices have been rising, but not at the same rate.
 
-What does this mean? It is correct that, in several markets, prices have been soaring (particularly housing, construction goods, and automotive). Yet, this has little to do with the rise of the money supply (although cheap interests rates may be having a strong impact). On the contrary, these sectors have been experiencing spiraling inflation due to multiple conditions.
+What does this mean? It is correct that, in several markets, prices have been soaring (particularly housing, construction goods, and automotive). This has little to do with the rise of the money supply (although cheap interests rates may be having a strong impact). On the contrary, these sectors have been experiencing spiraling inflation due to multiple conditions.
 
 > * Real estate has been affected by pre-existing housing shortages, cheap lending, and new COVID-19 driven migratory patterns (Source: [WSJ](https://www.wsj.com/articles/u-s-home-prices-surge-higher-pricing-out-many-buyers-11620748183))
 > * Construction materials have been affected by the reduced labor supply, the increasing demand from new housing, and “covid” renovations (Source: [WSJ](https://www.wsj.com/articles/u-s-home-prices-surge-higher-pricing-out-many-buyers-11620748183))
