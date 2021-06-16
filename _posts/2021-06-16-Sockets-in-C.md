@@ -40,14 +40,14 @@ This basic pattern repeats itself on the internet. Anything from Spotify to your
 
 We are going to replicate the pattern here with a simple program. The program will be IP agnostic, with the caveat that we will have to explain quite a few concepts, but the payoff is you can copy this style and get rolling (if traffic isn’t insane). Without further ado:
 
-### Client code
+## Client code
 This code example implements a TCP client, composed of four steps:
 1. Create a TCP socket using socket()
 2. Establish a connection to the server using connect()
 3. communicate using send() and recv()
 4. close the connection using close()
 
-The client takes a server address/ domain name, a string, and, optionally, a port. This example borrows heavily from (CITE).
+The client takes a server address/ domain name, a string, and, optionally, a port. This example borrows heavily from (Donahoo, Calvert, 2009).
 
 **includes**
 ```c
@@ -146,7 +146,7 @@ int setupTcpClientSocket(const char *host, const char *service)
 }
 ```
 
-### Server code
+## Server code
 The code implements a TCP server, composed of four steps:
 
 1. Create a TCP socket using socket()
@@ -160,7 +160,7 @@ The code implements a TCP server, composed of four steps:
 
 	c. close the client connection with close()
 
-The server takes a port as its argument. The code borrows from (CITE).
+The server takes a port as its argument. The code borrows from (Donahoo, Calvert, 2009).
 
 **includes**
 ```c
@@ -358,8 +358,8 @@ To those interested in learning more about sockets and their rich history in net
 
 # **Bib**
 
-1. Hall, B. "Beej J. (n.d.). Beej’s Guide to Network Programming: Using Internet Sockets. https://beej.us/guide/bgnet/
-2. Donahoo, M. J., & Calvert, K. L. (2009). TCP/IP sockets in C: Practical guide for programmers (2nd ed). Morgan Kaufmann. https://www.sciencedirect.com/book/9780123745408/tcp-ip-sockets-in-c
+1. Hall, B. "Beej J. (n.d.). Beej’s Guide to Network Programming: Using Internet Sockets. [https://beej.us/guide/bgnet/](https://beej.us/guide/bgnet/)
+2. Donahoo, M. J., & Calvert, K. L. (2009). TCP/IP sockets in C: Practical guide for programmers (2nd ed). Morgan Kaufmann. [https://www.sciencedirect.com/book/9780123745408/tcp-ip-sockets-in-c](https://www.sciencedirect.com/book/9780123745408/tcp-ip-sockets-in-c)
 
 
 'Till next time space cowboy
