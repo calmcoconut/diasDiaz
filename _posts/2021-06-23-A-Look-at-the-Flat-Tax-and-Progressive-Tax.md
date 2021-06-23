@@ -42,11 +42,16 @@ We look at a $10,000 earner (Person A) and a $15,000 earner (Person B) under bot
 
 ![Table with breakdown of taxes in a flat tax example](https://github.com/calmcoconut/diasDiaz/blob/master/assets/images/look-at-the-flat-tax-and-progressive-tax/flat-tax-example-chart.png?raw=true)
 
-![Pie chart of the flat tax example](https://github.com/calmcoconut/diasDiaz/blob/master/assets/images/look-at-the-flat-tax-and-progressive-tax/flat-tax-example-pie.png?raw=true)
+<!--![Pie chart of the flat tax example](https://github.com/calmcoconut/diasDiaz/blob/master/assets/images/look-at-the-flat-tax-and-progressive-tax/flat-tax-example-pie.png?raw=true) -->
+
+<img src="https://github.com/calmcoconut/diasDiaz/blob/master/assets/images/look-at-the-flat-tax-and-progressive-tax/flat-tax-example-pie.png?raw=true" width="300" />
+
 
 ![Table with breakdown of taxes in a progressive tax example](https://github.com/calmcoconut/diasDiaz/blob/master/assets/images/look-at-the-flat-tax-and-progressive-tax/progressive-tax-example-chart.png?raw=true)
 
-![Pie chart of the progressive tax example](https://github.com/calmcoconut/diasDiaz/blob/master/assets/images/look-at-the-flat-tax-and-progressive-tax/progressive-tax-example-pie.png?raw=true)
+<!--![Pie chart of the progressive tax example](https://github.com/calmcoconut/diasDiaz/blob/master/assets/images/look-at-the-flat-tax-and-progressive-tax/progressive-tax-example-pie.png?raw=true) -->
+
+<img src= "https://github.com/calmcoconut/diasDiaz/blob/master/assets/images/look-at-the-flat-tax-and-progressive-tax/progressive-tax-example-pie.png?raw=true" width="300" />
 
 I set up the example so that both the flat tax and the progressive tax systems generate almost the same revenue. As you can see, in both tax systems, the higher earner pays a higher total tax.
 
