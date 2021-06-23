@@ -6,6 +6,7 @@ tagline:             'Computer Science Adventures'
 description:         'I am a student at Georgia Tech in the OMSCS. I studied at the University of Georgia for my undergrad in Economics. Before switching to CS, I completed the Lv1 CFA Exam and worked as an analyst at various F500 companies. Dont be deceived, I am pretty dumb. expect easy to follow language.'
 url:                 'https://calmcoconut.github.io'
 baseurl:             '/diasDiaz'
+BASE_PATH : /diasDiaz
 
 # About/contact
 author:

@@ -40,7 +40,7 @@ These tax brackets work better with incomes ranging from $3,000 to $15,000 becau
 
 We look at a $10,000 earner (Person A) and a $15,000 earner (Person B) under both systems. We plug into the calculator the incomes, and we are left with the following:
 
-![charts of how each system lays out its taxes](/assets/images/look-at-the-flat-tax-and-progressive-tax/flat-tax-example-chart.png)
+![THIS IS A TEXT]({{ BASE_PATH }}/assets/images/look-at-the-flat-tax-and-progressive-tax/flat-tax-example-chart.png)
 
 ![charts of how each system lays out its taxes](/assets/images/look-at-the-flat-tax-and-progressive-tax/flat-tax-example-pie.png)
 
