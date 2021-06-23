@@ -40,14 +40,17 @@ These tax brackets work better with incomes ranging from $3,000 to $15,000 becau
 
 We look at a $10,000 earner (Person A) and a $15,000 earner (Person B) under both systems. We plug into the calculator the incomes, and we are left with the following:
 
-![Table with breakdown of taxes in a flat tax example](https://github.com/calmcoconut/diasDiaz/blob/master/assets/images/look-at-the-flat-tax-and-progressive-tax/flat-tax-example-chart.png?raw=true)
+<!--![Table with breakdown of taxes in a flat tax example](https://github.com/calmcoconut/diasDiaz/blob/master/assets/images/look-at-the-flat-tax-and-progressive-tax/flat-tax-example-chart.png?raw=true) -->
+
+<img src="https://github.com/calmcoconut/diasDiaz/blob/master/assets/images/look-at-the-flat-tax-and-progressive-tax/flat-tax-example-chart.png?raw=true" width="800" alt="Table with breakdown of taxes in a flat tax example"/>
 
 <!--![Pie chart of the flat tax example](https://github.com/calmcoconut/diasDiaz/blob/master/assets/images/look-at-the-flat-tax-and-progressive-tax/flat-tax-example-pie.png?raw=true) -->
 
 <img src="https://github.com/calmcoconut/diasDiaz/blob/master/assets/images/look-at-the-flat-tax-and-progressive-tax/flat-tax-example-pie.png?raw=true" width="500" alt="Pie chart of the flat tax example"/>
 
 
-![Table with breakdown of taxes in a progressive tax example](https://github.com/calmcoconut/diasDiaz/blob/master/assets/images/look-at-the-flat-tax-and-progressive-tax/progressive-tax-example-chart.png?raw=true)
+<!-- ![Table with breakdown of taxes in a progressive tax example](https://github.com/calmcoconut/diasDiaz/blob/master/assets/images/look-at-the-flat-tax-and-progressive-tax/progressive-tax-example-chart.png?raw=true) -->
+<img src= "https://github.com/calmcoconut/diasDiaz/blob/master/assets/images/look-at-the-flat-tax-and-progressive-tax/progressive-tax-example-chart.png?raw=true" width="800" alt="Table with breakdown of taxes in a progressive tax example"/>
 
 <!--![Pie chart of the progressive tax example](https://github.com/calmcoconut/diasDiaz/blob/master/assets/images/look-at-the-flat-tax-and-progressive-tax/progressive-tax-example-pie.png?raw=true) -->
 
