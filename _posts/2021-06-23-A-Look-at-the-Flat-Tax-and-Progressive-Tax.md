@@ -31,7 +31,7 @@ We have established a basic definition of each system. A flat tax charges the sa
 We will show why the flat tax rate system is less equitable to lower-income taxpayers using an example. I built a simple spreadsheet that illustrates the progressive tax system for 4 set buckets (these buckets are not changeable in this example!). 
 
 For the progressive tax system: 
-* the first $500 in this system is tax-free
+* The first $500 in this system is tax-free
 *	The next $1000 is taxed at 6%
 *	The next $5000 is taxed at 15% 
 *	Anything beyond that ($6500<) is taxed at 25%. So only income more than $6500 is taxed at the 25% rate. 
