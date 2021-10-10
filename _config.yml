@@ -28,7 +28,7 @@ permalink: /:title/
 encoding: utf-8
 
 # Set analytics
-google_analytics: G-9YFJ00TT7N
+google_analytics: UA-209828425-1
 
 # Collections for texts
 collections:
