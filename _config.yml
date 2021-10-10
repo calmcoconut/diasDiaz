@@ -27,6 +27,9 @@ permalink: /:title/
 # Set encoding to UTF-8
 encoding: utf-8
 
+# Set analytics
+google_analytics: G-9YFJ00TT7N
+
 # Collections for texts
 collections:
   texts:
