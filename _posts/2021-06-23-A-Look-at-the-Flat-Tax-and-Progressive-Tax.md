@@ -23,7 +23,7 @@ I mentioned buckets/brackets and example tax rates in the previous examples. I w
 
 Another aside is that there is a popular belief that accepting a pay raise will “push them into a higher tax bracket.” It is important to remember that these buckets are independent. Money gets passed through them at all stages, and you never pay more than you earned (in the case of an income tax). In other words, you will always get a portion of each additional dollar, no matter what bracket that money goes into. It is always better to take more money if offered.
 
-![charts of how each system lays out its taxes](https://github.com/calmcoconut/diasDiaz/blob/master/assets/images/look-at-the-flat-tax-and-progressive-tax/progressive-flat-regressive-chart.png?raw=true)
+![charts of how each system lays out its taxes](https://github.com/calmcoconut/diasDiaz/blob/master/assets/images/20210623-look-at-the-flat-tax-and-progressive-tax/progressive-flat-regressive-chart.png?raw=true)
 
 ## Why is the Flat Tax not an Equitable Tax Policy?
 We have established a basic definition of each system. A flat tax charges the same rates to everyone. A progressive tax system breaks money up into brackets, with each bracket taxed at a different, increasing tax rate. A regressive tax system also breaks money into tax brackets, but the higher tax rates occur at lower tax brackets. We now discuss flat-tax and progressive tax systems as they pertain to income. 
@@ -40,21 +40,21 @@ These tax brackets work better with incomes ranging from $3,000 to $15,000 becau
 
 We look at a $10,000 earner (Person A) and a $15,000 earner (Person B) under both systems. We plug into the calculator the incomes, and we are left with the following:
 
-<!--![Table with breakdown of taxes in a flat tax example](https://github.com/calmcoconut/diasDiaz/blob/master/assets/images/look-at-the-flat-tax-and-progressive-tax/flat-tax-example-chart.png?raw=true) -->
+<!--![Table with breakdown of taxes in a flat tax example](https://github.com/calmcoconut/diasDiaz/blob/master/assets/images/20210623-look-at-the-flat-tax-and-progressive-tax/flat-tax-example-chart.png?raw=true) -->
 
-<img src="https://github.com/calmcoconut/diasDiaz/blob/master/assets/images/look-at-the-flat-tax-and-progressive-tax/flat-tax-example-chart.png?raw=true" width="800" alt="Table with breakdown of taxes in a flat tax example"/>
+<img src="https://github.com/calmcoconut/diasDiaz/blob/master/assets/images/20210623-look-at-the-flat-tax-and-progressive-tax/flat-tax-example-chart.png?raw=true" width="800" alt="Table with breakdown of taxes in a flat tax example"/>
 
-<!--![Pie chart of the flat tax example](https://github.com/calmcoconut/diasDiaz/blob/master/assets/images/look-at-the-flat-tax-and-progressive-tax/flat-tax-example-pie.png?raw=true) -->
+<!--![Pie chart of the flat tax example](https://github.com/calmcoconut/diasDiaz/blob/master/assets/images/20210623-look-at-the-flat-tax-and-progressive-tax/flat-tax-example-pie.png?raw=true) -->
 
-<img src="https://github.com/calmcoconut/diasDiaz/blob/master/assets/images/look-at-the-flat-tax-and-progressive-tax/flat-tax-example-pie.png?raw=true" width="500" alt="Pie chart of the flat tax example"/>
+<img src="https://github.com/calmcoconut/diasDiaz/blob/master/assets/images/20210623-look-at-the-flat-tax-and-progressive-tax/flat-tax-example-pie.png?raw=true" width="500" alt="Pie chart of the flat tax example"/>
 
 
-<!-- ![Table with breakdown of taxes in a progressive tax example](https://github.com/calmcoconut/diasDiaz/blob/master/assets/images/look-at-the-flat-tax-and-progressive-tax/progressive-tax-example-chart.png?raw=true) -->
-<img src= "https://github.com/calmcoconut/diasDiaz/blob/master/assets/images/look-at-the-flat-tax-and-progressive-tax/progressive-tax-example-chart.png?raw=true" width="800" alt="Table with breakdown of taxes in a progressive tax example"/>
+<!-- ![Table with breakdown of taxes in a progressive tax example](https://github.com/calmcoconut/diasDiaz/blob/master/assets/images/20210623-look-at-the-flat-tax-and-progressive-tax/progressive-tax-example-chart.png?raw=true) -->
+<img src= "https://github.com/calmcoconut/diasDiaz/blob/master/assets/images/20210623-look-at-the-flat-tax-and-progressive-tax/progressive-tax-example-chart.png?raw=true" width="800" alt="Table with breakdown of taxes in a progressive tax example"/>
 
-<!--![Pie chart of the progressive tax example](https://github.com/calmcoconut/diasDiaz/blob/master/assets/images/look-at-the-flat-tax-and-progressive-tax/progressive-tax-example-pie.png?raw=true) -->
+<!--![Pie chart of the progressive tax example](https://github.com/calmcoconut/diasDiaz/blob/master/assets/images/20210623-look-at-the-flat-tax-and-progressive-tax/progressive-tax-example-pie.png?raw=true) -->
 
-<img src= "https://github.com/calmcoconut/diasDiaz/blob/master/assets/images/look-at-the-flat-tax-and-progressive-tax/progressive-tax-example-pie.png?raw=true" width="500" alt="Pie chart of the progressive tax example"/>
+<img src= "https://github.com/calmcoconut/diasDiaz/blob/master/assets/images/20210623-look-at-the-flat-tax-and-progressive-tax/progressive-tax-example-pie.png?raw=true" width="500" alt="Pie chart of the progressive tax example"/>
 
 I set up the example so that both the flat tax and the progressive tax systems generate almost the same revenue. As you can see, in both tax systems, the higher earner pays a higher total tax.
 
@@ -65,9 +65,9 @@ The tax burden is compounded further when you consider that the poorer earner is
 
 ### **With necessities**
 In this example we add a flat cost of $500 to both person A and person B as a stand in for basic expenses (food, hygiene):
-![Pie chart of the flat tax example with necessities added](https://github.com/calmcoconut/diasDiaz/blob/master/assets/images/look-at-the-flat-tax-and-progressive-tax/flat-tax-example-pie-necessities.png?raw=true)
+![Pie chart of the flat tax example with necessities added](https://github.com/calmcoconut/diasDiaz/blob/master/assets/images/20210623-look-at-the-flat-tax-and-progressive-tax/flat-tax-example-pie-necessities.png?raw=true)
 
-![Pie chart of the progressive tax example with necessities added](https://github.com/calmcoconut/diasDiaz/blob/master/assets/images/look-at-the-flat-tax-and-progressive-tax/progressive-tax-example-pie-necessities.png?raw=true)
+![Pie chart of the progressive tax example with necessities added](https://github.com/calmcoconut/diasDiaz/blob/master/assets/images/20210623-look-at-the-flat-tax-and-progressive-tax/progressive-tax-example-pie-necessities.png?raw=true)
 
 
 ## Conclusions
