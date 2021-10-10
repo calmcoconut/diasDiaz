@@ -91,9 +91,9 @@ This article is part one of a multipart series on Operating systems. Here you le
 
 #### Resources and Further Readings
 1. Arpaci-Dusseau, R. H., & Arpaci-Dusseau, A. C. (2018). Operating systems: Three easy pieces. Arpaci-Dusseau Books, LLC.
-Donahoo, M. J., & Calvert, K. L. (2009). TCP/IP Sockets in C: Practical Guide for Programmers. Elsevier. http://public.eblib.com/choice/publicfullrecord.aspx?p=428534
-2. Hall, B. “Beej J. (2020). Beej’s Guide to Network Programming. beej.us. https://beej.us/guide/bgnet/html/#connect
-3. Kerrisk, M. (2010). The Linux programming interface: A Linux and UNIX system programming handbook. No Starch Press.
+2. Donahoo, M. J., & Calvert, K. L. (2009). TCP/IP Sockets in C: Practical Guide for Programmers. Elsevier. http://public.eblib.com/choice/publicfullrecord.aspx?p=428534
+3. Hall, B. “Beej J. (2020). Beej’s Guide to Network Programming. beej.us. https://beej.us/guide/bgnet/html/#connect
+4. Kerrisk, M. (2010). The Linux programming interface: A Linux and UNIX system programming handbook. No Starch Press.
 
 
 'Till next time space cowboy
