@@ -8,7 +8,7 @@ tags: computer science os multithreading lowlevel
 > A readable summary of how an __operating system__ facilitates __multi-threading__ and how it works. This series of articles will cover key questions about how an Operating System works. After you read it, you will walk away knowing what the OS does behind the scenes to make your life easier when creating multi-threaded applications. You won't need much of any background to read this article, but it will help if you are familiar with a low-level language, like C. 
 _If you want to learn more, the end of this article provides my sources and what you can use in your own studies._
 
-## What Even is an Operating System?
+## What even is an Operating System?
 On a technical level, an operating system is a layer of software that sits above the hardware layer of a computer. Typically, it is the only piece of software on a system that has the privilege and power to manipulate the underlying hardware. File systems, networking, and disk access are all managed by the operating system. Other applications can not access the underlying hardware. Instead, they have to ask the OS for permission. In most operating systems, this means that the OS provides an interface for working with hardware. As a programmer, you don't have to worry about things such as hard disk drivers. Instead, you call to _open()_, and the OS kicks off the rest.
 
 Besides being an arbitrator to the hardware layer, the operating system has two more important responsibilities. First, it must assure that all applications are modular (i.e., isolated) from each other. Modularity means that applications should each essentially think they have the computer to themselves. Why? Because if every program were able to see every other program, there is potential for accidental (or malicious) interactions that could cause the whole system to crash. For example, if chrome had access to every other program's memory, can you imagine what security risks this could cause? What if a virus could access or overwrite what was in memory for all applications on a system?
@@ -28,7 +28,7 @@ So, how does the Operating system manipulate the state of the hardware? How does
 
 Some systems may find it best to, for example, give the CPU to one process for a long, long time, while others might find it best to keep switching between processes. Varying ways of using mechanisms is an example of a __policy__. Policies manage how the system decides to use its mechanisms. Different machines will have different use cases (e.g., a home PC has different requirements an IBM mainframe!).
 
-## Operating Systems seem complicated- What are their Guiding Principles?
+## Operating Systems seem complicated- what are their Guiding Principles?
 __Optimize for the common case__. I hinted at this in the last section. OS designers have to consider what the system will be used for, its requirements, and its users/stakeholders. It is impossible to optimize for all cases, so designers have to implement their policies around these constraints.
 
 __Separate mechanisms from policies__. Engineers need to offer mechanisms that are flexible enough to fit many types of use cases. Separating mechanisms and policies makes mechanisms more flexible. Flexible mechanisms enable different policies that are themselves now flexible enough to be changed by a user setting or circumstance.
@@ -36,10 +36,10 @@ __Separate mechanisms from policies__. Engineers need to offer mechanisms that a
 
 Phew, that was a high-level section. Let's get more concrete!
 
-## Access, privilege, and hardware
+## Access, Privilege, and Hardware
 User applications can never access hardware. There is a clear separation between system (privileged), _kernel_ level operations, and user level (un-privileged) contexts.
 
-#### Hardware also plays a role. The Kernel trap
+#### Hardware also plays a role. The Trap
 A machine's hardware even facilitates the distinction between user and privileged access. The CPU has a special switch (a bit) that is flipped on/off depending on the system's access level. If the system is on a user level, the switch will be off. Then when an application attempts to access hardware, the CPU will check the status of this switch. If it is off, it acts as an alarm, and a hardware _interrupt_ occurs to hand control over to the Operating System. The OS then decides to continue or terminate the hardware procedure.
 
 This describes a _boundary_ between privileged and user modes.
