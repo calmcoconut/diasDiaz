@@ -1,6 +1,6 @@
 ---
 layout: post
-title: An Introduction to Concurrency- OS Perspective (Part 1)
+title: An Introduction to Thread Concurrency- a OS Perspective (Part 1)
 author: Alejandro Diaz
 tags: computer science os multithreading lowlevel
 ---
