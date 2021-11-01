@@ -7,7 +7,7 @@ tags: computer science os multithreading lowlevel
 
 > A readable summary of how an __operating system__ facilitates __multi-threading__ and how it works. This series of articles will cover key questions about how an Operating System works. After you read it, you will walk away knowing what the OS does behind the scenes to make your life easier when creating multi-threaded applications. You won't need much of any background to read this article, but it will help if you are familiar with a low-level language, like C. 
 _If you want to learn more, the end of this article provides my sources and what you can use in your own studies._
-_Make sure to check out [part one](https://calmcoconut.github.io/diasDiaz/An-Introduction-to-Concurrency-a-OS-Perspective/)_.
+_Make sure to check out [part one](https://calmcoconut.github.io/diasDiaz/An-Introduction-to-Thread-Concurrency-a-OS-Perspective-Part-1/)_.
 
 # Processing a Process
 In [part one](https://calmcoconut.github.io/diasDiaz/An-Introduction-to-Concurrency-a-OS-Perspective/), we used the terms "process" and "application" interchangeably. This is not entirely correct, as you will see. An application is represented as one or more processes. A process, by definition has its own resources and data, the most basic unit of work on the user level. Recall that the OS uses processes to achieve its goal of __modular__ and __isolated__ programs.
