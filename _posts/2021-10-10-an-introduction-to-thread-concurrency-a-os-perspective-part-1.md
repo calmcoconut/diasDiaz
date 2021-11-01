@@ -7,7 +7,7 @@ tags: computer science os multithreading lowlevel
 
 > A readable summary of how an __operating system__ facilitates __multi-threading__ and how it works. This series of articles will cover key questions about how an Operating System works. After you read it, you will walk away knowing what the OS does behind the scenes to make your life easier when creating multi-threaded applications. You won't need much of any background to read this article, but it will help if you are familiar with a low-level language, like C. 
 _If you want to learn more, the end of this article provides my sources and what you can use in your own studies._
-_Make sure to check out [part two](https://calmcoconut.github.io/diasDiaz/an-Introduction-to-Thread-Concurrency-a-OS-Perspective-Part-2/)_.
+_Make sure to check out [part two](https://calmcoconut.github.io/diasDiaz/an-introduction-to-thread-concurrency-a-os-perspective-part-2/)_.
 
 ## What even is an Operating System?
 On a technical level, an operating system is a layer of software that sits above the hardware layer of a computer. Typically, it is the only piece of software on a system that has the privilege and power to manipulate the underlying hardware. File systems, networking, and disk access are all managed by the operating system. Other applications can not access the underlying hardware. Instead, they have to ask the OS for permission. In most operating systems, this means that the OS provides an interface for working with hardware. As a programmer, you don't have to worry about things such as hard disk drivers. Instead, you call to _open()_, and the OS kicks off the rest.
