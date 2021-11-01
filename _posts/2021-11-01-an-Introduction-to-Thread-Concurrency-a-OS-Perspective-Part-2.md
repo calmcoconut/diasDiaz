@@ -1,9 +1,8 @@
-
 ---
 layout: post
-title: An Introduction to Thread Concurrency- a OS Perspective (Part 2)
+title: An Introduction to Thread Concurrency- a OS Perspective (Part 1)
 author: Alejandro Diaz
-tags: computer science os multi-threading lowlevel
+tags: computer science os multithreading lowlevel
 ---
 
 > A readable summary of how an __operating system__ facilitates __multi-threading__ and how it works. This series of articles will cover key questions about how an Operating System works. After you read it, you will walk away knowing what the OS does behind the scenes to make your life easier when creating multi-threaded applications. You won't need much of any background to read this article, but it will help if you are familiar with a low-level language, like C. 
