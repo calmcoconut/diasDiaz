@@ -62,6 +62,3 @@ Another option is to have the server launch another copy of itself when acceptin
 The third option, which is what I chose, was to make the server multi-threaded. A multi-threaded server would have its main thread accept incoming clients, then load these clients into a queue. The queue, in turn, would be handled by a child thread that would fulfill the request.
 
 I implemented this using the pthread's library. A callback function is registered with each thread. The function kicks off the client-handling portion of our implementation. These threads would sleep until the main thread signals that a client needs to be served.
-
-
-### Conclusion
