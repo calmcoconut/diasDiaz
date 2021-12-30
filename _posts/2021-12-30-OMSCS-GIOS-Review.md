@@ -5,10 +5,10 @@ author: Alejandro Diaz
 tags: computer science gios omscs
 ---
 
-## tl;dr
-* OMSCS Graduate Introduction to Operating Systems will give you a wide breadth into modern operating systems
-* Exams are over-weighted
-* Projects were fun, but can be challenging coming from a less experienced background
+>### tl;dr
+>* OMSCS Graduate Introduction to Operating Systems will give you a wide breadth into modern operating systems
+>* Exams are over-weighted
+>* Projects were fun, but can be challenging coming from a less experienced background
 
 # GIOS Fall 2021 Review
 Coming from an economics background with Java and Python experience, GIOS was a plunge into the deep end of the swimming pool. 
