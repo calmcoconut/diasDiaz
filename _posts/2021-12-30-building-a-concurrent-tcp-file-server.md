@@ -2,7 +2,7 @@
 layout: post
 title: Building a Concurrent TCP File Server in C
 author: Alejandro Diaz
-tags: computer science gios omscs C TCP
+tags: computer science C TCP
 ---
 
 > ### tl;dr
