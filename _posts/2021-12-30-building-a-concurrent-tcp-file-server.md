@@ -4,7 +4,6 @@ title: Building a Concurrent TCP File Server in C
 author: Alejandro Diaz
 tags: computer science C TCP
 ---
-
 > ### tl;dr
 > * We start build-up from our starting point of a simple echo-client and server, to a file-server
 > * Make use of IPv4/IPv6 agnostic TCP sockets

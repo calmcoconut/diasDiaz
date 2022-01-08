@@ -4,7 +4,6 @@ title: OMSCS GIOS Review
 author: Alejandro Diaz
 tags: computer science gios omscs
 ---
-
 >### tl;dr
 >* OMSCS Graduate Introduction to Operating Systems will give you a wide breadth into modern operating systems
 >* Exams are over-weighted

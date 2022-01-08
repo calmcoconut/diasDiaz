@@ -4,7 +4,6 @@ title: Coordinating Caching in multi-process applications
 author: Alejandro Diaz
 tags: computer science 
 ---
-
 > ### tl;dr
 > * Caching makes huge performance improvements. Here we work on integrating a server-side caching application with a server
 > * To communicate between processes we have to use POSIX message queues, shared memory, and semaphores
