@@ -33,4 +33,5 @@ I chose to handle this problem by tracking what files are on the clients. Then, 
 What if multiple clients are making changes that conflict with one another? For example, one client is trying to fetch a file while another is making changes to the file. Which file is valid? This is known as the readers writers problem.
 
 For the distributed file system to work correctly, we need to implement some exclusivity guarantees. Particularly, when a client is writing to a file and when the server is deleting a file. I implemented this by using reader/writer locks. Essentially a reader lock allows multiple entities to have access to a resource, while a writer lock allows only a single entity to have access. The server should associate each file with a lock, and any client that has the lock should also be noted.
+
 These locks in combination with a "lease" mean that a client making a write request can have a guaranteed amount of time where the client is given exclusive access. This lease must be timed to prevent the system from getting locked up on a misbehaving client.
