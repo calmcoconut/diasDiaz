@@ -47,7 +47,7 @@ In android, a given page is represented using fragments. Let's walk through the 
 ## Designing the Front-end
 The wireframe I built earlier provided a solid foundation to build the frontend (colors, UI, etc.). After initializing a tabbed layout, I went to work on creating the home fragment.
 
-![home]({{ baseurl | relative_url }}/home.png)
+![home](/home.png)
 
 The home page needed to be populated by cards showing the user's recent activities. Furthermore, it needed to be a RecyclerView ("infinite" scrolling) to provide efficient retrieval. 
 
