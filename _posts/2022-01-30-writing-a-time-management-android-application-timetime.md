@@ -47,29 +47,29 @@ In android, a given page is represented using fragments. Let's walk through the 
 ## Designing the Front-end
 The wireframe I built earlier provided a solid foundation to build the frontend (colors, UI, etc.). After initializing a tabbed layout, I went to work on creating the home fragment.
 
-![home](/home.png)
+![home](./assets/images/home.png)
 
 The home page needed to be populated by cards showing the user's recent activities. Furthermore, it needed to be a RecyclerView ("infinite" scrolling) to provide efficient retrieval. 
 
 The other requirement of the home page was to provide a way to log activities. I used a Floating Action Button (FAB) with a "+" on it. The FAB will also be present on most other fragments but with a responsibility corresponding to that tab.
 
-![log](./logtime.png)
+![log](./assets/images/logtime.png)
 
 The activity and categories fragments are similar. They show the user the activities or categories they have in their database. Users can create custom categories or activities via the FAB.
 
-![activity](/assets/images/2021-01-30-writing-a-time-management-android-application-timetime/activity.png)
+![activity](./assets/images/activity.png)
 
-![create activity](/assets/images/2021-01-30-writing-a-time-management-android-application-timetime/createActivity.png)
+![create activity](./assets/images/createActivity.png)
 
-![category](/assets/images/2021-01-30-writing-a-time-management-android-application-timetime/category.png)
+![category](./assets/images/category.png)
 
 
 
 Finally, A statistics page aggregates the user's database and presents data visualizations.
 
-![stats period](/assets/images/2021-01-30-writing-a-time-management-android-application-timetime/statperiod.png)
+![stats period](./assets/images/statperiod.png)
 
-![category](/assets/images/2021-01-30-writing-a-time-management-android-application-timetime/stat.png)
+![category](./assets/images/stat.png)
 
 ## Tidbits: Notifications and Lockscreen prompt
 I wanted the application to be opened maybe once a week by a user. Ideally, the user only interacts with the application via notifications. In TimeTime, there are two types of notifications: traditional and full-lockscreen. Both notification types must use a daemon thread and an alarm to trigger them.
