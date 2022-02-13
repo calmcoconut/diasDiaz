@@ -6,7 +6,9 @@ author: Alejandro Diaz
 tags: AI
 ---
 >### tl;dr
-> * point 1
+> * Representations are powerful problem-solving technique that provides perspective, and makes difficult problems easy
+> * Like humans, AI benefits from problem constraints and making abstract problems concrete
+> * We can make problems concrete using mental models. We make mental models by representing the problem
 
 How you frame a problem is everything. It can make a painless problem painful. However, a good mental model will make even complex, abstract problems concrete and simple to solve.
 
@@ -15,24 +17,21 @@ The same is true in computer science and human-like AI. The rest of this article
 ## An example problem: Wolves and Sheep
 A fun brain teaser: the wolves and sheep problem (or its many variants, such as missionaries and cannibals) asks how to move the two groups across a river without losing any members. The boat can hold up to two members, and may not cross without at least one sheep or wolf in the boat. If wolves outnumber sheep on either bank, then the sheep are eaten, and the game is lost.
 
-[example image](../assets/images/20220213-framing-problems-and-answering-questions-human-thinking-and-ai/example.png)
+![example image](../assets/images/20220213-framing-problems-and-answering-questions-human-thinking-and-ai/example.png){: height="550" }
 
 The graphic above is a great representation, but we can't use images as code usually, so let's make it even simpler!
 Say $$A$$ represents the origin bank of the river and $$B$$ the goal bank, If we have one sheep and one wolf we can model it as:
 
-~~~~~~
-A < B
-1 	0
-1 	0
-~~~~~~
+
+>A < B
+>1 	0
+>1 	0
 
 We can see that the boat is currently on bank $$A$$ because we have '<' point to the current bank. When we cross, we are left with:
 
-~~~~~~
-A > B
-0 	1
-0 	1
-~~~~~~
+>A > B
+>0 	1
+>0 	1
 
 While this example is trivial, we have made the problem concrete enough to represent it using code. In Python, we can use a tuple, like ((B)ank, (s)heep,(w)olves). To make the model even simpler, we have sheep and wolves only count for the sheep and wolves on bank A of the river. We can deduce the number of sheep on bank B at any time (i.e., total sheep - bank A sheep = bank B sheep).
 Now we can observe all possible states in the problem:
