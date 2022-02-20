@@ -10,7 +10,7 @@ tags: computer science
 ## title
 Give an infant some shapes and a shape sorter and watch them try to fit each shape into a slot. We call this method generate-and-test. A machine can use generate and test to solve various problems, using simple, human-like AI. This article will discuss using generate-and-test to solve the Tower of Hanoi with the fewest moves possible.
 
-![tower of hanoi](../assets/images/20220220-human-like-ai-with-generate-and-test/Picture1.png)
+![tower of hanoi](../assets/images/20220220-human-like-ai-with-generate-and-test/Picture1.png?style=centerme)
 
 The first step to this problem is figuring out how to represent it. The illustration gives a hint. Each block is either:
 
