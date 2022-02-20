@@ -1,13 +1,12 @@
 ---
 layout: post
-title: Human-Like AI with generate and test
+title: Human-Like AI with Generate and Test
 author: Alejandro Diaz
 tags: computer science 
 ---
 >### tl;dr
 > * Generate-and-Test is a human-like AI method that can solve complex problems by creating plausible states intelligently
 
-## title
 Give an infant some shapes and a shape sorter and watch them try to fit each shape into a slot. We call this method generate-and-test. A machine can use generate and test to solve various problems, using simple, human-like AI. This article will discuss using generate-and-test to solve the Tower of Hanoi with the fewest moves possible.
 
 ![tower of hanoi](../assets/images/20220220-human-like-ai-with-generate-and-test/Picture1.png?style=centerme)
