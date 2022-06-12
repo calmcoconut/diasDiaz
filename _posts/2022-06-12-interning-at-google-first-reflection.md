@@ -1,13 +1,11 @@
 ---
 layout: post
-title: title
+title: Interning at Google- first reflection
 author: Alejandro Diaz
 tags: computer science google reflection
 ---
 >### tl;dr
-> * 
-
-## Interning at Google: first reflection
+> * There are great perks working for large tech companies, but there is a real threat of burnout. 
 
 Tomorrow will be my fourth week since I’ve started working at Google for my summer internship. I’ll describe some of my experience, how I got here, and finally what I’ve learned so far. This article will likely be article 1 of a series of three going from beginning to end. This is the beginning to my reflection on the experience.
 
