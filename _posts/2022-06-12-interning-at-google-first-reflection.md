@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Interning at Google- first reflection
+title: Interning at Google - first reflection
 author: Alejandro Diaz
 tags: computer science google reflection
 ---
