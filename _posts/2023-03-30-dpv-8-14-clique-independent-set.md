@@ -24,11 +24,11 @@ We need to show that for any solution $S$ for and instance $I$ of CIS can be ver
 * To validate the $S$ clique, we first check that there are not more than $k$ vertices in $S$. This takes $O(n)$ time.
 * Next, we check that all pairs are strongly connected (to satisfy the definition of a clique). We do this by looking at each $x,y$ vertex and ensuring there is an edge between them. This takes $O(n^2)$ time.
 
-The above is poly-time to the input, thus we can assert $CIS\in NP$.
+The above is poly-time to the input, thus we can assert $$CIS\in NP$$.
 
-### CIS in NP-complete
+### **CIS in NP-complete**
 
-#### Clique -> CIS
+#### **Clique -> CIS**
 We now reduce a known NP-complete problem, Clique, to CIS. We must take care of the wording of the problem: it will only return IFF there is both a clique and an independent set of size $k$.
 
 Clique takes a graph, $G=(V,E)$ and a goal $g$.
