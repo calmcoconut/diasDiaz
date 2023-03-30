@@ -1,8 +1,8 @@
 ---
 layout: post
-title: (DPV 8.17) Clique and Independent Set
+title: Clique and Independent Set DPV 8.14
 author: Alejandro Diaz
-tags: computer science 
+tags: computer science lp
 ---
 
 ## Overview
