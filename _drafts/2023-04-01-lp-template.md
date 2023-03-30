@@ -1,10 +1,21 @@
 ---
 layout: post
-title: title
+title: (DPV 8.17) Clique and Independent Set
 author: Alejandro Diaz
 tags: computer science 
 ---
->### tl;dr
-> * point 1
 
-## title
+## Overview
+
+**Problem Statement**
+> 
+
+**Approach**
+
+
+### problem in NP
+
+### problem in NP-complete
+
+#### Reduction
+#### <==>
