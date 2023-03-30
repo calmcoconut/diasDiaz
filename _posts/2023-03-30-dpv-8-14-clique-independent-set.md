@@ -39,7 +39,7 @@ Now we pass $G'$ (the transformed graph) and $g$ to CIS. If there is a clique of
 
 The transformation is poly-time, taking at most O(n+m) to add vertices to the graph.
 
-![Illustration of our graph transformation](../assets/images/2023-04-01-lp-dpv-8-14-clique-independent-set/cis.png){: height="550" }
+![Illustration of our graph transformation](../assets/images/2023-03-30-dpv-8-14-clique-independent-set/cis.png){: height="550" }
 
 #### Clique <==> CIS
 Now we have to prove correctness. We do this by proving both directions. That is $Clique\iff CIS$:
