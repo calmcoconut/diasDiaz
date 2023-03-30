@@ -33,7 +33,7 @@ We now reduce a known NP-complete problem, Clique, to CIS. We must take care of 
 
 Clique takes a graph, $$G=(V,E)$$ and a goal $$g$$.
 
-We can take the $$G$$ and modify it. We add vertices to the graph which are not connected to any edges, such that there are $$g$$ new vertices, for a total of $$|V'|=|V|+g$$.	
+We can take the $$G$$ and modify it. We add vertices to the graph which are not connected to any edges, such that there are $$g$$ new vertices, for a total of: $$\|V'\|=\|V\|+g$$.	
 
 Now we pass $$G'$$ (the transformed graph) and $$g$$ to CIS. If there is a clique of size $$g$$, CIS will return that clique as well as an independent set of size $$g$$ (which we guaranteed by the above). Our illustration captures what's going on.
 
