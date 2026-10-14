@@ -1,0 +1,90 @@
+{{- define "main" }}
+<div class="shelves-container">
+    <header class="page-header">
+        <h1 class="page-title">
+            {{ partial "icon.html" (dict "name" "shelves" "size" 32) }}
+            <span>{{ .Title | default "Shelves" }}</span>
+        </h1>
+    </header>
+
+    {{- if .Content }}
+    <div class="shelves-intro md-content">
+        {{ .Content }}
+    </div>
+    {{- end }}
+
+    {{- $shelvesData := partial "shelves-data.html" . }}
+    {{- $readingCurrent := index $shelvesData "reading_current" | default slice }}
+    {{- $readingFinished := index $shelvesData "reading_finished" | default slice }}
+    {{- $watchingCurrent := index $shelvesData "watching_current" | default slice }}
+    {{- $watchingFinished := index $shelvesData "watching_finished" | default slice }}
+
+    <section class="shelves-section reading-section">
+        <h2 class="section-heading">
+            {{ partial "icon.html" (dict "name" "open-book" "size" 24) }}
+            <span>Reading</span>
+        </h2>
+
+        <div class="shelves-subgroup">
+            <h3 class="group-label">CURRENT</h3>
+            {{- if gt (len $readingCurrent) 0 }}
+                <div class="shelves-items-list">
+                    {{- range $readingCurrent }}
+                        {{ partial "shelves-entry.html" . }}
+                    {{- end }}
+                </div>
+            {{- else }}
+                <p class="empty-state">Nothing currently being read.</p>
+            {{- end }}
+        </div>
+
+        <div class="shelves-subgroup">
+            <h3 class="group-label">FINISHED</h3>
+            {{- if gt (len $readingFinished) 0 }}
+                <div class="shelves-items-list">
+                    {{- range $readingFinished }}
+                        {{ partial "shelves-entry.html" . }}
+                    {{- end }}
+                </div>
+            {{- else }}
+                <p class="empty-state">No finished books yet.</p>
+            {{- end }}
+        </div>
+    </section>
+
+    <hr class="section-divider" />
+
+    <section class="shelves-section watching-section">
+        <h2 class="section-heading">
+            {{ partial "icon.html" (dict "name" "television" "size" 24) }}
+            <span>Watching</span>
+        </h2>
+
+        <div class="shelves-subgroup">
+            <h3 class="group-label">CURRENT</h3>
+            {{- if gt (len $watchingCurrent) 0 }}
+                <div class="shelves-items-list">
+                    {{- range $watchingCurrent }}
+                        {{ partial "shelves-entry.html" . }}
+                    {{- end }}
+                </div>
+            {{- else }}
+                <p class="empty-state">Nothing currently being watched.</p>
+            {{- end }}
+        </div>
+
+        <div class="shelves-subgroup">
+            <h3 class="group-label">FINISHED</h3>
+            {{- if gt (len $watchingFinished) 0 }}
+                <div class="shelves-items-list">
+                    {{- range $watchingFinished }}
+                        {{ partial "shelves-entry.html" . }}
+                    {{- end }}
+                </div>
+            {{- else }}
+                <p class="empty-state">No finished films or series yet.</p>
+            {{- end }}
+        </div>
+    </section>
+</div>
+{{- end }}

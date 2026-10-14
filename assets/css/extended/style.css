@@ -1,0 +1,1492 @@
+/**
+ * diasDiaz.net - Extended CSS
+ * Warm-retro personal-first styling for PaperMod
+ * Circa 2002 aesthetic: off-white/cream canvas, dark-gray typography,
+ * signature muted-magenta accent, local monospace headings/metadata,
+ * crisp 1px rules, pixel-art icon system.
+ */
+
+/* ==========================================================================
+   1. Design Tokens & Theme Variables
+   ========================================================================== */
+
+:root {
+  /* Layout Dimensions */
+  --max-width: 760px;
+  --main-width: 760px;
+  --nav-width: 760px;
+  --header-height: auto;
+  --footer-height: auto;
+  --gap: 24px;
+  --mobile-gutter: 20px;
+  --radius: 0px;
+
+  /* Typography Stacks */
+  --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "Cascadia Mono", "Segoe UI Mono", Menlo, Consolas, monospace;
+
+  /* Spacing Scale */
+  --space-element: 10px;    /* 8-12px element spacing */
+  --space-section: 36px;    /* 32-40px section spacing */
+  --space-top-desktop: 32px;
+  --space-top-mobile: 24px;
+
+  /* Light Theme Palette (Barely cream off-white #FAF9F6) */
+  --color-bg: #FAF9F6;
+  --color-text: #454545;
+  --color-heading: #404040;
+  --color-link: #805277;          /* Darker muted magenta meeting WCAG AA (5.9:1) */
+  --color-link-hover: #5E3957;
+  --color-link-bg-hover: rgba(170, 117, 159, 0.12);
+  --color-accent: #AA759F;        /* Signature diasDiaz muted magenta */
+  --color-rule: #D8D6D0;          /* Crisp neutral separator rule */
+  --color-secondary: #63615D;     /* Subdued metadata meeting WCAG AA (5.4:1) */
+  --color-focus: #805277;
+  --color-code-bg: #F0EEE9;
+  --color-code-block-bg: #242528;
+
+  /* PaperMod Variable Overrides - Light Mode */
+  --theme: var(--color-bg);
+  --entry: var(--color-bg);
+  --primary: var(--color-heading);
+  --secondary: var(--color-secondary);
+  --tertiary: var(--color-rule);
+  --content: var(--color-text);
+  --border: var(--color-rule);
+  --code-bg: var(--color-code-bg);
+  --code-block-bg: var(--color-code-block-bg);
+
+  color-scheme: light;
+}
+
+/* Dark Theme Palette (Charcoal #202020) */
+:root[data-theme="dark"],
+body[data-theme="dark"] {
+  --color-bg: #202020;
+  --color-text: #E8E8E8;
+  --color-heading: #FFFFFF;
+  --color-link: #D6A6CC;          /* Pale magenta meeting WCAG AA (7.9:1) */
+  --color-link-hover: #F0D0E9;
+  --color-link-bg-hover: rgba(214, 166, 204, 0.16);
+  --color-accent: #AA759F;
+  --color-rule: #383838;
+  --color-secondary: #A8A6A0;     /* Light gray metadata meeting WCAG AA (6.8:1) */
+  --color-focus: #D6A6CC;
+  --color-code-bg: #2A2A2A;
+  --color-code-block-bg: #181818;
+
+  /* PaperMod Variable Overrides - Dark Mode */
+  --theme: var(--color-bg);
+  --entry: var(--color-bg);
+  --primary: var(--color-heading);
+  --secondary: var(--color-secondary);
+  --tertiary: var(--color-rule);
+  --content: var(--color-text);
+  --border: var(--color-rule);
+  --code-bg: var(--color-code-bg);
+  --code-block-bg: var(--color-code-block-bg);
+
+  color-scheme: dark;
+}
+
+/* System Dark Mode Fallback (when no explicit light theme set) */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-bg: #202020;
+    --color-text: #E8E8E8;
+    --color-heading: #FFFFFF;
+    --color-link: #D6A6CC;
+    --color-link-hover: #F0D0E9;
+    --color-link-bg-hover: rgba(214, 166, 204, 0.16);
+    --color-accent: #AA759F;
+    --color-rule: #383838;
+    --color-secondary: #A8A6A0;
+    --color-focus: #D6A6CC;
+    --color-code-bg: #2A2A2A;
+    --color-code-block-bg: #181818;
+
+    --theme: var(--color-bg);
+    --entry: var(--color-bg);
+    --primary: var(--color-heading);
+    --secondary: var(--color-secondary);
+    --tertiary: var(--color-rule);
+    --content: var(--color-text);
+    --border: var(--color-rule);
+    --code-bg: var(--color-code-bg);
+    --code-block-bg: var(--color-code-block-bg);
+
+    color-scheme: dark;
+  }
+}
+
+/* ==========================================================================
+   2. Base Typography & Global Reset Overrides
+   ========================================================================== */
+
+html {
+  font-family: var(--font-body);
+  font-size: 18px;
+  line-height: 1.65;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  line-height: 1.65;
+  margin: 0;
+  padding: 0;
+}
+
+body.list {
+  background-color: var(--color-bg) !important;
+}
+
+/* Headings Stack: Local System Monospace */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-mono);
+  color: var(--color-heading);
+  letter-spacing: -0.01em;
+  margin-top: var(--space-section);
+  margin-bottom: var(--space-element);
+}
+
+h1 {
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+h2 {
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+h3 {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+/* Paragraphs & Spacing */
+p {
+  margin-top: 0;
+  margin-bottom: var(--space-element);
+}
+
+/* Links: Persistent Underline, Contrast-Safe, Subtle Flat Hover */
+a {
+  color: var(--color-link);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+a:hover {
+  color: var(--color-link-hover);
+  background-color: var(--color-link-bg-hover);
+}
+
+/* Focus Visible: Clear Visible Ring */
+:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+/* Crisp 1px Separators */
+hr, .section-divider, .footer-divider {
+  border: 0;
+  border-top: 1px solid var(--color-rule);
+  margin: var(--space-section) 0;
+  height: 0;
+}
+
+/* ==========================================================================
+   3. Accessible Skip Link
+   ========================================================================== */
+
+.skip-link {
+  position: absolute;
+  top: -9999px;
+  left: 20px;
+  z-index: 10000;
+  padding: 8px 16px;
+  background-color: var(--color-bg);
+  color: var(--color-link);
+  border: 2px solid var(--color-focus);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: underline;
+  border-radius: 0;
+}
+
+.skip-link:focus,
+.skip-link:focus-visible {
+  top: 12px;
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+/* ==========================================================================
+   4. Layout & Containers
+   ========================================================================== */
+
+/* Main Centered Reading Column */
+.main {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 var(--gap);
+  min-height: calc(100vh - 220px);
+}
+
+.home-container,
+.blog-container,
+.shelves-container,
+.resume-container,
+.search-container,
+.archive-container {
+  width: 100%;
+}
+
+/* ==========================================================================
+   5. Header & Navigation
+   ========================================================================== */
+
+.header {
+  padding-top: var(--space-top-desktop);
+  padding-bottom: 20px;
+}
+
+.header-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 var(--gap);
+  line-height: normal;
+  row-gap: 12px;
+}
+
+/* Site Logo / Linked Display Name */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo a {
+  font-family: var(--font-mono);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-heading);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px; /* 6-8px gap between nav icon and label */
+}
+
+.logo a:hover {
+  background-color: transparent;
+  color: var(--color-link);
+}
+
+.logo a svg {
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Theme Toggle Button: Square, Monospace, Clean Border */
+.logo-switches {
+  display: inline-flex;
+  align-items: center;
+}
+
+.theme-toggle,
+#theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  background-color: transparent;
+  color: var(--color-text);
+  border: 1px solid var(--color-rule);
+  border-radius: 0;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1;
+}
+
+.theme-toggle:hover,
+#theme-toggle:hover {
+  background-color: var(--color-link-bg-hover);
+  color: var(--color-link);
+}
+
+.theme-toggle svg {
+  vertical-align: middle;
+}
+
+/* Header Menu Links */
+.menu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  column-gap: 20px;
+  row-gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 15px;
+}
+
+.menu li {
+  margin: 0;
+  padding: 0;
+}
+
+.menu a {
+  color: var(--color-text);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 0;
+}
+
+.menu a:hover {
+  color: var(--color-link);
+  background-color: var(--color-link-bg-hover);
+}
+
+.nav-item-inner {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px; /* 6-8px icon to label gap */
+}
+
+.nav-item-inner.active,
+.menu .active {
+  color: var(--color-heading);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ==========================================================================
+   6. Shared Pixel-Art Icon Alignment
+   ========================================================================== */
+
+/* Heading Icons: 10-12px gap between icon and label */
+.heading-with-icon,
+.page-header h1,
+.page-title,
+.shelves-group-heading {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.heading-with-icon svg,
+.page-header h1 svg,
+.page-title svg,
+.shelves-group-heading svg {
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+
+/* Navigation Icons: 6-8px gap */
+.nav-icon,
+.menu-icon,
+.nav-item-inner svg {
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+
+/* Section Group Labels (Reading / Watching) */
+.lately-label,
+.group-label,
+.lately-group-label,
+.shelves-group-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-heading);
+  margin-bottom: 12px;
+  margin-top: 0;
+}
+
+.lately-label svg,
+.group-label svg,
+.lately-group-label svg,
+.shelves-group-label svg {
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+
+/* ==========================================================================
+   7. Homepage: Introduction, Lately, Recent Writing
+   ========================================================================== */
+
+/* Welcome / Introduction */
+.home-intro {
+  margin-top: 16px;
+  margin-bottom: var(--space-section);
+}
+
+.home-intro h1 {
+  font-size: 32px;
+  margin-top: 0;
+  margin-bottom: 12px;
+}
+
+.home-intro p {
+  font-size: 18px;
+  line-height: 1.65;
+  color: var(--color-text);
+  margin-bottom: 8px;
+}
+
+/* Lately Section */
+.lately-section,
+.home-section {
+  margin: var(--space-section) 0;
+}
+
+.section-heading {
+  font-family: var(--font-mono);
+  font-size: 19px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-top: 0;
+  margin-bottom: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.lately-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+
+.lately-col,
+.lately-column {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Media Entry Layout (Lately and Shelves) */
+.media-entry,
+.lately-entry,
+.shelf-entry,
+.shelves-entry {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  margin: 10px 0;
+}
+
+/* Cover Image: 56-64px bounded on home, 64-80px on shelves */
+.media-cover,
+.entry-cover-wrap,
+.lately-cover-wrapper {
+  width: 60px;
+  flex-shrink: 0;
+}
+
+.shelf-cover-wrapper {
+  width: 72px;
+  flex-shrink: 0;
+}
+
+.media-cover img,
+.entry-cover,
+.lately-cover,
+.shelf-cover {
+  width: 100%;
+  height: auto;
+  max-height: 90px;
+  object-fit: cover;
+  border: 1px solid var(--color-rule);
+  display: block;
+}
+
+.shelf-cover {
+  max-height: 110px;
+}
+
+.media-details,
+.entry-details,
+.lately-entry-content,
+.shelf-entry-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.media-title,
+.entry-title,
+.lately-title,
+.shelf-title {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--color-heading);
+}
+
+.media-title a,
+.entry-title a,
+.lately-title-link,
+.shelf-title-link {
+  color: var(--color-link);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.media-title a:hover,
+.entry-title a:hover,
+.lately-title-link:hover,
+.shelf-title-link:hover {
+  color: var(--color-link-hover);
+}
+
+.media-creator,
+.entry-creator,
+.lately-creator,
+.shelf-creator {
+  font-size: 14px;
+  color: var(--color-secondary);
+  margin-top: 2px;
+}
+
+.media-meta,
+.entry-meta,
+.lately-meta,
+.shelf-meta {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--color-secondary);
+  margin-top: 3px;
+}
+
+.entry-sep,
+.lately-sep,
+.shelf-sep {
+  color: var(--color-secondary);
+}
+
+.entry-date,
+.shelf-completed {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--color-secondary);
+  margin-top: 2px;
+}
+
+.media-note,
+.entry-note,
+.lately-note,
+.shelf-note {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--color-text);
+  margin-top: 6px;
+  margin-bottom: 0;
+}
+
+.section-more,
+.section-more-wrap {
+  margin-top: 14px;
+}
+
+.section-link,
+.section-more-link {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--color-link);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  display: inline-block;
+}
+
+.section-link:hover,
+.section-more-link:hover {
+  background-color: var(--color-link-bg-hover);
+  color: var(--color-link-hover);
+}
+
+/* Recent Writing Section (Homepage) */
+.recent-writing-section {
+  margin: var(--space-section) 0;
+}
+
+.recent-writing-list,
+.post-rows-list {
+  list-style: none;
+  margin: 16px 0;
+  padding: 0;
+}
+
+.recent-writing-row,
+.archive-post-row,
+.post-row {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  column-gap: 20px;
+  align-items: baseline;
+  padding: 6px 0;
+}
+
+.recent-writing-row .post-date,
+.archive-post-row .post-date,
+.post-row .post-date {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--color-secondary);
+  white-space: nowrap;
+}
+
+.recent-writing-row .post-title-link,
+.archive-post-row .post-title-link,
+.post-row .post-title-link {
+  font-size: 17px;
+  color: var(--color-link);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.empty-state {
+  font-style: italic;
+  color: var(--color-secondary);
+  margin: 12px 0;
+}
+
+/* ==========================================================================
+   8. Shelves Page Layout
+   ========================================================================== */
+
+.shelves-container {
+  margin-top: 24px;
+}
+
+.shelves-intro {
+  margin-bottom: var(--space-section);
+  color: var(--color-text);
+}
+
+.shelves-section {
+  margin-bottom: var(--space-section);
+}
+
+.shelves-subgroup {
+  margin: 16px 0;
+}
+
+.shelves-subheading {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--color-secondary);
+  text-transform: uppercase;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--color-rule);
+}
+
+.shelves-items-list,
+.shelves-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 12px 0;
+}
+
+/* ==========================================================================
+   9. Blog List & Archive (PaperMod Card Reset to Text-Led Rows)
+   ========================================================================== */
+
+/* Remove Card Appearance */
+.blog-entry,
+.post-entry {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  padding: 16px 0 !important;
+  margin-bottom: 20px !important;
+  border-bottom: 1px solid var(--color-rule) !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.blog-entry:last-child {
+  border-bottom: none !important;
+}
+
+.post-entry:hover,
+.post-entry:focus-within,
+.blog-entry:hover,
+.blog-entry:focus-within {
+  transform: none !important;
+  border-color: var(--color-rule) !important;
+}
+
+.entry-header h2,
+.blog-entry .entry-title {
+  font-size: 22px;
+  margin-top: 0;
+  margin-bottom: 6px;
+}
+
+.entry-header h2 a,
+.blog-entry .entry-title a {
+  color: var(--color-heading);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.entry-header h2 a:hover,
+.blog-entry .entry-title a:hover {
+  color: var(--color-link);
+}
+
+.entry-content,
+.blog-entry .entry-description {
+  color: var(--color-text);
+  font-size: 16px;
+  line-height: 1.55;
+  margin: 8px 0;
+}
+
+.entry-footer,
+.post-meta,
+.blog-entry .entry-meta {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--color-secondary);
+  margin-top: 4px;
+}
+
+.meta-sep {
+  color: var(--color-secondary);
+}
+
+/* Archive List */
+.archive-year-group {
+  margin-top: 32px;
+}
+
+.archive-year {
+  font-size: 24px;
+  border-bottom: 1px solid var(--color-rule);
+  padding-bottom: 6px;
+  margin-bottom: 16px;
+}
+
+.archive-entry {
+  padding: 6px 0 !important;
+  border-radius: 0 !important;
+}
+
+.archive-entry-title {
+  font-size: 17px;
+  font-weight: 500;
+}
+
+/* Tags List */
+.post-tags,
+.terms-tags,
+.entry-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0;
+  list-style: none;
+  margin-top: 8px;
+}
+
+.post-tags a,
+.terms-tags a,
+.entry-tag {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  padding: 2px 8px;
+  border: 1px solid var(--color-rule);
+  border-radius: 0;
+  background-color: transparent;
+  color: var(--color-link);
+  text-decoration: none;
+}
+
+.post-tags a:hover,
+.terms-tags a:hover,
+.entry-tag:hover {
+  background-color: var(--color-link-bg-hover);
+  color: var(--color-link-hover);
+}
+
+/* Pagination: Square, Monospace */
+.pagination {
+  margin: var(--space-section) 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pagination a,
+.pagination-link {
+  border-radius: 0 !important;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  background: transparent !important;
+  border: 1px solid var(--color-rule) !important;
+  color: var(--color-link) !important;
+  padding: 6px 14px !important;
+  line-height: normal !important;
+  text-decoration: none;
+}
+
+.pagination a:hover,
+.pagination-link:hover {
+  background-color: var(--color-link-bg-hover) !important;
+  color: var(--color-link-hover) !important;
+}
+
+/* ==========================================================================
+   10. Article / Post Single Page
+   ========================================================================== */
+
+.post-header {
+  margin-bottom: 24px;
+}
+
+.post-title {
+  font-size: 32px;
+  line-height: 1.25;
+  margin-bottom: 8px;
+}
+
+.post-description,
+.page-description {
+  font-size: 17px;
+  color: var(--color-secondary);
+  margin-top: 6px;
+  margin-bottom: 16px;
+}
+
+.post-content {
+  font-size: 18px;
+  line-height: 1.65;
+  color: var(--color-text);
+}
+
+.post-content h2 {
+  font-size: 24px;
+  margin-top: 36px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid var(--color-rule);
+  padding-bottom: 4px;
+}
+
+.post-content h3 {
+  font-size: 20px;
+  margin-top: 28px;
+  margin-bottom: 10px;
+}
+
+/* Blockquotes: Thin accent rule, no heavy panel */
+.post-content blockquote,
+.md-content blockquote {
+  margin: 20px 0;
+  padding: 4px 0 4px 16px;
+  border-inline-start: 3px solid var(--color-accent);
+  color: var(--color-secondary);
+  background: transparent;
+  font-style: italic;
+}
+
+/* Code Blocks & Inline Code */
+code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background-color: var(--color-code-bg);
+  padding: 2px 5px;
+  border-radius: 0;
+}
+
+pre {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  line-height: 1.5;
+  background-color: var(--color-code-block-bg) !important;
+  color: #E8E8E8;
+  padding: 16px;
+  border: 1px solid var(--color-rule);
+  border-radius: 0;
+  overflow-x: auto;
+  margin: 20px 0;
+}
+
+pre code {
+  background-color: transparent !important;
+  padding: 0;
+  font-size: inherit;
+  color: inherit;
+}
+
+.copy-code {
+  border-radius: 0 !important;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  background: #383838 !important;
+  color: #FFFFFF !important;
+  border: 1px solid #555555;
+  padding: 2px 6px;
+}
+
+/* Table of Contents: In-flow list, compact */
+details.toc {
+  margin: 24px 0;
+  padding: 12px 16px;
+  border: 1px solid var(--color-rule);
+  background-color: transparent;
+  border-radius: 0;
+}
+
+details.toc summary {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+}
+
+details.toc .inner {
+  margin-top: 10px;
+  padding: 0;
+}
+
+details.toc ul {
+  padding-left: 20px;
+  margin: 4px 0;
+}
+
+details.toc li {
+  margin: 4px 0;
+  font-size: 14px;
+}
+
+/* ==========================================================================
+   11. Search UI Styling
+   ========================================================================== */
+
+.search-header {
+  margin-bottom: 24px;
+}
+
+.searchbox {
+  margin: 20px 0;
+}
+
+.searchbox label,
+.search-label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: var(--color-heading);
+}
+
+.searchbox input,
+#searchInput {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  font-family: var(--font-mono);
+  font-size: 16px;
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-rule);
+  border-radius: 0;
+  box-shadow: none;
+  outline: none;
+}
+
+.searchbox input:focus,
+#searchInput:focus {
+  border-color: var(--color-focus);
+  outline: 2px solid var(--color-focus);
+  outline-offset: 1px;
+}
+
+.search-status {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--color-secondary);
+  margin: 12px 0;
+}
+
+.searchResults {
+  list-style: none;
+  padding: 0;
+  margin: 20px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.searchResults li {
+  background: transparent !important;
+  border: none !important;
+  border-bottom: 1px solid var(--color-rule) !important;
+  border-radius: 0 !important;
+  padding: 12px 0 !important;
+  display: block !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+.searchResults li:hover {
+  transform: none !important;
+}
+
+.search-result-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.search-result-title a {
+  color: var(--color-link);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.search-result-snippet {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--color-secondary);
+}
+
+.search-nojs-fallback {
+  margin-top: 16px;
+  font-size: 15px;
+  color: var(--color-secondary);
+}
+
+/* ==========================================================================
+   12. Résumé Styling & Print Stylesheet
+   ========================================================================== */
+
+.resume-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.resume-display-name {
+  display: none;
+}
+
+.print-resume-btn,
+.print-btn {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  padding: 5px 12px;
+  background-color: transparent;
+  color: var(--color-link);
+  border: 1px solid var(--color-rule);
+  border-radius: 0;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.print-resume-btn:hover,
+.print-btn:hover {
+  background-color: var(--color-link-bg-hover);
+  color: var(--color-link-hover);
+}
+
+.resume-section {
+  margin-bottom: 32px;
+}
+
+.resume-section h2,
+.resume-content h2 {
+  font-family: var(--font-mono);
+  font-size: 19px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border-bottom: 1px solid var(--color-rule);
+  padding-bottom: 6px;
+  margin-bottom: 16px;
+}
+
+.post-content h2,
+.post-content h3,
+.post-single .post-content h2,
+.post-single .post-content h3 {
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.resume-entry {
+  margin-bottom: 20px;
+}
+
+.resume-entry-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.resume-role {
+  font-weight: 700;
+  font-size: 17px;
+  color: var(--color-heading);
+}
+
+.resume-org {
+  font-size: 15px;
+  color: var(--color-secondary);
+}
+
+.resume-dates {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--color-secondary);
+  white-space: nowrap;
+}
+
+.resume-entry ul {
+  margin: 6px 0 0 0;
+  padding-left: 20px;
+}
+
+.resume-entry li {
+  margin-bottom: 4px;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.resume-skills-group {
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+.resume-skills-group strong {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--color-heading);
+}
+
+/* ==========================================================================
+   13. Footer
+   ========================================================================== */
+
+.footer {
+  max-width: var(--max-width);
+  margin: 48px auto 24px auto;
+  padding: 0 var(--gap);
+  text-align: left;
+  line-height: 1.6;
+}
+
+.footer-divider {
+  border: 0;
+  border-top: 1px solid var(--color-rule);
+  margin: 0 0 20px 0;
+}
+
+.footer-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  font-family: var(--font-mono);
+  font-size: 14px;
+}
+
+.footer-link {
+  color: var(--color-link);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.footer-link:hover {
+  background-color: var(--color-link-bg-hover);
+  color: var(--color-link-hover);
+}
+
+.footer-sep {
+  color: var(--color-secondary);
+  user-select: none;
+}
+
+/* ==========================================================================
+   14. Responsive Layout Breakpoints (< 600px)
+   ========================================================================== */
+
+@media screen and (max-width: 600px) {
+  html {
+    font-size: 17px;
+  }
+
+  /* Mobile Top & Gutter Spacing */
+  .header {
+    padding-top: var(--space-top-mobile);
+    padding-bottom: 16px;
+  }
+
+  .header-nav {
+    padding: 0 var(--mobile-gutter);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    row-gap: 12px;
+  }
+
+  .nav-right {
+    display: contents;
+  }
+
+  .logo {
+    order: 1;
+  }
+
+  .logo-switches {
+    order: 2;
+  }
+
+  /* Navigation flows on its own wrapping row below site name */
+  .menu {
+    order: 3;
+    width: 100%;
+    overflow-x: visible;
+    white-space: normal;
+    column-gap: 16px;
+    row-gap: 8px;
+    padding-top: 4px;
+  }
+
+  .main {
+    padding: 0 var(--mobile-gutter);
+  }
+
+  .footer {
+    padding: 0 var(--mobile-gutter);
+  }
+
+  /* Heading scale down on mobile */
+  h1,
+  .page-header h1,
+  .post-title,
+  .home-intro h1 {
+    font-size: 26px;
+  }
+
+  .section-heading,
+  .resume-section h2,
+  .resume-content h2,
+  h2 {
+    font-size: 17px;
+    letter-spacing: 0.07em;
+  }
+
+  /* Lately stacks Reading above Watching */
+  .lately-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  /* Post rows stack date above title */
+  .recent-writing-row,
+  .archive-post-row,
+  .post-row {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 8px 0;
+  }
+
+  .recent-writing-row .post-date,
+  .archive-post-row .post-date,
+  .post-row .post-date {
+    font-size: 12px;
+  }
+
+  .recent-writing-row .post-title-link,
+  .archive-post-row .post-title-link,
+  .post-row .post-title-link {
+    font-size: 16px;
+  }
+
+  /* Résumé header stacks print control */
+  .resume-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .resume-entry-header {
+    flex-direction: column;
+    gap: 2px;
+  }
+}
+
+/* ==========================================================================
+   15. Résumé Print Stylesheet (@media print)
+   ========================================================================== */
+
+@media print {
+  @page {
+    margin: 1.5cm;
+    size: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  html,
+  body {
+    background: #FFFFFF !important;
+    color: #000000 !important;
+    font-size: 11pt !important;
+    line-height: 1.4 !important;
+  }
+
+  /* Hide Site Navigation Header, Theme Toggle, Print Button, Footer, Skip Link, Scroll-to-Top */
+  .header,
+  .header-nav,
+  .menu,
+  .logo-switches,
+  #theme-toggle,
+  .theme-toggle,
+  .print-btn,
+  .print-resume-btn,
+  .no-print,
+  .footer,
+  .footer-nav,
+  .skip-link,
+  #top-link,
+  .top-link {
+    display: none !important;
+  }
+
+  .resume-header {
+    display: block !important;
+    margin-bottom: 24px !important;
+    border-bottom: 2px solid #000000 !important;
+    padding-bottom: 12px !important;
+  }
+
+  .resume-display-name {
+    display: block !important;
+    font-size: 20pt !important;
+    font-weight: 700 !important;
+    color: #000000 !important;
+    margin-bottom: 4px !important;
+    font-family: var(--font-mono) !important;
+  }
+
+  .resume-header .page-title {
+    font-size: 14pt !important;
+    font-weight: 600 !important;
+    color: #000000 !important;
+    margin: 0 !important;
+    font-family: var(--font-mono) !important;
+  }
+
+  .main {
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    min-height: auto !important;
+  }
+
+  a {
+    color: #000000 !important;
+    text-decoration: none !important;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    color: #000000 !important;
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+
+  .resume-section {
+    margin-bottom: 20px !important;
+  }
+
+  .resume-section h2 {
+    color: #000000 !important;
+    border-bottom: 1px solid #444444 !important;
+    padding-bottom: 2px !important;
+    margin-bottom: 10px !important;
+  }
+
+  .resume-entry {
+    page-break-inside: avoid;
+    break-inside: avoid;
+    margin-bottom: 14px !important;
+  }
+
+  .resume-role {
+    color: #000000 !important;
+  }
+
+  .resume-org,
+  .resume-dates {
+    color: #333333 !important;
+  }
+
+  hr,
+  .section-divider {
+    border-color: #555555 !important;
+    margin: 16px 0 !important;
+  }
+}

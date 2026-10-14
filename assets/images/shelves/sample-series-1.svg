@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 180" width="120" height="180">
+  <!-- Outer cover background and border -->
+  <rect x="1" y="1" width="118" height="178" rx="2" fill="#202022" stroke="#454545" stroke-width="2"/>
+  
+  <!-- CRT / Monitor border -->
+  <g transform="translate(16, 20)">
+    <rect x="0" y="0" width="88" height="82" rx="4" fill="#18181A" stroke="#6E8CA0" stroke-width="1.5"/>
+    <!-- Subtle monitor scanlines -->
+    <line x1="4" y1="14" x2="84" y2="14" stroke="#28282C" stroke-width="1"/>
+    <line x1="4" y1="28" x2="84" y2="28" stroke="#28282C" stroke-width="1"/>
+    <line x1="4" y1="42" x2="84" y2="42" stroke="#28282C" stroke-width="1"/>
+    <line x1="4" y1="56" x2="84" y2="56" stroke="#28282C" stroke-width="1"/>
+    <line x1="4" y1="70" x2="84" y2="70" stroke="#28282C" stroke-width="1"/>
+    <!-- Corporate maze icon / geometry -->
+    <rect x="22" y="22" width="44" height="38" fill="none" stroke="#AA759F" stroke-width="2"/>
+    <rect x="32" y="30" width="24" height="22" fill="#6E8CA0" opacity="0.6"/>
+    <circle cx="44" cy="41" r="4" fill="#FAF9F6"/>
+  </g>
+
+  <!-- Title bars in pale contrast -->
+  <rect x="16" y="116" width="88" height="6" fill="#E8E8E8"/>
+  <rect x="16" y="126" width="56" height="4" fill="#A0A0A0"/>
+
+  <!-- Label badge -->
+  <g transform="translate(16, 146)">
+    <rect x="0" y="0" width="46" height="14" rx="1" fill="#202022" stroke="#AA759F" stroke-width="1"/>
+    <text x="23" y="10" font-family="ui-monospace, monospace" font-size="8" fill="#D6A6CC" font-weight="bold" text-anchor="middle" letter-spacing="1">SERIES</text>
+  </g>
+</svg>

@@ -1,0 +1,225 @@
+{{- /*
+  shelves-data.html
+  Centralized Hugo partial to load, validate, filter, and sort data/shelves.yaml.
+  Returns a dictionary with:
+    reading_current, reading_finished, watching_current, watching_finished,
+    lately_reading, lately_watching
+*/ -}}
+{{- $nilVal := index (dict) "nil" -}}
+{{- $rawItems := slice -}}
+{{- if and (reflect.IsMap .) (isset . "items") -}}
+  {{- $rawItems = .items -}}
+{{- else -}}
+  {{- $shelvesData := hugo.Data.shelves -}}
+  {{- if not $shelvesData -}}
+    {{- with site.Data.shelves -}}
+      {{- $shelvesData = . -}}
+    {{- end -}}
+  {{- end -}}
+  {{- with $shelvesData -}}
+    {{- with .items -}}
+      {{- $rawItems = . -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $seenIds := dict -}}
+{{- $intTypes := slice "int" "int8" "int16" "int32" "int64" "uint" "uint8" "uint16" "uint32" "uint64" -}}
+
+{{- $readingCurrent := slice -}}
+{{- $readingFinishedDated := slice -}}
+{{- $readingFinishedUndated := slice -}}
+
+{{- $watchingCurrent := slice -}}
+{{- $watchingFinishedDated := slice -}}
+{{- $watchingFinishedUndated := slice -}}
+
+{{- range $idx, $item := $rawItems -}}
+  {{- /* 1. Validate ID (nonempty, unique) */ -}}
+  {{- $id := "" -}}
+  {{- if and (isset $item "id") (ne $item.id nil) -}}
+    {{- $id = printf "%v" $item.id -}}
+  {{- end -}}
+  {{- if eq (strings.TrimSpace $id) "" -}}
+    {{- errorf "shelves: item at index %d missing required field 'id'" $idx -}}
+  {{- else if index $seenIds $id -}}
+    {{- errorf "shelves: item '%s' has duplicate field 'id'" $id -}}
+  {{- else -}}
+    {{- $seenIds = merge $seenIds (dict $id true) -}}
+  {{- end -}}
+
+  {{- /* 2. Validate Type (required enum: book, film, series) */ -}}
+  {{- $type := "" -}}
+  {{- if and (isset $item "type") (ne $item.type nil) -}}
+    {{- $type = printf "%v" $item.type -}}
+  {{- end -}}
+  {{- if eq (strings.TrimSpace $type) "" -}}
+    {{- errorf "shelves: item '%s' missing required field 'type'" $id -}}
+  {{- else if not (in (slice "book" "film" "series") $type) -}}
+    {{- errorf "shelves: item '%s' has invalid field 'type': '%s' (must be book, film, or series)" $id $type -}}
+  {{- end -}}
+
+  {{- /* 3. Validate Title (required nonempty string) */ -}}
+  {{- $title := "" -}}
+  {{- if and (isset $item "title") (ne $item.title nil) -}}
+    {{- $title = printf "%v" $item.title -}}
+  {{- end -}}
+  {{- if eq (strings.TrimSpace $title) "" -}}
+    {{- errorf "shelves: item '%s' missing required field 'title'" $id -}}
+  {{- end -}}
+
+  {{- /* 4. Validate Status (required enum: current, finished) */ -}}
+  {{- $status := "" -}}
+  {{- if and (isset $item "status") (ne $item.status nil) -}}
+    {{- $status = printf "%v" $item.status -}}
+  {{- end -}}
+  {{- if eq (strings.TrimSpace $status) "" -}}
+    {{- errorf "shelves: item '%s' missing required field 'status'" $id -}}
+  {{- else if not (in (slice "current" "finished") $status) -}}
+    {{- errorf "shelves: item '%s' has invalid field 'status': '%s' (must be current or finished)" $id $status -}}
+  {{- end -}}
+
+  {{- /* 5. Validate Order (required int) */ -}}
+  {{- if not (isset $item "order") -}}
+    {{- errorf "shelves: item '%s' missing required field 'order'" $id -}}
+  {{- else if eq $item.order nil -}}
+    {{- errorf "shelves: item '%s' missing required field 'order'" $id -}}
+  {{- else if not (in $intTypes (printf "%T" $item.order)) -}}
+    {{- errorf "shelves: item '%s' has invalid field 'order': '%v' of type %T (must be an integer)" $id $item.order $item.order -}}
+  {{- end -}}
+
+  {{- /* 6. Validate Completed (optional ISO date YYYY-MM-DD) */ -}}
+  {{- if and (isset $item "completed") (ne $item.completed nil) -}}
+    {{- $compStr := printf "%v" $item.completed -}}
+    {{- if ne (strings.TrimSpace $compStr) "" -}}
+      {{- if eq (len (findRE `^\d{4}-\d{2}-\d{2}$` $compStr)) 0 -}}
+        {{- errorf "shelves: item '%s' has invalid field 'completed': '%s' (must be ISO date YYYY-MM-DD)" $id $compStr -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+
+  {{- /* 7. Validate URL (optional absolute HTTP/HTTPS) */ -}}
+  {{- if and (isset $item "url") (ne $item.url nil) -}}
+    {{- $urlStr := printf "%v" $item.url -}}
+    {{- if ne (strings.TrimSpace $urlStr) "" -}}
+      {{- if not (or (hasPrefix $urlStr "http://") (hasPrefix $urlStr "https://")) -}}
+        {{- errorf "shelves: item '%s' has invalid field 'url': '%s' (must start with http:// or https://)" $id $urlStr -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+
+  {{- /* 8. Validate Cover (optional path relative to assets/images/shelves/) */ -}}
+  {{- if and (isset $item "cover") (ne $item.cover nil) -}}
+    {{- $coverStr := printf "%v" $item.cover -}}
+    {{- if ne (strings.TrimSpace $coverStr) "" -}}
+      {{- if or (strings.Contains $coverStr "..") (hasPrefix $coverStr "/") -}}
+        {{- errorf "shelves: item '%s' has invalid field 'cover': '%s' (must not contain '..' or start with '/')" $id $coverStr -}}
+      {{- else -}}
+        {{- $coverAssetPath := printf "images/shelves/%s" $coverStr -}}
+        {{- $coverRes := resources.Get $coverAssetPath -}}
+        {{- if not $coverRes -}}
+          {{- errorf "shelves: item '%s' has unresolvable field 'cover': missing asset at '%s'" $id $coverAssetPath -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+
+  {{- /* Filtering: skip draft items unless site.BuildDrafts is enabled */ -}}
+  {{- $isDraft := false -}}
+  {{- if and (isset $item "draft") (ne $item.draft nil) -}}
+    {{- if eq $item.draft true -}}
+      {{- $isDraft = true -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if not (and $isDraft (not site.BuildDrafts)) -}}
+    {{- if eq $type "book" -}}
+      {{- if eq $status "current" -}}
+        {{- $readingCurrent = $readingCurrent | append $item -}}
+      {{- else -}}
+        {{- $hasComp := false -}}
+        {{- if and (isset $item "completed") (ne $item.completed nil) -}}
+          {{- if ne (strings.TrimSpace (printf "%v" $item.completed)) "" -}}
+            {{- $hasComp = true -}}
+          {{- end -}}
+        {{- end -}}
+        {{- if $hasComp -}}
+          {{- $readingFinishedDated = $readingFinishedDated | append $item -}}
+        {{- else -}}
+          {{- $readingFinishedUndated = $readingFinishedUndated | append $item -}}
+        {{- end -}}
+      {{- end -}}
+    {{- else -}}
+      {{- if eq $status "current" -}}
+        {{- $watchingCurrent = $watchingCurrent | append $item -}}
+      {{- else -}}
+        {{- $hasComp := false -}}
+        {{- if and (isset $item "completed") (ne $item.completed nil) -}}
+          {{- if ne (strings.TrimSpace (printf "%v" $item.completed)) "" -}}
+            {{- $hasComp = true -}}
+          {{- end -}}
+        {{- end -}}
+        {{- if $hasComp -}}
+          {{- $watchingFinishedDated = $watchingFinishedDated | append $item -}}
+        {{- else -}}
+          {{- $watchingFinishedUndated = $watchingFinishedUndated | append $item -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- /* Sorting:
+       Current: order asc, id asc
+       Finished: completed desc, undated last, id asc
+*/ -}}
+{{- if gt (len $readingCurrent) 0 -}}
+  {{- $readingCurrent = sort (sort $readingCurrent "id" "asc") "order" "asc" -}}
+{{- end -}}
+
+{{- if gt (len $readingFinishedDated) 0 -}}
+  {{- $readingFinishedDated = sort (sort $readingFinishedDated "id" "asc") "completed" "desc" -}}
+{{- end -}}
+{{- if gt (len $readingFinishedUndated) 0 -}}
+  {{- $readingFinishedUndated = sort $readingFinishedUndated "id" "asc" -}}
+{{- end -}}
+{{- $readingFinished := $readingFinishedDated | append $readingFinishedUndated -}}
+
+{{- if gt (len $watchingCurrent) 0 -}}
+  {{- $watchingCurrent = sort (sort $watchingCurrent "id" "asc") "order" "asc" -}}
+{{- end -}}
+
+{{- if gt (len $watchingFinishedDated) 0 -}}
+  {{- $watchingFinishedDated = sort (sort $watchingFinishedDated "id" "asc") "completed" "desc" -}}
+{{- end -}}
+{{- if gt (len $watchingFinishedUndated) 0 -}}
+  {{- $watchingFinishedUndated = sort $watchingFinishedUndated "id" "asc" -}}
+{{- end -}}
+{{- $watchingFinished := $watchingFinishedDated | append $watchingFinishedUndated -}}
+
+{{- $latelyReading := $nilVal -}}
+{{- if gt (len $readingCurrent) 0 -}}
+  {{- $latelyReading = index $readingCurrent 0 -}}
+{{- end -}}
+
+{{- $latelyWatching := $nilVal -}}
+{{- if gt (len $watchingCurrent) 0 -}}
+  {{- $latelyWatching = index $watchingCurrent 0 -}}
+{{- end -}}
+
+{{- $result := dict
+  "reading_current" $readingCurrent
+  "reading_finished" $readingFinished
+  "watching_current" $watchingCurrent
+  "watching_finished" $watchingFinished
+  "lately_reading" $latelyReading
+  "lately_watching" $latelyWatching
+-}}
+
+{{- with . -}}
+  {{- with .Scratch -}}
+    {{- .Set "shelves" $result -}}
+    {{- .Set "shelves_data" $result -}}
+  {{- end -}}
+{{- end -}}
+
+{{- return $result -}}

@@ -1,4 +1,44 @@
 baseURL: "https://diasdiaz.net/"
 locale: en-us
-title: "My Blog"
+title: "[Your Name]"
 theme: "PaperMod"
+
+mainSections:
+  - "blog"
+
+taxonomies:
+  tag: "tags"
+
+outputs:
+  home:
+    - HTML
+    - RSS
+    - JSON
+
+menu:
+  main:
+    - name: "Blog"
+      url: "/blog/"
+      weight: 10
+    - name: "Résumé"
+      url: "/resume/"
+      weight: 20
+    - name: "Shelves"
+      url: "/shelves/"
+      weight: 30
+
+params:
+  display_name: "[Your Name]"
+  defaultTheme: "auto"
+  disableThemeToggle: false
+  ShowCodeCopyButtons: true
+  ShowReadingTime: true
+  assets:
+    favicon: "favicon.svg"
+  mainSections:
+    - "blog"
+  fuseOpts:
+    keys:
+      - "title"
+      - "content"
+      - "summary"

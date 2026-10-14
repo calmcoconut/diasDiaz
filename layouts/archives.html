@@ -1,0 +1,32 @@
+{{- define "main" }}
+<div class="archive-container">
+    <header class="page-header">
+        <h1 class="page-title">
+            {{ partial "icon.html" (dict "name" "archive" "size" 32) }}
+            <span>{{ .Title | default "Archive" }}</span>
+        </h1>
+        {{- with .Description }}
+        <div class="page-description">{{ . }}</div>
+        {{- end }}
+    </header>
+
+    {{- $pages := where site.RegularPages "Section" "blog" }}
+    {{- if gt (len $pages) 0 }}
+        {{- range $pages.GroupByDate "2006" }}
+        <section class="archive-year-group">
+            <h2 class="archive-year">{{ .Key }}</h2>
+            <div class="archive-posts-list">
+                {{- range .Pages }}
+                <div class="archive-post-row">
+                    <time class="post-date" datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006-01-02" }}</time>
+                    <a href="{{ .RelPermalink }}" class="post-title-link">{{ .Title }}</a>
+                </div>
+                {{- end }}
+            </div>
+        </section>
+        {{- end }}
+    {{- else }}
+        <p class="empty-state">No posts yet.</p>
+    {{- end }}
+</div>
+{{- end }}

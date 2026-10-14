@@ -1,0 +1,18 @@
+{{- define "main" }}
+<div class="resume-container">
+    <header class="resume-header">
+        <div class="resume-title-wrap">
+            <div class="resume-display-name">{{ site.Params.display_name | default site.Title }}</div>
+            <h1 class="page-title">
+                {{ partial "icon.html" (dict "name" "document" "size" 32 "class" "no-print") }}
+                <span>{{ .Title | default "Résumé" }}</span>
+            </h1>
+        </div>
+        <button type="button" class="print-resume-btn no-print" onclick="window.print()">Print résumé</button>
+    </header>
+
+    <div class="resume-content md-content">
+        {{ .Content }}
+    </div>
+</div>
+{{- end }}

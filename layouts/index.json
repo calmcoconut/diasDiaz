@@ -1,0 +1,9 @@
+{{- $posts := where site.RegularPages "Section" "blog" -}}
+{{- $index := slice -}}
+{{- range $posts -}}
+    {{- if not .Params.searchHidden -}}
+        {{- $item := dict "title" .Title "permalink" .RelPermalink "date" (.Date.Format "2006-01-02") "summary" (.Summary | plainify | htmlUnescape) "content" (.Plain | htmlUnescape) -}}
+        {{- $index = $index | append $item -}}
+    {{- end -}}
+{{- end -}}
+{{- $index | jsonify -}}

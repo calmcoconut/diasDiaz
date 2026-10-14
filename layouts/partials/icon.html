@@ -1,0 +1,52 @@
+{{- /* Shared Icon Partial: layouts/partials/icon.html */ -}}
+{{- $name := "" -}}
+{{- $size := 0 -}}
+{{- $class := "" -}}
+
+{{- if reflect.IsMap . -}}
+  {{- $name = .name | default "" -}}
+  {{- with .size }}{{ $size = int . }}{{ end -}}
+  {{- with .class }}{{ $class = . }}{{ end -}}
+{{- else -}}
+  {{- $name = printf "%v" . -}}
+{{- end -}}
+
+{{- /* Enforce explicit semantic allowlist */ -}}
+{{- $allowlist := slice "house" "notebook" "document" "shelves" "open-book" "television" "search" "archive" -}}
+{{- if not (in $allowlist $name) -}}
+  {{- errorf "Invalid icon name %q. Allowed icons are: %s" $name (delimit $allowlist ", ") -}}
+{{- end -}}
+
+{{- /* Determine standard default size if not provided */ -}}
+{{- if le $size 0 -}}
+  {{- if in (slice "house" "open-book" "television") $name -}}
+    {{- $size = 24 -}}
+  {{- else -}}
+    {{- $size = 16 -}}
+  {{- end -}}
+{{- end -}}
+
+{{- /* Locate the icon SVG asset */ -}}
+{{- $resourcePath := printf "icons/%s.svg" $name -}}
+{{- $viewBox := "0 0 16 16" -}}
+{{- if in (slice "house" "open-book" "television") $name -}}
+  {{- $viewBox = "0 0 24 24" -}}
+{{- else if eq $size 32 -}}
+  {{- if resources.Get (printf "icons/%s-32.svg" $name) -}}
+    {{- $resourcePath = printf "icons/%s-32.svg" $name -}}
+    {{- $viewBox = "0 0 32 32" -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $iconRes := resources.Get $resourcePath -}}
+{{- if not $iconRes -}}
+  {{- errorf "Icon asset not found at assets/%s" $resourcePath -}}
+{{- else -}}
+  {{- $classAttr := "" -}}
+  {{- with $class -}}
+    {{- $classAttr = printf ` class="%s"` . -}}
+  {{- end -}}
+  {{- $svgOpen := printf `<svg xmlns="http://www.w3.org/2000/svg"%s width="%d" height="%d" viewBox="%s" shape-rendering="crispEdges" aria-hidden="true" focusable="false">` $classAttr $size $size $viewBox -}}
+  {{- $svgOutput := replaceRE `^<svg[^>]*>` $svgOpen $iconRes.Content -}}
+  {{- $svgOutput | safeHTML -}}
+{{- end -}}

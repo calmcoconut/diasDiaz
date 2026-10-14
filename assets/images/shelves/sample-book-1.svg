@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 180" width="120" height="180">
+  <!-- Outer cover background and border -->
+  <rect x="1" y="1" width="118" height="178" rx="2" fill="#FAF9F6" stroke="#454545" stroke-width="2"/>
+  <!-- Spine stripe -->
+  <rect x="1" y="1" width="12" height="178" fill="#AA759F" opacity="0.85"/>
+  <line x1="13" y1="1" x2="13" y2="179" stroke="#454545" stroke-width="1.5"/>
+  
+  <!-- Geometric decorative motif -->
+  <g transform="translate(24, 28)">
+    <rect x="0" y="0" width="72" height="72" fill="#F0EDE6" stroke="#454545" stroke-width="1.5"/>
+    <!-- Stepped pixel towers motif -->
+    <rect x="10" y="36" width="12" height="26" fill="#7A9A95"/>
+    <rect x="22" y="24" width="12" height="38" fill="#AA759F"/>
+    <rect x="34" y="16" width="12" height="46" fill="#D4A359"/>
+    <rect x="46" y="30" width="12" height="32" fill="#D97D64"/>
+    <rect x="58" y="44" width="8" height="18" fill="#454545"/>
+    <!-- Small star / sun -->
+    <rect x="14" y="12" width="6" height="6" fill="#AA759F"/>
+  </g>
+  
+  <!-- Placeholder title bars -->
+  <rect x="24" y="114" width="72" height="6" fill="#454545"/>
+  <rect x="24" y="124" width="50" height="4" fill="#6B6069"/>
+  
+  <!-- Label badge -->
+  <g transform="translate(24, 146)">
+    <rect x="0" y="0" width="40" height="14" rx="1" fill="#FAF9F6" stroke="#AA759F" stroke-width="1"/>
+    <text x="20" y="10" font-family="ui-monospace, monospace" font-size="8" fill="#805277" font-weight="bold" text-anchor="middle" letter-spacing="1">BOOK</text>
+  </g>
+</svg>

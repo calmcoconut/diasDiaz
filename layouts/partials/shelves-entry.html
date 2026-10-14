@@ -1,0 +1,52 @@
+{{- /*
+  shelves-entry.html
+  Renders a single shelf entry for the /shelves/ page.
+  Covers use empty alt="" since title is adjacent.
+  No placeholder or reserved space when cover is absent.
+*/ -}}
+{{- $item := . -}}
+{{- if and (reflect.IsMap .) (isset . "item") -}}
+  {{- $item = .item -}}
+{{- end -}}
+{{- with $item -}}
+<div class="shelf-entry shelves-entry media-entry" id="shelf-{{ .id }}">
+  {{- with .cover -}}
+    {{- $coverRes := resources.Get (printf "images/shelves/%s" .) -}}
+    {{- with $coverRes -}}
+      <div class="shelf-cover-wrapper entry-cover-wrap">
+        {{- if reflect.IsImageResourceProcessable . -}}
+          <img src="{{ .RelPermalink }}" class="shelf-cover entry-cover" alt="" width="{{ .Width }}" height="{{ .Height }}" loading="lazy">
+        {{- else -}}
+          <img src="{{ .RelPermalink }}" class="shelf-cover entry-cover" alt="" width="72" height="108" loading="lazy">
+        {{- end -}}
+      </div>
+    {{- end -}}
+  {{- end -}}
+  <div class="shelf-entry-content entry-details">
+    <div class="shelf-header entry-title-wrap">
+      {{- if .url -}}
+        <a href="{{ .url }}" class="shelf-title shelf-title-link entry-title" rel="noopener noreferrer">{{ .title }}</a>
+      {{- else -}}
+        <span class="shelf-title entry-title">{{ .title }}</span>
+      {{- end -}}
+      {{- if eq .type "book" -}}
+        {{- with .creator }} <span class="shelf-creator entry-creator">— {{ . }}</span>{{ end -}}
+      {{- end -}}
+    </div>
+    {{- if or (eq .type "film") (eq .type "series") -}}
+      <div class="shelf-meta entry-meta">
+        {{- with .creator }}<span class="shelf-creator entry-creator">{{ . }}</span> <span class="shelf-sep entry-sep" aria-hidden="true">·</span> {{ end -}}
+        <span class="shelf-type entry-type">{{ if eq .type "film" }}Film{{ else }}Series{{ end }}</span>
+      </div>
+    {{- end -}}
+    {{- with .completed -}}
+      <div class="shelf-completed entry-date">
+        <time datetime="{{ . }}">{{ . }}</time>
+      </div>
+    {{- end -}}
+    {{- with .note -}}
+      <p class="shelf-note entry-note">{{ . | plainify }}</p>
+    {{- end -}}
+  </div>
+</div>
+{{- end -}}

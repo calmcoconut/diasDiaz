@@ -1,0 +1,129 @@
+<footer class="footer">
+    <hr class="footer-divider" />
+    <nav class="footer-nav" aria-label="Footer navigation">
+        <a href="{{ "/search/" | relLangURL }}" class="footer-link">
+            {{ partial "icon.html" (dict "name" "search" "size" 16) }}
+            <span>Search</span>
+        </a>
+        <span class="footer-sep" aria-hidden="true">·</span>
+        <a href="{{ "/archive/" | relLangURL }}" class="footer-link">
+            {{ partial "icon.html" (dict "name" "archive" "size" 16) }}
+            <span>Archive</span>
+        </a>
+        <span class="footer-sep" aria-hidden="true">·</span>
+        <a href="{{ "/tags/" | relLangURL }}" class="footer-link">
+            <span>Tags</span>
+        </a>
+        <span class="footer-sep" aria-hidden="true">·</span>
+        <a href="{{ "/index.xml" | relLangURL }}" class="footer-link">
+            <span>RSS</span>
+        </a>
+    </nav>
+</footer>
+
+{{- partial "extend_footer.html" . }}
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            var href = this.getAttribute("href");
+            if (!href || href === "#") return;
+            var id = href.substr(1);
+            var targetEl = document.getElementById(decodeURIComponent(id));
+            if (!targetEl) return;
+            e.preventDefault();
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                targetEl.scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                targetEl.scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+            if (id === "content") {
+                targetEl.setAttribute("tabindex", "-1");
+                targetEl.focus();
+            }
+        });
+    });
+</script>
+
+{{- if (not site.Params.disableThemeToggle) }}
+<script>
+    var themeToggle = document.getElementById("theme-toggle");
+    if (themeToggle) {
+        themeToggle.addEventListener("click", () => {
+            const html = document.querySelector("html");
+            if (html.dataset.theme === "dark") {
+                html.dataset.theme = 'light';
+                localStorage.setItem("pref-theme", 'light');
+            } else {
+                html.dataset.theme = 'dark';
+                localStorage.setItem("pref-theme", 'dark');
+            }
+        });
+    }
+</script>
+{{- end }}
+
+{{- if site.Params.ShowCodeCopyButtons }}
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', () => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { }
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode && container.parentNode.firstChild == container) {
+            // td containing LineNos
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode && codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+{{- end }}

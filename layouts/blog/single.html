@@ -1,0 +1,34 @@
+{{- define "main" }}
+<article class="post-single">
+    <header class="post-header">
+        <h1 class="post-title">{{ .Title }}</h1>
+        {{- if not .Date.IsZero }}
+        <div class="post-meta">
+            <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006-01-02" }}</time>
+            {{- if site.Params.ShowReadingTime }}
+            <span class="meta-sep" aria-hidden="true">·</span>
+            <span class="reading-time">{{ .ReadingTime }} min read</span>
+            {{- end }}
+        </div>
+        {{- end }}
+        {{- with .Params.tags }}
+        <div class="post-tags">
+            {{- range . }}
+            <a href="{{ "/tags/" | relLangURL }}{{ . | urlize }}/" class="post-tag">#{{ . }}</a>
+            {{- end }}
+        </div>
+        {{- end }}
+    </header>
+
+    {{- if and .TableOfContents (or .Params.toc (and site.Params.ShowToc (ne .Params.toc false))) }}
+    <nav class="post-toc in-flow" aria-label="Table of contents">
+        <div class="toc-title">Table of contents</div>
+        {{ .TableOfContents }}
+    </nav>
+    {{- end }}
+
+    <div class="post-content md-content">
+        {{ .Content }}
+    </div>
+</article>
+{{- end }}

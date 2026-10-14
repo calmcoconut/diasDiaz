@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 180" width="120" height="180">
+  <!-- Outer cover background and border -->
+  <rect x="1" y="1" width="118" height="178" rx="2" fill="#F5F2EB" stroke="#454545" stroke-width="2"/>
+  <!-- Spine stripe -->
+  <rect x="1" y="1" width="12" height="178" fill="#D4A359" opacity="0.85"/>
+  <line x1="13" y1="1" x2="13" y2="179" stroke="#454545" stroke-width="1.5"/>
+  
+  <!-- Geometric decorative motif -->
+  <g transform="translate(24, 28)">
+    <rect x="0" y="0" width="72" height="72" fill="#EAE5DC" stroke="#454545" stroke-width="1.5"/>
+    <!-- Dual worlds / circle and crescent -->
+    <circle cx="28" cy="36" r="16" fill="#6E8CA0" stroke="#454545" stroke-width="1.5"/>
+    <circle cx="48" cy="36" r="12" fill="#AA759F" stroke="#454545" stroke-width="1.5"/>
+    <rect x="20" y="58" width="32" height="3" fill="#D97D64"/>
+  </g>
+  
+  <!-- Placeholder title bars -->
+  <rect x="24" y="114" width="68" height="6" fill="#454545"/>
+  <rect x="24" y="124" width="44" height="4" fill="#6B6069"/>
+  
+  <!-- Label badge -->
+  <g transform="translate(24, 146)">
+    <rect x="0" y="0" width="40" height="14" rx="1" fill="#F5F2EB" stroke="#D4A359" stroke-width="1"/>
+    <text x="20" y="10" font-family="ui-monospace, monospace" font-size="8" fill="#5A4010" font-weight="bold" text-anchor="middle" letter-spacing="1">BOOK</text>
+  </g>
+</svg>

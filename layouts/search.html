@@ -1,0 +1,29 @@
+{{- define "main" }}
+<div class="search-container">
+    <header class="page-header">
+        <h1 class="page-title">
+            {{ partial "icon.html" (dict "name" "search" "size" 32) }}
+            <span>{{ .Title | default "Search" }}</span>
+        </h1>
+        {{- with .Description }}
+        <div class="page-description">{{ . }}</div>
+        {{- end }}
+    </header>
+
+    <div id="searchbox" class="searchbox">
+        <label for="searchInput" class="search-label">Search posts</label>
+        <input id="searchInput" type="search" placeholder="Type to search posts..."
+            aria-label="Search posts" autocomplete="off" maxlength="64" spellcheck="false" />
+        <div id="searchStatus" class="search-status" aria-live="polite" role="status">
+            Type a query above to search posts.
+        </div>
+        <ul id="searchResults" class="searchResults" aria-label="Search results"></ul>
+    </div>
+
+    <noscript>
+        <div class="search-nojs-fallback">
+            <p>JavaScript is required for live search. You can browse all writing in the <a href="{{ "/blog/" | relLangURL }}">Blog</a> or <a href="{{ "/archive/" | relLangURL }}">Archive</a>.</p>
+        </div>
+    </noscript>
+</div>
+{{- end }}

@@ -1,0 +1,58 @@
+{{- define "main" }}
+<div class="blog-container">
+    <header class="page-header">
+        <h1 class="page-title">
+            {{ partial "icon.html" (dict "name" "notebook" "size" 32) }}
+            <span>{{ .Title | default "Blog" }}</span>
+        </h1>
+        {{- with .Description }}
+        <div class="page-description">{{ . }}</div>
+        {{- end }}
+    </header>
+
+    {{- $pages := where .RegularPages "Section" "blog" }}
+    {{- $paginator := .Paginate $pages 10 }}
+
+    {{- if gt (len $paginator.Pages) 0 }}
+        <div class="blog-posts-list">
+            {{- range $paginator.Pages }}
+            <article class="blog-entry">
+                <div class="entry-meta">
+                    <time class="entry-date" datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006-01-02" }}</time>
+                    {{- if site.Params.ShowReadingTime }}
+                    <span class="meta-sep" aria-hidden="true">·</span>
+                    <span class="entry-reading-time">{{ .ReadingTime }} min read</span>
+                    {{- end }}
+                </div>
+                <h2 class="entry-title">
+                    <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+                </h2>
+                {{- with .Description }}
+                <p class="entry-description">{{ . }}</p>
+                {{- end }}
+                {{- with .Params.tags }}
+                <div class="entry-tags">
+                    {{- range . }}
+                    <a href="{{ "/tags/" | relLangURL }}{{ . | urlize }}/" class="entry-tag">#{{ . }}</a>
+                    {{- end }}
+                </div>
+                {{- end }}
+            </article>
+            {{- end }}
+        </div>
+
+        {{- if gt $paginator.TotalPages 1 }}
+        <nav class="pagination" aria-label="Pagination">
+            {{- if $paginator.HasPrev }}
+            <a href="{{ $paginator.Prev.URL | relURL }}" class="pagination-link prev" rel="prev">← Newer posts</a>
+            {{- end }}
+            {{- if $paginator.HasNext }}
+            <a href="{{ $paginator.Next.URL | relURL }}" class="pagination-link next" rel="next">Older posts →</a>
+            {{- end }}
+        </nav>
+        {{- end }}
+    {{- else }}
+        <p class="empty-state">No posts yet.</p>
+    {{- end }}
+</div>
+{{- end }}

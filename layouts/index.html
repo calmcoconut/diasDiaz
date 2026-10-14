@@ -1,0 +1,69 @@
+{{- define "main" }}
+<div class="home-container">
+    {{- if .Content }}
+    <div class="home-intro md-content">
+        {{ .Content }}
+    </div>
+    {{- end }}
+
+    <hr class="section-divider" />
+
+    <section class="home-section lately-section">
+        <h2 class="section-heading">Lately</h2>
+        <div class="lately-grid">
+            <div class="lately-col lately-reading">
+                <h3 class="lately-label">
+                    {{ partial "icon.html" (dict "name" "open-book" "size" 24) }}
+                    <span>READING</span>
+                </h3>
+                {{- $shelvesData := partial "shelves-data.html" . }}
+                {{- $latelyReading := index $shelvesData "lately_reading" }}
+                {{- if $latelyReading }}
+                    {{ partial "lately-entry.html" $latelyReading }}
+                {{- else }}
+                    <p class="empty-state">Nothing listed for reading yet.</p>
+                {{- end }}
+            </div>
+
+            <div class="lately-col lately-watching">
+                <h3 class="lately-label">
+                    {{ partial "icon.html" (dict "name" "television" "size" 24) }}
+                    <span>WATCHING</span>
+                </h3>
+                {{- $shelvesData := partial "shelves-data.html" . }}
+                {{- $latelyWatching := index $shelvesData "lately_watching" }}
+                {{- if $latelyWatching }}
+                    {{ partial "lately-entry.html" $latelyWatching }}
+                {{- else }}
+                    <p class="empty-state">Nothing listed for watching yet.</p>
+                {{- end }}
+            </div>
+        </div>
+        <div class="section-more">
+            <a href="{{ "/shelves/" | relLangURL }}" class="section-link">More on my shelves →</a>
+        </div>
+    </section>
+
+    <hr class="section-divider" />
+
+    <section class="home-section recent-writing-section">
+        <h2 class="section-heading">Recent writing</h2>
+        {{- $recentPosts := where site.RegularPages "Section" "blog" | first 5 }}
+        {{- if gt (len $recentPosts) 0 }}
+            <div class="recent-writing-list">
+                {{- range $recentPosts }}
+                <div class="recent-writing-row">
+                    <time class="post-date" datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006-01-02" }}</time>
+                    <a href="{{ .RelPermalink }}" class="post-title-link">{{ .Title }}</a>
+                </div>
+                {{- end }}
+            </div>
+        {{- else }}
+            <p class="empty-state">No posts yet.</p>
+        {{- end }}
+        <div class="section-more">
+            <a href="{{ "/blog/" | relLangURL }}" class="section-link">All writing →</a>
+        </div>
+    </section>
+</div>
+{{- end }}

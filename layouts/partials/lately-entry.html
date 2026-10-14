@@ -1,0 +1,48 @@
+{{- /*
+  lately-entry.html
+  Renders a single Lately entry for the homepage.
+  Covers use empty alt="" since title is adjacent.
+  No placeholder or reserved space when cover is absent.
+*/ -}}
+{{- $item := . -}}
+{{- if and (reflect.IsMap .) (isset . "item") -}}
+  {{- $item = .item -}}
+{{- end -}}
+{{- with $item -}}
+<div class="lately-entry media-entry" id="lately-{{ .id }}">
+  {{- with .cover -}}
+    {{- $coverRes := resources.Get (printf "images/shelves/%s" .) -}}
+    {{- with $coverRes -}}
+      <div class="lately-cover-wrapper entry-cover-wrap">
+        {{- if reflect.IsImageResourceProcessable . -}}
+          <img src="{{ .RelPermalink }}" class="lately-cover entry-cover" alt="" width="{{ .Width }}" height="{{ .Height }}" loading="lazy">
+        {{- else -}}
+          <img src="{{ .RelPermalink }}" class="lately-cover entry-cover" alt="" width="60" height="90" loading="lazy">
+        {{- end -}}
+      </div>
+    {{- end -}}
+  {{- end -}}
+  <div class="lately-entry-content entry-details">
+    <div class="lately-title-row entry-title-wrap">
+      {{- if .url -}}
+        <a href="{{ .url }}" class="lately-title lately-title-link entry-title" rel="noopener noreferrer">{{ .title }}</a>
+      {{- else -}}
+        <span class="lately-title entry-title">{{ .title }}</span>
+      {{- end -}}
+    </div>
+    {{- if eq .type "book" -}}
+      {{- with .creator -}}
+        <div class="lately-creator entry-creator">{{ . }}</div>
+      {{- end -}}
+    {{- else -}}
+      <div class="lately-meta entry-meta">
+        {{- with .creator }}<span class="lately-creator entry-creator">{{ . }}</span> <span class="lately-sep entry-sep" aria-hidden="true">·</span> {{ end -}}
+        <span class="lately-type entry-type">{{ if eq .type "film" }}Film{{ else }}Series{{ end }}</span>
+      </div>
+    {{- end -}}
+    {{- with .note -}}
+      <p class="lately-note entry-note">{{ . | plainify }}</p>
+    {{- end -}}
+  </div>
+</div>
+{{- end -}}
