@@ -1,3 +1,4 @@
-baseURL: https://example.org/
+baseURL: "https://diasdiaz.net/"
 locale: en-us
-title: My New Hugo Project
+title: "My Blog"
+theme: "PaperMod"
