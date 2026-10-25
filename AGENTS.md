@@ -121,9 +121,10 @@ Consequences worth preserving:
 
 ## 5. Validation: fail loud
 
-Follows the precedent set by `shelves-data.html`. Bad input **stops the build** with an
+Follows the precedent set by `shelves-data.html`. Bad input **stops the build** with a
 `[obsidian-validate]` message naming the file and the offending token — never a silently
-wrong page.
+wrong page. Note the shelves partial predates this and prefixes its messages `shelves:`
+instead, so the prefix is per-surface, not universal.
 
 Covered: unresolved or ambiguous wikilinks, missing heading/block anchors, missing
 attachments, missing image alt text, unbalanced `%%`, malformed `[[`, invalid LaTeX,
@@ -209,7 +210,10 @@ Verification playbook:
 
 ```bash
 # Raw syntax must never reach text output
-grep -rl --include='*.html' --include='*.xml' --include='*.json' -e '[[' -e '%%' /tmp/out   # expect 0
+grep -rlF --include='*.html' --include='*.xml' --include='*.json' -e '[[' -e '%%' /tmp/out   # expect 0
+# ^ -F is required. Without it, grep treats "[[" as an unbalanced bracket expression,
+#   errors to stderr, and matches nothing -- piping or negating that yields a FALSE PASS.
+#   Never write this check as `| wc -l` or `if grep -q`; the error is then invisible.
 # Draft isolation
 grep -rl 'DRAFT_LEAK_TOKEN' /tmp/out                                                        # expect 0
 # Structured data still parses
@@ -243,8 +247,10 @@ Each of these cost real debugging time. They are not hypothetical.
    same treatment.
 3. **`$$…$$` mid-sentence is block-level and shatters paragraphs.** `<div>` auto-closes
    `<p>`, producing orphan fragments. Inline math must use `$…$`. The passthrough hook now
-   emits `<span class="math-block">` so the DOM can never be invalid, but
-   `render-passthrough.html` also carries a **prose guard**: `$` delimiters are shared with
+   emits `<span class="math-block">` so the DOM can never be invalid — but the sentence *still*
+   fragments into `<p>…</p>` / block math / `<p>…</p>`. Use `$…$` inline. Do not write a
+   golden-file test for this case; it would enshrine the fragments. Also note
+   `render-passthrough.html` carries a **prose guard**: `$` delimiters are shared with
    currency, so text with no TeX control token is emitted verbatim. Tightening or loosening
    that guard will either typeset your prices or break real math.
 4. **`partialCached "footer.html"` does not reliably receive the current page** — it served
