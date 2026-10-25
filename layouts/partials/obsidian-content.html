@@ -25,7 +25,7 @@
     8. Fail loud when a "[[" survived resolution, i.e. the author never closed
        the link.
     9. Unwrap paragraphs that hold nothing but block-level output (figures,
-       mermaid figures, note cards), then restore the masked code regions.
+       note cards), then restore the masked code regions.
 
   Text that comes out of .Content has already passed through Goldmark's
   typographer, so "'", "--" and "..." arrive as HTML entities ("&rsquo;",
@@ -317,7 +317,7 @@
 {{- end -}}
 
 {{- /* 9. Unwrap paragraphs that hold nothing but block-level output. ------- */ -}}
-{{- $blockEl := `<figure class="(?:obsidian-image|mermaid-figure)">[\s\S]*?</figure>|<aside class="obsidian-embed-note">[\s\S]*?</aside>` -}}
+{{- $blockEl := `<figure class="obsidian-image">[\s\S]*?</figure>|<aside class="obsidian-embed-note">[\s\S]*?</aside>` -}}
 {{- $html = replaceRE (printf `(?s)<p>\s*((?:%s)(?:\s*(?:%s))*)\s*</p>` $blockEl $blockEl) "$1" $html -}}
 
 {{- /* 10. Restore masked code regions ------------------------------------- */ -}}

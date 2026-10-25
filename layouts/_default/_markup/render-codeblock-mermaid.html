@@ -1,23 +1,17 @@
 {{- /*
   render-codeblock-mermaid.html
   ---------------------------------------------------------------------------
-  Emits a figure that degrades to readable diagram source when JavaScript is
-  disabled. The raw source is preserved in data-mermaid-src so mermaid-init.js
-  can re-render the graph when the reader toggles light/dark mode.
+  There is no Mermaid runtime on this site. Diagrams are static SVG: export
+  from the diagram tool, drop the file in content/blog/_attachments/, and
+  embed it with ![[diagram.svg|Descriptive alt text]] (handled by
+  obsidian-content.html through the assets/attachments mount).
 
-  The element is written from a value escaped exactly once and injected with
-  safeHTML: the attribute name contains "src", so Hugo url-normalizes a plain
-  {{ .Inner }} interpolation (spaces become percent-20 and an angle bracket
-  becomes percent-3e), while an explicit htmlEscape would then be escaped a
-  second time by the attribute context (a mermaid arrow was double-escaped).
-  Escaping by hand keeps both the attribute value and the no-JS fallback text
-  byte-identical to the authored diagram source.
-
-  The hasMermaid page flag makes extend_footer.html load the vendored mermaid
-  bundle only on pages that actually contain a diagram.
+  A ```mermaid fence therefore fails the build. Emitting anything here — a pre
+  block of diagram source, an empty figure — would publish a silently broken
+  page, so the hook only ever reports and never renders.
 */ -}}
-{{- .Page.Store.Set "hasMermaid" true -}}
-{{- $src := .Inner | htmlEscape -}}
-<figure class="mermaid-figure">
-  {{ printf "\x3cpre class=\"mermaid\" data-mermaid-src=\"%s\"\x3e%s\x3c/pre\x3e" $src $src | safeHTML }}
-</figure>
+{{- $srcPath := "" -}}
+{{- with .Page.File -}}
+  {{- $srcPath = printf "content/%s" .Path -}}
+{{- end -}}
+{{- errorf "[obsidian-validate] %s: Mermaid diagrams are not rendered at build time. Diagram support uses static SVG: export the diagram as .svg, drop it in content/blog/_attachments/, and embed it with ![[diagram.svg|Descriptive alt text]]." $srcPath -}}

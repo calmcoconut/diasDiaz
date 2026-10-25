@@ -132,7 +132,7 @@ Incorrect front matter fails the build with an `[obsidian-validate]` error namin
 | `==text==` | Highlighted text |
 | `$inline$` / `$$block$$` | LaTeX, rendered to MathML at build time (no JavaScript). Use `$…$` inside a sentence; `$$…$$` is display math and should be on its own line. |
 | `%%comment%%` | Author-only note, stripped from all output |
-| ` ```mermaid ` | Diagram, rendered in the browser by a locally hosted copy of Mermaid |
+| ` ```mermaid ` | **Not supported** — the build fails if you use it. Export the diagram as `.svg`, drop it in `content/blog/_attachments/`, and embed it with `![[diagram.svg\|Descriptive alt text]]`. SVG scales to the text column and needs no JavaScript. |
 
 Callout types map to five colour groups: `note info todo abstract summary tldr`, `tip hint important check done success`, `warning caution attention question help faq`, `danger error bug fail failure missing`, and `quote cite example`.
 

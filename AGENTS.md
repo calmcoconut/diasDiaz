@@ -7,7 +7,8 @@ Read this before changing anything. The sections on **Hard invariants** and **Tr
 have already bitten us** encode decisions that are expensive to rediscover.
 
 - Human-facing authoring instructions: `AUTHORING.md`
-- Why the site looks the way it does: `IMPLEMENTATION-PLAN.md`, `GRILL-ME.md`
+- Why the site looks the way it does: this file, the design-token section (§1) of
+  `assets/css/extended/style.css`, and the decisions recorded in `GRILL-ME.md`
 
 ---
 
@@ -21,9 +22,9 @@ These are correctness properties, not preferences. Treat a violation as a shippi
 | **Zero `[[` or `%%` in any text output** | Raw Obsidian syntax in HTML/XML/JSON means the post-processor missed a case. `%%` is author-private; brackets in `og:description` look broken. | §8 verification commands |
 | **No draft content or draft-only assets in production** | Attachments are mounted through the asset pipeline so an image referenced only by a draft is never published. | grep output for fixture tokens; no `attachments/` dir expected when nothing published references it |
 | **Blog-only scope for RSS, search JSON, archive, tags** | Enforced by *templates*, not config. `hugo.yaml` alone is not evidence. | `index.json` contains no `/resume/`, `/shelves/`, `/archive/`, `/search/`, `/tags/` URLs |
-| **At most one build warning** | Currently one pre-existing deprecation owned by the *theme* (`.Language.LanguageCode` in `themes/PaperMod/layouts/_partials/templates/opengraph.html`). Any new warning is a regression. | warning count in build output |
+| **Zero build warnings** | Guaranteed by overriding the one deprecated theme call (§9 trap 9). Any new warning is a regression. `.Site.BuildDrafts` in `shelves-data.html` is the only retained deprecated call and Go templates short-circuit it away unless a shelf item sets `draft: true` (§6) — with draft shelf data expect exactly that one warning. | warning count in build output |
 | **Routes never change** | `/`, `/blog/`, `/blog/<slug>/`, `/resume/`, `/shelves/`, `/tags/`, `/tags/<tag>/`, `/archive/`, `/search/`, `/index.xml` | — |
-| **Reading works without JavaScript** | JS is progressive enhancement only (popover, Mermaid). Links, callouts, math, backlinks are all server-rendered. | disable JS, or load under `CSP: script-src 'none'` |
+| **Reading works without JavaScript** | JS is progressive enhancement only (the link-preview popover). Links, callouts, math, backlinks and diagrams are all server-rendered. | disable JS, or load under `CSP: script-src 'none'` |
 | **`public/` is generated, never committed** | It is in `.gitignore`; deployment builds fresh in CI. | `git status` shows no `public/` entries |
 
 ---
@@ -43,7 +44,7 @@ content/
 data/shelves.yaml          reading/watching records (see §6)
 layouts/                   all overrides — the theme is never touched
 assets/css/extended/       style.css, the single stylesheet (see §7)
-assets/js/                 link-preview.js, mermaid-init.js, vendor/mermaid.min.js
+assets/js/                 link-preview.js — the only runtime JavaScript
 static/                    favicons, CNAME, images/ (legacy Jekyll-era post images)
 themes/PaperMod/           submodule — READ ONLY
 .github/workflows/hugo.yml build + GitHub Pages deploy on push to master
@@ -69,7 +70,7 @@ The important thing to understand: **there are two independent rendering pipelin
 | --- | --- |
 | `render-blockquote.html` | `> [!note] Title`, foldable `[!tip]+` / `[!warning]-` |
 | `render-passthrough.html` | `$inline$` and `$$block$$` → MathML via `transform.ToMath` |
-| `render-codeblock-mermaid.html` | ` ```mermaid ` → `<pre class="mermaid">`, sets `hasMermaid` |
+| `render-codeblock-mermaid.html` | Fail-loud guard: a ` ```mermaid ` fence is a build error naming the static-SVG workflow. Emits nothing. |
 | `render-link.html` | Standard `[text](note.md)` internal links |
 | `render-image.html` | Standard `![alt](image.png)` |
 
@@ -96,7 +97,7 @@ AST.
 | `obsidian-excerpt.html` | Sanitises preview excerpts (fences, callout markers, heading `#`, list markers). | `lookup-map`, `backlinks-index` |
 | `obsidian-key.html` | Normalises curly quotes / ellipses / dash runs so lookups match front-matter titles. | lookup + every wikilink target |
 | `obsidian-detoken.html` | Unwraps `[[Target\|Alias]]` → `Alias` for TOC and plain text. | single templates, `obsidian-plain` |
-| `extend_footer.html` | Emits fingerprinted `link-preview.js`, and Mermaid **only** when `hasMermaid`. | both single templates, `footer.html` |
+| `extend_footer.html` | Emits fingerprinted `link-preview.js` when the page has wikilinks or backlinks. | both single templates, `footer.html` |
 
 Caching: the lookup map and backlinks index are `partialCached` (computed once per build).
 `obsidian-content.html` is cached per `RelPermalink` so HTML and RSS share one computation.
@@ -125,8 +126,9 @@ Follows the precedent set by `shelves-data.html`. Bad input **stops the build** 
 wrong page.
 
 Covered: unresolved or ambiguous wikilinks, missing heading/block anchors, missing
-attachments, missing image alt text, unbalanced `%%`, malformed `[[`, invalid LaTeX, and
-leaked Dataview/Templater syntax.
+attachments, missing image alt text, unbalanced `%%`, malformed `[[`, invalid LaTeX,
+leaked Dataview/Templater syntax, and a ` ```mermaid ` fence (there is no diagram
+renderer — see §3.1).
 
 **`errorf` does not abort template execution.** After calling it you must not touch the
 value you just rejected, or the author sees a Go nil-dereference *instead of* your message.
@@ -245,27 +247,24 @@ Each of these cost real debugging time. They are not hypothetical.
    `render-passthrough.html` also carries a **prose guard**: `$` delimiters are shared with
    currency, so text with no TeX control token is emitted verbatim. Tightening or loosening
    that guard will either typeset your prices or break real math.
-4. **Hugo URL-normalises attribute values whose name contains `src`.** `data-mermaid-src`
-   containing `-->` became `%3e`, and naïve escaping double-escaped it into `--&amp;gt;`,
-   so Mermaid silently rendered nothing (`suppressErrors` is on). The hook emits escaped
-   text via `safeHTML` to escape exactly once. Verify the parsed DOM value, not the source.
-5. **`partialCached "footer.html"` does not reliably receive the current page** — it served
+4. **`partialCached "footer.html"` does not reliably receive the current page** — it served
    another page's context, which is why `extend_footer.html` is called from the single
    templates and guarded by an idempotency flag rather than relying on the cached footer.
    If you add a new single-page template, **it must call `extend_footer.html` itself**.
-6. **`layouts/blog/single.html` shadows `layouts/_default/single.html`.** Every blog post
+5. **`layouts/blog/single.html` shadows `layouts/_default/single.html`.** Every blog post
    uses the former. Changes to one must be mirrored in the other; a fix applied only to
    `_default/single.html` looks correct and does nothing.
-7. **Future-dated posts are excluded by default.** A post dated ahead of the machine clock
+6. **Future-dated posts are excluded by default.** A post dated ahead of the machine clock
    silently vanishes from builds. Use `--buildFuture` when testing with placeholder dates.
-8. **`grep` over `public/` matches binary images.** `[[` inside a PNG produces fake leaks;
+7. **`grep` over `public/` matches binary images.** `[[` inside a PNG produces fake leaks;
    restrict with `--include='*.html' --include='*.xml' --include='*.json' --include='*.txt'`.
-9. **`truncate` HTML-escapes its input**, which double-escaped `data-preview-excerpt` into
+8. **`truncate` HTML-escapes its input**, which double-escaped `data-preview-excerpt` into
    `&amp;#39;`. Rune-safe `substr` is used instead.
-10. **Bootstrap-order copies of theme partials rot.** Only one override exists
-    (`templates/schema_json.html`) and it names its upstream path and revision in a header
-    comment. If you add another, do the same, and prefer a content contract over copying a
-    large partial (`head.html` is ~200 lines and was explicitly rejected).
+9. **Bootstrap-order copies of theme partials rot.** Two overrides exist —
+   `templates/schema_json.html` and `templates/opengraph.html` — and each names its upstream
+   path and the pinned revision (`d3768854`) in a header comment. If you add another, do the
+   same, and prefer a content contract over copying a large partial (`head.html` is ~200
+   lines and was explicitly rejected).
 
 ---
 
@@ -280,7 +279,8 @@ Rules:
 - Use the CSS custom properties for every colour, font, and spacing value. Do not introduce
   new hex literals; both colour modes must keep working.
 - Square corners (`--radius: 0px`), 1px rules, no soft shadows or pill shapes.
-- Wireframes and the visual brief live in `IMPLEMENTATION-PLAN.md` §Experience and visual design.
+- The visual brief is the design-token section (§1) of `style.css` plus this file; `GRILL-ME.md`
+  records the Q&A it came from. There is no separate wireframe or plan document.
 - WCAG AA in both modes is a requirement, not a nice-to-have. The five callout palettes and
   the preview popover are the highest-risk surfaces.
 - The breakpoint is `max-width: 600px`; keep new responsive rules inside it.
@@ -304,14 +304,9 @@ adding both the asset and the allowlist entry.
   noisy.
 - Search JSON runs code samples through detokenisation, so a literal `` `[[x]]` `` appears as
   `x` in indexed text.
-- 2.75 MB vendored Mermaid (11.12.1, MIT) is committed. It is only *loaded* on pages with a
-  diagram, but it is always in the repo.
 - Page-bundle posts (`content/blog/<slug>/index.md`) are **not** supported, despite an early
   plan promising them: the content mount's include list cannot surface non-`.md` bundle
   resources. Flat files only.
-- `IMPLEMENTATION-PLAN.md` still says Hugo `v0.167` and describes an empty-content initial
-  state. The site has since gained real content and Hugo 0.168. Treat the plan as design
-  rationale, not as current state.
 
 ---
 
@@ -330,10 +325,12 @@ backticks still builds.
 **New callout type** — PaperMod/Hugo supplies `.AlertType`; add it to one of the five colour
 groups in `style.css` §18 and to the palette table in `AUTHORING.md`.
 
-**Theme bump** — check out the new submodule commit, then re-diff
-`layouts/partials/templates/schema_json.html` against
-`themes/PaperMod/layouts/_partials/templates/schema_json.html` and re-apply its two changed
-lines. Confirm the warning count did not change.
+**Theme bump** — check out the new submodule commit, then re-diff **both** project overrides
+against their upstream files and re-apply their changed lines:
+`layouts/partials/templates/schema_json.html` (two changed lines) and
+`layouts/partials/templates/opengraph.html` (the `og:locale` fallback, which must keep using
+`site.Language.Locale`). Confirm the warning count is still zero.
 
-**Hugo bump** — update local Hugo, `.github/workflows/hugo.yml`'s `HUGO_VERSION`, and
-`IMPLEMENTATION-PLAN.md`/this file if versions are named. Re-run §8.
+**Hugo bump** — update local Hugo, `.github/workflows/hugo.yml`'s `HUGO_VERSION`, and this
+file if versions are named. Watch for new deprecations in the two theme overrides and in
+`shelves-data.html` (§6). Re-run §8.

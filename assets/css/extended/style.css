@@ -1615,7 +1615,7 @@ details.toc li {
 }
 
 /* ==========================================================================
-   18. Obsidian Authoring: Callouts, Embeds, Marks, Math & Mermaid
+   18. Obsidian Authoring: Callouts, Embeds, Marks & Math
    ========================================================================== */
 
 /* Accent tokens measured against an 8% accent tint over --color-bg.
@@ -1768,32 +1768,6 @@ details.callout[open] > summary.callout-title::after {
 
 .math-block math {
   display: block;
-}
-
-.mermaid-figure {
-  margin: var(--space-element) 0;
-}
-
-.mermaid-figure .mermaid {
-  display: block;
-  margin: 0;
-  padding: 12px;
-  border: 1px solid var(--color-rule);
-  border-radius: var(--radius);
-  background-color: var(--color-code-bg);
-  color: var(--color-text);
-  font-family: var(--font-mono);
-  font-size: 13px;
-  line-height: 1.5;
-  overflow-x: auto;
-  white-space: pre;
-}
-
-.mermaid-figure svg {
-  display: block;
-  max-width: 100%;
-  height: auto;
-  margin: 0 auto;
 }
 
 mark {
