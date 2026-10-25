@@ -1,0 +1,19 @@
+{{- /*
+  obsidian-plain.html
+  ---------------------------------------------------------------------------
+  Reduces Obsidian-flavoured text (or HTML) to clean plain text:
+
+    Obsidian syntax            handled by obsidian-detoken.html
+    any HTML tag               a space
+    runs of whitespace         a single space
+
+  Used for the search index (index.json), RSS descriptions, excerpts and the
+  data-preview-excerpt attribute of [[wikilinks]] / "Linked from" rows.
+
+  Context: a string, or a dict with a "text" key.
+  Returns: string
+*/ -}}
+{{- $text := partial "obsidian-detoken.html" . -}}
+{{- $text = replaceRE `(?s)<[^>]*>` " " $text -}}
+{{- $text = replaceRE `\s+` " " $text -}}
+{{- return (strings.TrimSpace $text) -}}

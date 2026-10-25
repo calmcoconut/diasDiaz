@@ -23,12 +23,20 @@
     {{- if and .TableOfContents (or .Params.toc (and site.Params.ShowToc (ne .Params.toc false))) }}
     <nav class="post-toc in-flow" aria-label="Table of contents">
         <div class="toc-title">Table of contents</div>
-        {{ .TableOfContents }}
+        {{- /* .TableOfContents is built from the raw heading text, before
+               wikilinks are resolved, so it can still carry [[…]] syntax.
+               De-bracket it while leaving its anchors intact. */ -}}
+        {{ partial "obsidian-detoken.html" .TableOfContents | safeHTML }}
     </nav>
     {{- end }}
 
     <div class="post-content md-content">
-        {{ .Content }}
+        {{ partialCached "obsidian-content.html" . .RelPermalink }}
     </div>
+
+    {{- partial "backlinks.html" . }}
 </article>
+
+{{- /* Emitted per page: the cached footer invocation cannot vary per post. */ -}}
+{{- partial "extend_footer.html" . }}
 {{- end }}

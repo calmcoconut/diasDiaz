@@ -1,0 +1,75 @@
+{{- /*
+  render-blockquote.html
+  ---------------------------------------------------------------------------
+  Obsidian callouts, using Hugo's native alert syntax support. Alert markers
+  written at the start of a blockquote line are:
+
+    [!note] Title            static callout
+    [!tip]+ Title            foldable, open by default
+    [!warning]- Title        foldable, closed by default
+
+  Five decoration buckets are emitted so the stylesheet can theme them
+  independently in light and dark mode:
+
+    note     note, info, todo, abstract, summary, tldr
+    tip      tip, hint, important, check, done, success
+    warning  warning, caution, attention, question, help, faq
+    danger   danger, error, bug, fail, failure, missing
+    quote    quote, cite, example
+
+  Plain blockquotes (no alert marker) keep the default semantics.
+*/ -}}
+{{- if eq .Type "alert" -}}
+  {{- $alert := lower (printf "%v" .AlertType) -}}
+  {{- $bucket := "note" -}}
+  {{- if in (slice "tip" "hint" "important" "check" "done" "success") $alert -}}
+    {{- $bucket = "tip" -}}
+  {{- else if in (slice "warning" "caution" "attention" "question" "help" "faq") $alert -}}
+    {{- $bucket = "warning" -}}
+  {{- else if in (slice "danger" "error" "bug" "fail" "failure" "missing") $alert -}}
+    {{- $bucket = "danger" -}}
+  {{- else if in (slice "quote" "cite" "example") $alert -}}
+    {{- $bucket = "quote" -}}
+  {{- end -}}
+
+  {{- $types := dict
+        "note" "Note" "info" "Info" "todo" "Todo" "abstract" "Abstract"
+        "summary" "Summary" "tldr" "TL;DR"
+        "tip" "Tip" "hint" "Hint" "important" "Important" "check" "Check"
+        "done" "Done" "success" "Success"
+        "warning" "Warning" "caution" "Caution" "attention" "Attention"
+        "question" "Question" "help" "Help" "faq" "FAQ"
+        "danger" "Danger" "error" "Error" "bug" "Bug" "fail" "Fail"
+        "failure" "Failure" "missing" "Missing"
+        "quote" "Quote" "cite" "Cite" "example" "Example" -}}
+  {{- $label := index $types $alert | default (strings.Title $alert) -}}
+  {{- $title := .AlertTitle | default $label -}}
+
+  {{- $icon := dict
+        "note" `<svg class="callout-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="8" cy="8" r="6.5"></circle><line x1="8" y1="7" x2="8" y2="11.5"></line><line x1="8" y1="4.5" x2="8" y2="5"></line></svg>`
+        "tip" `<svg class="callout-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5.5 11.5h5"></path><path d="M6 14h4"></path><path d="M8 1.5a4.5 4.5 0 0 0-2.5 8.2v1.3h5V9.7A4.5 4.5 0 0 0 8 1.5z"></path></svg>`
+        "warning" `<svg class="callout-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M8 1.8 15 14H1z"></path><line x1="8" y1="6" x2="8" y2="9.5"></line><line x1="8" y1="11.6" x2="8" y2="12"></line></svg>`
+        "danger" `<svg class="callout-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="8" cy="8" r="6.5"></circle><line x1="5.6" y1="5.6" x2="10.4" y2="10.4"></line><line x1="10.4" y1="5.6" x2="5.6" y2="10.4"></line></svg>`
+        "quote" `<svg class="callout-icon" width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" focusable="false"><path d="M3 4h4v4H5v1.5A1.5 1.5 0 0 0 6.5 11H3V4zm6 0h4v4H11v1.5A1.5 1.5 0 0 0 12.5 11H9V4z"></path></svg>` -}}
+  {{- $svg := index $icon $bucket -}}
+  {{- $sign := .AlertSign -}}
+  {{- if $sign -}}
+    {{- $open := "" -}}
+    {{- if eq $sign "+" -}}
+      {{- $open = " open" -}}
+    {{- end -}}
+    <details class="callout callout-{{ $bucket }}"{{ $open | safeHTMLAttr }}>
+      <summary class="callout-title">{{ $svg | safeHTML }}<span class="callout-title-text">{{ $title }}</span></summary>
+      <div class="callout-content">{{ .Text }}</div>
+    </details>
+  {{- else -}}
+    <aside class="callout callout-{{ $bucket }}" role="note">
+      <div class="callout-title">{{ $svg | safeHTML }}<span class="callout-title-text">{{ $title }}</span></div>
+      <div class="callout-content">{{ .Text }}</div>
+    </aside>
+  {{- end -}}
+{{- else -}}
+<blockquote>
+{{ .Text }}
+</blockquote>
+{{- end -}}

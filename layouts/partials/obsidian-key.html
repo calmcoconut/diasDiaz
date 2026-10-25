@@ -1,0 +1,31 @@
+{{- /*
+  obsidian-key.html
+  ---------------------------------------------------------------------------
+  Normalizes a string into a wikilink lookup key, and is applied to BOTH sides
+  of the lookup (every registered key in obsidian-lookup-map.html and every
+  [[target]] being resolved):
+
+    surrounding "/" and whitespace   removed
+    curly quotes                     straight quotes
+    ellipsis character               three dots
+    en dash / em dash / hyphen runs  a single hyphen
+    case                             lowercased
+
+  Why: wikilink targets come out of .Content, where Goldmark's typographer has
+  already rewritten ' -- ... into &rsquo; &ndash; &mldr;. htmlUnescape restores
+  the characters but not the ASCII spelling the author typed in front matter,
+  so "[[Jekyll's ...]]" would never match the title "Jekyll's ...". Folding
+  both sides onto one spelling makes the lookup insensitive to that rewrite
+  (and to an en dash standing in for "--").
+
+  Context: a string.
+  Returns: string
+*/ -}}
+{{- $key := printf "%v" . -}}
+{{- $key = strings.TrimSpace $key -}}
+{{- $key = replaceRE "[‘’]" "'" $key -}}
+{{- $key = replaceRE "[“”]" "\"" $key -}}
+{{- $key = replaceRE "…" "..." $key -}}
+{{- $key = replaceRE "[-–—]+" "-" $key -}}
+{{- $key = lower (strings.Trim $key "/") -}}
+{{- return $key -}}

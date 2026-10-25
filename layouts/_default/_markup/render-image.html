@@ -1,0 +1,67 @@
+{{- /*
+  render-image.html
+  ---------------------------------------------------------------------------
+  Standard Markdown images.
+
+  Relative destinations resolve through the Obsidian attachments mount first
+  (assets/attachments/), then page-bundle resources, then the global assets
+  folder. Images resolved that way are wrapped in a figure and fail loud when
+  the author forgot the alt text.
+
+  Absolute and root-relative destinations (for example the migrated static
+  /images/... assets) are passed through unchanged so existing posts keep
+  rendering exactly as before.
+*/ -}}
+{{- $dest := .Destination -}}
+{{- $alt := .Text -}}
+{{- $title := .Title -}}
+{{- $srcPath := "" -}}
+{{- with .Page -}}
+  {{- with .File -}}
+    {{- $srcPath = printf "content/%s" .Path -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $isAbsolute := or
+      (hasPrefix $dest "http://")
+      (hasPrefix $dest "https://")
+      (hasPrefix $dest "data:")
+      (hasPrefix $dest "//")
+      (hasPrefix $dest "/") -}}
+{{- $src := $dest -}}
+{{- $resolved := false -}}
+{{- $dims := "" -}}
+{{- if not $isAbsolute -}}
+  {{- $path := strings.TrimPrefix "./" $dest -}}
+  {{- $res := or (.PageInner.Resources.GetMatch $path) (resources.Get $path) (resources.Get (printf "attachments/%s" $path)) -}}
+  {{- with $res -}}
+    {{- $src = .RelPermalink -}}
+    {{- $resolved = true -}}
+    {{- if in (slice "png" "jpg" "jpeg" "webp" "gif" "avif") .MediaType.SubType -}}
+      {{- $dims = printf ` width="%d" height="%d"` .Width .Height -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- if and $resolved (eq (strings.TrimSpace $alt) "") -}}
+  {{- errorf "[obsidian-validate] %s: image embed \"![](%s)\" is missing required accessible alt text. Use \"![descriptive alt text](%s)\" or \"![decorative](%s)\" with role=\"presentation\"." $srcPath $dest $dest $dest -}}
+{{- end -}}
+
+{{- $altAttr := $alt -}}
+{{- $roleAttr := "" -}}
+{{- if and $resolved (eq (lower $alt) "decorative") -}}
+  {{- $altAttr = "" -}}
+  {{- $roleAttr = ` role="presentation"` -}}
+{{- end -}}
+{{- $titleAttr := "" -}}
+{{- if $title -}}
+  {{- $titleAttr = printf ` title="%s"` (htmlEscape $title) -}}
+{{- end -}}
+
+{{- if $resolved -}}
+<figure class="obsidian-image">
+  {{- printf "\x3cimg src=\"%s\" alt=\"%s\"%s%s loading=\"lazy\" decoding=\"async\"%s\x3e" $src (htmlEscape $altAttr) $roleAttr $dims $titleAttr | safeHTML -}}
+</figure>
+{{- else -}}
+{{- printf "\x3cimg src=\"%s\" alt=\"%s\"%s loading=\"lazy\" decoding=\"async\"%s\x3e" $src (htmlEscape $altAttr) $roleAttr $titleAttr | safeHTML -}}
+{{- end -}}

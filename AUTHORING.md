@@ -100,6 +100,70 @@ draft: true
 ### Publishing a Post
 Change `draft: true` to `draft: false`. Draft posts are never included in production builds or RSS feeds.
 
+### Authoring in Obsidian
+
+Open `content/` as the Obsidian vault root. Posts are flat Markdown files at `content/blog/<slug>.md`, and pasted images land in `content/blog/_attachments/` (already configured in `.obsidian/app.json`).
+
+`content/blog/_attachments/` is mounted into Hugo's asset pipeline, so an image is only published when a rendered, non-draft post actually references it. Images used solely by drafts never reach `public/`.
+
+#### Required Properties
+
+Every post needs `title`, `date`, `slug`, and `draft`. `slug` is what keeps URLs stable: you can rename the `.md` file or change the title in Obsidian freely, and `/blog/<slug>/` plus every existing `[[wikilink]]` keeps working.
+
+`description` becomes **required as soon as a post uses `[[wikilinks]]` or `%%comments%%`**. Without it, Hugo falls back to the post summary for `og:description` and Twitter cards, which would expose raw bracket syntax in link previews. Posts that use neither may omit it.
+
+Incorrect front matter fails the build with an `[obsidian-validate]` error naming the file and field, rather than publishing something wrong.
+
+#### Syntax Support
+
+| You write | Result |
+| --- | --- |
+| `[[Note]]` | Link to that post, using its title |
+| `[[Note\|custom text]]` | Link with your own anchor text |
+| `[[Note#Heading]]` | Deep link to a heading; the heading must exist |
+| `[[#Heading]]` | Link to a heading on the same page |
+| `[[Note^block\|text]]` | Link to a paragraph block ID |
+| `![[image.png\|Alt text]]` | Image; **alt text is mandatory** |
+| `![[image.png\|Alt text\|500]]` | Image with a maximum width of 500px |
+| `![[Note]]` | Citation card linking to that post. Must sit on its own line and be the only thing in its paragraph. |
+| `> [!note] Title` | Callout |
+| `> [!tip]+ Title` | Foldable callout, open by default |
+| `> [!warning]- Title` | Foldable callout, closed by default |
+| `==text==` | Highlighted text |
+| `$inline$` / `$$block$$` | LaTeX, rendered to MathML at build time (no JavaScript). Use `$…$` inside a sentence; `$$…$$` is display math and should be on its own line. |
+| `%%comment%%` | Author-only note, stripped from all output |
+| ` ```mermaid ` | Diagram, rendered in the browser by a locally hosted copy of Mermaid |
+
+Callout types map to five colour groups: `note info todo abstract summary tldr`, `tip hint important check done success`, `warning caution attention question help faq`, `danger error bug fail failure missing`, and `quote cite example`.
+
+#### Backlinks and Hover Previews
+
+Any `[[wikilink]]` is recorded automatically. The target post gets a compact **Linked from** list at the bottom showing each linking post's title and date. Posts with no incoming links have no section at all.
+
+Hovering a wikilink, or a row in "Linked from", shows a small preview card with the target's title, date, and excerpt. For backlinks the excerpt is the sentence in the source post that linked here. Preview data is embedded in the page at build time, so there is no extra request. Tabbing to a link shows the same card and `Escape` dismisses it. With JavaScript disabled everything still works as ordinary links.
+
+#### Build-Failing Errors
+
+The build stops rather than guessing. Common messages and fixes:
+
+| Error | Fix |
+| --- | --- |
+| `unresolved wikilink "[[Target]]"` | No published post matches that filename, slug, alias, or title. Check the spelling, or publish the target if it is still a draft. |
+| `ambiguous wikilink` | Several posts match. Link using the exact `slug` or filename. |
+| `heading anchor ... does not exist` | The `#Heading` in the link does not exist in the target post. |
+| `missing required front-matter field "description"` | Add a `description` (required when the post uses `[[` or `%%`). |
+| `image embed ... not found` | The file is not in `content/blog/_attachments/`. |
+| `is missing required accessible alt text` | Use `![[image.png\|Descriptive alt text]]`, or `\|decorative` if the image is purely ornamental. |
+| `block transclusion ... is not supported` | Inline copies of a single paragraph are not supported; use `![[Note#Heading]]` or quote it and cite with `[[Note^block\|text]]`. |
+| `invalid LaTeX math expression` | Fix the LaTeX. |
+| `unexpanded Obsidian plugin syntax detected` | Dataview and Templater blocks cannot be published; replace them with static content. |
+
+#### Not Supported
+
+Inline `#tags` in prose (use YAML `tags:` instead), block transclusion `![[Note^block]]`, Dataview, Templater, Canvas, graph view, and unlinked-mention search.
+
+Math uses `$` delimiters globally, so prose containing currency can be ambiguous. The renderer deliberately leaves dollar amounts in running text alone and only typesets content that parses as LaTeX. If a paragraph with prices ever renders as math, rephrase it or move it into a callout.
+
 ---
 
 ## 4. Managing Shelves (Reading & Watching)

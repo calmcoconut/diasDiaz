@@ -1493,3 +1493,389 @@ details.toc li {
     margin: 16px 0 !important;
   }
 }
+
+/* ==========================================================================
+   16. Obsidian Authoring: Internal Links & Preview Popover
+   ========================================================================== */
+
+.wikilink {
+  text-decoration-style: dotted;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+.wikilink:hover,
+.wikilink:focus-visible {
+  text-decoration-style: solid;
+}
+
+.wikilink-popover {
+  position: fixed;
+  z-index: 1000;
+  width: max-content;
+  max-width: min(360px, calc(100vw - 32px));
+  padding: 10px 14px;
+  border: 1px solid var(--color-rule);
+  border-left: 3px solid var(--color-accent);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+  pointer-events: none;
+}
+
+.wikilink-popover[hidden] {
+  display: none;
+}
+
+.wikilink-popover-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--color-rule);
+}
+
+.wikilink-popover-title {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-heading);
+}
+
+.wikilink-popover-date {
+  flex: 0 0 auto;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-secondary);
+  white-space: nowrap;
+}
+
+.wikilink-popover-excerpt {
+  margin: 0;
+  color: var(--color-text);
+}
+
+/* ==========================================================================
+   17. Obsidian Authoring: Compact "Linked from" Backlinks
+   ========================================================================== */
+
+.post-backlinks {
+  margin-top: var(--space-section);
+  padding-top: var(--space-element);
+  border-top: 1px solid var(--color-rule);
+}
+
+.post-backlinks-heading {
+  margin: 0 0 var(--space-element);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-secondary);
+}
+
+.post-backlinks-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.post-backlinks-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 7px 0;
+}
+
+.post-backlinks-row + .post-backlinks-row {
+  border-top: 1px solid var(--color-rule);
+}
+
+.post-backlinks-row a {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.post-backlinks-row time,
+.post-backlinks-date {
+  flex: 0 0 auto;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-secondary);
+  white-space: nowrap;
+}
+
+/* ==========================================================================
+   18. Obsidian Authoring: Callouts, Embeds, Marks, Math & Mermaid
+   ========================================================================== */
+
+/* Accent tokens measured against an 8% accent tint over --color-bg.
+   Title-on-tint ratios: light blue 7.09, teal 5.42, amber 5.80,
+   crimson 6.29, secondary 5.27; dark blue 7.70, teal 8.20, amber 8.40,
+   crimson 7.16, secondary 5.84. Body text stays --color-text (>= 8:1). */
+:root {
+  --callout-blue: #2F4F73;
+  --callout-teal: #146B5A;
+  --callout-amber: #7A5300;
+  --callout-crimson: #9B2C2C;
+  --mark-bg: rgba(170, 117, 159, 0.28);
+}
+
+:root[data-theme="dark"] {
+  --callout-blue: #A8C4E8;
+  --callout-teal: #8FD6C0;
+  --callout-amber: #E8C77E;
+  --callout-crimson: #F2A6A6;
+  --mark-bg: rgba(214, 166, 204, 0.24);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --callout-blue: #A8C4E8;
+    --callout-teal: #8FD6C0;
+    --callout-amber: #E8C77E;
+    --callout-crimson: #F2A6A6;
+    --mark-bg: rgba(214, 166, 204, 0.24);
+  }
+}
+
+.callout {
+  --callout-accent: var(--callout-blue);
+  margin: var(--space-element) 0;
+  padding: 12px 16px;
+  border: 1px solid var(--color-rule);
+  border-left: 3px solid var(--callout-accent);
+  background-color: var(--color-bg);
+  background-color: color-mix(in srgb, var(--callout-accent) 8%, var(--color-bg));
+}
+
+.callout-title {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--callout-accent);
+}
+
+.callout-content {
+  padding-top: 6px;
+}
+
+.callout-content > :last-child {
+  margin-bottom: 0;
+}
+
+summary.callout-title {
+  cursor: pointer;
+}
+
+summary.callout-title::after {
+  content: "+";
+  margin-left: auto;
+  color: var(--callout-accent);
+}
+
+details.callout[open] > summary.callout-title::after {
+  content: "\2212";
+}
+
+.callout-note,
+.callout-info,
+.callout-todo,
+.callout-abstract,
+.callout-summary,
+.callout-tldr {
+  --callout-accent: var(--callout-blue);
+}
+
+.callout-tip,
+.callout-hint,
+.callout-important,
+.callout-check,
+.callout-done,
+.callout-success {
+  --callout-accent: var(--callout-teal);
+}
+
+.callout-warning,
+.callout-caution,
+.callout-attention,
+.callout-question,
+.callout-help,
+.callout-faq {
+  --callout-accent: var(--callout-amber);
+}
+
+.callout-danger,
+.callout-error,
+.callout-bug,
+.callout-fail,
+.callout-failure,
+.callout-missing {
+  --callout-accent: var(--callout-crimson);
+}
+
+.callout-quote,
+.callout-cite,
+.callout-example {
+  --callout-accent: var(--color-secondary);
+}
+
+.obsidian-image {
+  margin: var(--space-element) 0;
+}
+
+.obsidian-image img {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  border: 1px solid var(--color-rule);
+}
+
+.obsidian-embed-note {
+  margin: var(--space-element) 0;
+  padding: 12px 16px;
+  border: 1px solid var(--color-rule);
+  border-left: 3px solid var(--color-link);
+  background-color: var(--color-code-bg);
+}
+
+.obsidian-embed-note > :last-child {
+  margin-bottom: 0;
+}
+
+.math-block {
+  display: block;
+  max-width: 100%;
+  margin: var(--space-element) 0;
+  padding: 4px 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.math-block math {
+  display: block;
+}
+
+.mermaid-figure {
+  margin: var(--space-element) 0;
+}
+
+.mermaid-figure .mermaid {
+  display: block;
+  margin: 0;
+  padding: 12px;
+  border: 1px solid var(--color-rule);
+  border-radius: var(--radius);
+  background-color: var(--color-code-bg);
+  color: var(--color-text);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.5;
+  overflow-x: auto;
+  white-space: pre;
+}
+
+.mermaid-figure svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto;
+}
+
+mark {
+  padding: 0 0.15em;
+  background-color: var(--mark-bg);
+  color: var(--color-text);
+}
+
+/* ==========================================================================
+   19. Obsidian Authoring: Mobile & Print Adjustments
+   ========================================================================== */
+
+@media screen and (max-width: 600px) {
+  .wikilink-popover {
+    font-size: 14px;
+  }
+
+  .callout,
+  .obsidian-embed-note {
+    padding: 10px 12px;
+  }
+}
+
+@media print {
+  .wikilink-popover {
+    display: none !important;
+  }
+
+  summary.callout-title {
+    list-style: none;
+  }
+
+  summary.callout-title::-webkit-details-marker {
+    display: none;
+  }
+
+  summary.callout-title::after {
+    content: none !important;
+  }
+
+  .callout-content {
+    display: block !important;
+  }
+
+  details.callout::details-content {
+    display: block !important;
+    content-visibility: visible !important;
+  }
+
+  .callout,
+  .obsidian-embed-note {
+    background: #FFFFFF !important;
+    border: 1px solid #999999 !important;
+    border-left: 3px solid #333333 !important;
+  }
+
+  .callout * {
+    color: #000000 !important;
+  }
+
+  .post-backlinks,
+  .post-backlinks * {
+    color: #000000 !important;
+    border-color: #999999 !important;
+  }
+
+  .post-backlinks-row {
+    break-inside: avoid;
+  }
+
+  .post-backlinks a,
+  .wikilink {
+    text-decoration: none !important;
+  }
+
+  mark {
+    background: transparent !important;
+    color: #000000 !important;
+    border-bottom: 1px solid #000000;
+  }
+
+  .math-block {
+    overflow: visible !important;
+  }
+}

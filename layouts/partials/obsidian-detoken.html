@@ -1,0 +1,37 @@
+{{- /*
+  obsidian-detoken.html
+  ---------------------------------------------------------------------------
+  Removes Obsidian link syntax from a string WITHOUT touching HTML, so it can
+  run over rendered HTML (for example .TableOfContents) as well as raw text:
+
+    %%comment%%            removed
+    ![[img|alt]]           the alt text
+    ![[img]]               removed
+    [[note|alias]]         the alias
+    [[#Heading]]           Heading
+    [[#^block]]            block
+    [[^block]]             block
+    [[note#Heading]]       note
+    [[note^block]]         note
+
+  Callers that need plain text (no markup at all) wrap this in
+  obsidian-plain.html; callers that must keep markup use it directly.
+
+  Context: a string, or a dict with a "text" key.
+  Returns: string
+*/ -}}
+{{- $text := . -}}
+{{- if reflect.IsMap . -}}
+  {{- $text = .text -}}
+{{- end -}}
+{{- $text = printf "%v" $text -}}
+{{- /* Author comments, inline and multiline. */ -}}
+{{- $text = replaceRE `(?s)%%.*?%%` "" $text -}}
+{{- /* Image embeds: keep authored alt text, drop undecorated embeds. */ -}}
+{{- $text = replaceRE `!\[\[[^\]\n|]*\|([^\]\n|]*)(?:\|\d+)?\]\]` "$1" $text -}}
+{{- $text = replaceRE `!\[\[[^\]\n]*\]\]` "" $text -}}
+{{- /* Wikilinks: alias wins, then a same-page fragment, then the note name. */ -}}
+{{- $text = replaceRE `\[\[([^\]\n|]*)\|([^\]\n]*)\]\]` "$2" $text -}}
+{{- $text = replaceRE `\[\[[#^]\^?([^\]\n]*)\]\]` "$1" $text -}}
+{{- $text = replaceRE `\[\[([^\]\n#^|]*)(?:[#^][^\]\n]*)?\]\]` "$1" $text -}}
+{{- return $text -}}

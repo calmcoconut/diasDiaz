@@ -1,0 +1,91 @@
+{{- /*
+  render-link.html
+  ---------------------------------------------------------------------------
+  Standard Markdown links. Links whose destination ends in ".md" are treated
+  as Obsidian note links: they are resolved through the shared lookup map, gain
+  the wikilink class plus data-preview-* metadata, and fail loud when the
+  target note or heading anchor does not exist.
+
+  Every other destination (external URLs, mailto:, root-relative paths, plain
+  anchors, protocol-relative URLs) is emitted unchanged, which keeps the
+  pre-existing content of the site working.
+
+  errorf reports a problem without aborting the template, so the unresolved
+  and ambiguous branches stop before dereferencing the missing page and emit
+  the link text instead: the last line an author sees is always the
+  [obsidian-validate] diagnostic, never a Go "index of type map" failure.
+*/ -}}
+{{- $dest := .Destination -}}
+{{- $title := .Title -}}
+{{- $srcPath := "" -}}
+{{- with .Page -}}
+  {{- with .File -}}
+    {{- $srcPath = printf "content/%s" .Path -}}
+  {{- end -}}
+{{- end -}}
+{{- $isAbsolute := or
+      (hasPrefix $dest "http://")
+      (hasPrefix $dest "https://")
+      (hasPrefix $dest "mailto:")
+      (hasPrefix $dest "tel:")
+      (hasPrefix $dest "//")
+      (hasPrefix $dest "/")
+      (hasPrefix $dest "#") -}}
+{{- $isNote := and (not $isAbsolute) (hasSuffix $dest ".md") -}}
+
+{{- if $isNote -}}
+  {{- $path := $dest -}}
+  {{- $anchorName := "" -}}
+  {{- if strings.Contains $dest "#" -}}
+    {{- $bits := split $dest "#" -}}
+    {{- $path = index $bits 0 -}}
+    {{- $anchorName = index $bits 1 -}}
+  {{- end -}}
+  {{- $path = strings.TrimSuffix ".md" (strings.TrimPrefix "./" (strings.TrimPrefix "/" $path)) -}}
+  {{- $map := partialCached "obsidian-lookup-map.html" "global" "global" -}}
+  {{- $byKey := index $map "byKey" -}}
+  {{- $previews := index $map "previews" -}}
+  {{- $hits := index $byKey (partial "obsidian-key.html" $path) -}}
+  {{- if not $hits -}}
+    {{- errorf "[obsidian-validate] %s: unresolved wikilink \"[%s](%s)\". No published blog post matches filename, slug, alias, or title \"%s\". (If %s is a draft, either publish it or keep the linking note as draft: true.)" $srcPath (.Text | plainify) $dest $path $path -}}
+    {{- .Text -}}
+  {{- else if gt (len $hits) 1 -}}
+    {{- $found := slice -}}
+    {{- range $hit := $hits -}}
+      {{- $found = $found | append (printf "\"content/%s\"" $hit.File.Path) -}}
+    {{- end -}}
+    {{- errorf "[obsidian-validate] %s: ambiguous wikilink \"[%s](%s)\" matches multiple posts (%s). Link by explicit slug or filename." $srcPath (.Text | plainify) $dest (delimit $found " and ") -}}
+    {{- .Text -}}
+  {{- else -}}
+    {{- $targetPage := index $hits 0 -}}
+    {{- $href := $targetPage.RelPermalink -}}
+    {{- $previewTitle := $targetPage.Title -}}
+    {{- if ne $anchorName "" -}}
+      {{- $anchor := anchorize $anchorName -}}
+      {{- $anchorOK := false -}}
+      {{- with $targetPage.Fragments -}}
+        {{- $anchorOK = .Identifiers.Contains $anchor -}}
+      {{- end -}}
+      {{- if not $anchorOK -}}
+        {{- errorf "[obsidian-validate] %s: wikilink \"[%s](%s)\" resolves to \"content/%s\", but heading anchor \"#%s\" does not exist in target post." $srcPath (.Text | plainify) $dest $targetPage.File.Path $anchor -}}
+      {{- end -}}
+      {{- $href = printf "%s#%s" $targetPage.RelPermalink $anchor -}}
+      {{- $previewTitle = printf "%s § %s" $targetPage.Title $anchorName -}}
+    {{- end -}}
+    {{- $preview := index $previews $targetPage.RelPermalink -}}
+    {{- $previewDate := index $preview "date" -}}
+    {{- $previewExcerpt := index $preview "excerpt" -}}
+    {{- $titleAttr := printf "%s (%s)" $previewTitle $previewDate -}}
+    {{- $attrs := printf ` href="%s" class="wikilink" data-preview-title="%s" data-preview-date="%s" data-preview-excerpt="%s" title="%s"` $href (htmlEscape $previewTitle) (htmlEscape $previewDate) (htmlEscape $previewExcerpt) (htmlEscape $titleAttr) -}}
+    {{- if $title -}}
+      {{- $attrs = printf `%s data-title="%s"` $attrs (htmlEscape $title) -}}
+    {{- end -}}
+    {{- printf "\x3ca%s\x3e%s\x3c/a\x3e" (safeHTMLAttr $attrs) .Text | safeHTML -}}
+  {{- end -}}
+{{- else -}}
+  {{- $attrs := printf ` href="%s"` (htmlEscape $dest) -}}
+  {{- if $title -}}
+    {{- $attrs = printf `%s title="%s"` $attrs (htmlEscape $title) -}}
+  {{- end -}}
+  {{- printf "\x3ca%s\x3e%s\x3c/a\x3e" (safeHTMLAttr $attrs) .Text | safeHTML -}}
+{{- end -}}

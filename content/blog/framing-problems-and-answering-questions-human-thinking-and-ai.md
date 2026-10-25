@@ -23,14 +23,14 @@ A fun brain teaser: the wolves and sheep problem (or its many variants, such as 
 ![example image](/images/20220213-framing-problems-and-answering-questions-human-thinking-and-ai/example.png){: height="550" }
 
 The graphic above is a great representation, but we can't use images as code usually, so let's make it even simpler!
-Say $$A$$ represents the origin bank of the river and $$B$$ the goal bank, If we have one sheep and one wolf we can model it as:
+Say $A$ represents the origin bank of the river and $B$ the goal bank, If we have one sheep and one wolf we can model it as:
 
 
 >A < B
 >1 	0
 >1 	0
 
-We can see that the boat is currently on bank $$A$$ because we have '<' point to the current bank. When we cross, we are left with:
+We can see that the boat is currently on bank $A$ because we have '<' point to the current bank. When we cross, we are left with:
 
 >A > B
 >0 	1

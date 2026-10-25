@@ -1,0 +1,148 @@
+{{- /*
+  backlinks-index.html
+  ---------------------------------------------------------------------------
+  Runs once per build (cached globally) and returns the reverse link index:
+
+      dict  target RelPermalink  to  slice of backlink records
+
+  Each record:
+
+      "SourcePermalink"  the linking post
+      "SourceTitle"      its title
+      "SourceDate"       YYYY-MM-DD
+      "SourceDateISO"    YYYY-MM-DD (sort key)
+      "ContextSnippet"   the linking paragraph, plain text, ~180 chars
+      "SourceIsDraft"    true when a draft build surfaces a draft source
+
+  Only published blog posts are scanned; Hugo excludes drafts from
+  site.RegularPages in a production build, so a draft note can never appear in
+  the "Linked from" list of a published post in public/.
+
+  Fenced code, inline code and %%comments%% are stripped before scanning so
+  code samples containing [[i]] never register a link or trip validation.
+
+  The index is filled through a Scratch with SetInMap: merging the whole
+  dictionary per insert made the build superlinear.
+*/ -}}
+{{- $map := partialCached "obsidian-lookup-map.html" "global" "global" -}}
+{{- $byKey := index $map "byKey" -}}
+{{- $scratch := newScratch -}}
+{{- $sources := where site.RegularPages "Section" "blog" -}}
+
+{{- range $source := $sources -}}
+  {{- $srcPath := printf "content/%s" $source.File.Path -}}
+  {{- $clean := replaceRE "(?s)```[\\s\\S]*?```|~~~[\\s\\S]*?~~~" "" $source.RawContent -}}
+  {{- $clean = replaceRE "`[^`\n]+`" "" $clean -}}
+  {{- $clean = replaceRE `(?s)%%.*?%%` "" $clean -}}
+  {{- /* Media embeds are not note links: drop them before scanning. */ -}}
+  {{- $clean = replaceRE `!\[\[[^\]\n]+\.(?:png|jpg|jpeg|webp|gif|svg|avif)(?:\|[^\]\n]*)?\]\]` "" $clean -}}
+
+  {{- $seenTargets := slice -}}
+  {{- range $token := findRE `\[\[[^\]\n]+?\]\]` $clean -}}
+    {{- $inner := replaceRE `^\[\[([\s\S]*)\]\]$` "$1" $token -}}
+    {{- $parts := split $inner "|" -}}
+    {{- $target := htmlUnescape (strings.TrimSpace (index $parts 0)) -}}
+    {{- $ref := $target -}}
+    {{- if strings.Contains $target "#^" -}}
+      {{- $bits := split $target "#^" -}}
+      {{- $ref = strings.TrimSpace (index $bits 0) -}}
+    {{- else if strings.Contains $target "^" -}}
+      {{- $bits := split $target "^" -}}
+      {{- $ref = strings.TrimSpace (index $bits 0) -}}
+    {{- else if strings.Contains $target "#" -}}
+      {{- $bits := split $target "#" -}}
+      {{- $ref = strings.TrimSpace (index $bits 0) -}}
+    {{- end -}}
+
+    {{- if ne $ref "" -}}
+      {{- $hits := index $byKey (partial "obsidian-key.html" $ref) -}}
+      {{- if not $hits -}}
+        {{- errorf "[obsidian-validate] %s: unresolved wikilink \"%s\". No published blog post matches filename, slug, alias, or title \"%s\". (If %s is a draft, either publish it or keep %s as draft: true.)" $srcPath $token $ref $ref $source.File.LogicalName -}}
+      {{- else if gt (len $hits) 1 -}}
+        {{- $found := slice -}}
+        {{- range $hit := $hits -}}
+          {{- $found = $found | append (printf "\"content/%s\"" $hit.File.Path) -}}
+        {{- end -}}
+        {{- errorf "[obsidian-validate] %s: ambiguous wikilink \"%s\" matches multiple posts (%s). Link by explicit slug or filename." $srcPath $token (delimit $found " and ") -}}
+      {{- else -}}
+        {{- $targetPage := index $hits 0 -}}
+        {{- if and (ne $targetPage.RelPermalink $source.RelPermalink) (not (in $seenTargets $targetPage.RelPermalink)) -}}
+          {{- $seenTargets = $seenTargets | append $targetPage.RelPermalink -}}
+
+          {{- /* Linking paragraph, reduced to plain text by the shared
+                 excerpt sanitizer so no Markdown or Obsidian syntax (callout
+                 markers, heading hashes, brackets) reaches the preview. */ -}}
+          {{- $context := "" -}}
+          {{- range $para := split $clean "\n\n" -}}
+            {{- if and (eq $context "") (strings.Contains $para $token) -}}
+              {{- $context = partial "obsidian-excerpt.html" (dict "text" $para) -}}
+            {{- end -}}
+          {{- end -}}
+          {{- if eq $context "" -}}
+            {{- $context = partial "obsidian-excerpt.html" (dict "text" $clean) -}}
+          {{- end -}}
+
+          {{- $record := dict
+                "SourcePermalink" $source.RelPermalink
+                "SourceTitle" $source.Title
+                "SourceDate" ($source.Date.Format "2006-01-02")
+                "SourceDateISO" ($source.Date.Format "2006-01-02")
+                "ContextSnippet" $context
+                "SourceIsDraft" $source.Draft -}}
+
+          {{- $existing := "" -}}
+          {{- with $scratch.Get "index" -}}
+            {{- $existing = index . $targetPage.RelPermalink -}}
+          {{- end -}}
+          {{- if $existing -}}
+            {{- $scratch.SetInMap "index" $targetPage.RelPermalink ($existing | append $record) -}}
+          {{- else -}}
+            {{- $scratch.SetInMap "index" $targetPage.RelPermalink (slice $record) -}}
+          {{- end -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+
+  {{- /* Standard Markdown links to notes, e.g. [text](other-note.md). */ -}}
+  {{- range $dest := findRE `\]\([^)\s]*\.md(?:#[^)]*)?\)` $clean -}}
+    {{- $path := replaceRE `^\]\(([^)\s]*?)(?:#[^)]*)?\)$` "$1" $dest -}}
+    {{- $path = strings.TrimPrefix "./" $path -}}
+    {{- $path = strings.TrimSuffix ".md" $path -}}
+    {{- $path = partial "obsidian-key.html" $path -}}
+    {{- $hits := index $byKey $path -}}
+    {{- if not $hits -}}
+      {{- errorf "[obsidian-validate] %s: unresolved wikilink \"%s\". No published blog post matches filename, slug, alias, or title \"%s\". (If %s is a draft, either publish it or keep %s as draft: true.)" $srcPath $dest $path $path $source.File.LogicalName -}}
+    {{- else if gt (len $hits) 1 -}}
+      {{- $found := slice -}}
+      {{- range $hit := $hits -}}
+        {{- $found = $found | append (printf "\"content/%s\"" $hit.File.Path) -}}
+      {{- end -}}
+      {{- errorf "[obsidian-validate] %s: ambiguous wikilink \"%s\" matches multiple posts (%s). Link by explicit slug or filename." $srcPath $dest (delimit $found " and ") -}}
+    {{- else -}}
+      {{- $targetPage := index $hits 0 -}}
+      {{- if and (ne $targetPage.RelPermalink $source.RelPermalink) (not (in $seenTargets $targetPage.RelPermalink)) -}}
+        {{- $seenTargets = $seenTargets | append $targetPage.RelPermalink -}}
+        {{- $context := partial "obsidian-excerpt.html" (dict "text" $source.RawContent) -}}
+        {{- $record := dict
+              "SourcePermalink" $source.RelPermalink
+              "SourceTitle" $source.Title
+              "SourceDate" ($source.Date.Format "2006-01-02")
+              "SourceDateISO" ($source.Date.Format "2006-01-02")
+              "ContextSnippet" $context
+              "SourceIsDraft" $source.Draft -}}
+        {{- $existing := "" -}}
+        {{- with $scratch.Get "index" -}}
+          {{- $existing = index . $targetPage.RelPermalink -}}
+        {{- end -}}
+        {{- if $existing -}}
+          {{- $scratch.SetInMap "index" $targetPage.RelPermalink ($existing | append $record) -}}
+        {{- else -}}
+          {{- $scratch.SetInMap "index" $targetPage.RelPermalink (slice $record) -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- return ($scratch.Get "index" | default dict) -}}

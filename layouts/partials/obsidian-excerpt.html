@@ -1,0 +1,51 @@
+{{- /*
+  obsidian-excerpt.html
+  ---------------------------------------------------------------------------
+  The single sanitizer behind every author-visible excerpt:
+
+    - data-preview-excerpt on [[wikilinks]]   (obsidian-lookup-map.html)
+    - data-preview-excerpt on "Linked from"   (backlinks-index.html)
+
+  Input is raw Markdown source (.RawContent or one of its paragraphs) or
+  rendered HTML; output is one plain-text line of at most 180 characters with
+  no Markdown or Obsidian syntax left in it:
+
+    fenced and inline code       removed
+    %%author comments%%          removed
+    callout markers [!note]+-    removed
+    leading # heading hashes     removed
+    list markers                 removed
+    markdown links / images      the link text
+    wikilinks and embeds         alias, alt text or note name
+    emphasis / pipes / quotes    a space
+    whitespace runs              one space
+
+  Context: a dict with a "text" key (a string is accepted too).
+  Returns: string
+*/ -}}
+{{- $text := . -}}
+{{- if reflect.IsMap . -}}
+  {{- $text = .text -}}
+{{- end -}}
+{{- $text = printf "%v" $text -}}
+{{- /* Code samples and author comments never belong in a preview. */ -}}
+{{- $text = replaceRE "(?s)```[\\s\\S]*?```|~~~[\\s\\S]*?~~~" " " $text -}}
+{{- $text = replaceRE "`[^`\n]+`" " " $text -}}
+{{- $text = replaceRE `(?s)%%.*?%%` "" $text -}}
+{{- /* Callout markers ([!note], [!warning]-, ...) and heading hashes. */ -}}
+{{- $text = replaceRE `\[![A-Za-z-]+\][+-]?` "" $text -}}
+{{- $text = replaceRE `(?m)^[ \t]*#{1,6}[ \t]*` "" $text -}}
+{{- /* Markdown links and images keep their text. */ -}}
+{{- $text = replaceRE `!\[([^\]]*)\]\([^)]*\)` "$1" $text -}}
+{{- $text = replaceRE `\[([^\]]*)\]\([^)]*\)` "$1" $text -}}
+{{- $text = replaceRE `(?m)^[ \t]*(?:[-*+]|[0-9]+\.)[ \t]*` "" $text -}}
+{{- /* Obsidian wikilinks, embeds and comments. */ -}}
+{{- $text = partial "obsidian-detoken.html" $text -}}
+{{- /* Residual Markdown emphasis, table pipes and blockquote markers. */ -}}
+{{- $text = replaceRE "[*_`\x3e~|]" " " $text -}}
+{{- $text = replaceRE `\s+` " " $text -}}
+{{- $text = strings.TrimSpace $text -}}
+{{- if gt (strings.RuneCount $text) 180 -}}
+  {{- $text = printf "%s..." (substr $text 0 177) -}}
+{{- end -}}
+{{- return $text -}}

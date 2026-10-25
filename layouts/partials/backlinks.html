@@ -1,0 +1,32 @@
+{{- /*
+  backlinks.html
+  ---------------------------------------------------------------------------
+  Renders the compact "Linked from" region for the current post.
+
+  Emitted only when the post has at least one incoming published link, so a
+  post with zero backlinks has no empty landmark in its HTML.
+
+  Each row carries data-preview-* so the shared link preview popover shows the
+  exact linking paragraph of the source post. A source that only exists
+  because the author ran a draft build (hugo --buildDrafts) is marked with a
+  [DRAFT] badge, so a preview page never presents draft material as published.
+*/ -}}
+{{- $index := partialCached "backlinks-index.html" "global" "global" -}}
+{{- $records := index $index .RelPermalink -}}
+{{- with $records -}}
+{{- $.Store.Set "hasBacklinks" true -}}
+<aside class="post-backlinks" aria-labelledby="backlinks-heading">
+  <h2 class="post-backlinks-heading" id="backlinks-heading">Linked from ({{ len . }})</h2>
+  <ul class="post-backlinks-list">
+    {{- range sort . "SourceDateISO" "desc" }}
+    <li class="post-backlinks-row">
+      <a class="post-backlinks-link" href="{{ .SourcePermalink }}" data-preview-title="{{ .SourceTitle }}" data-preview-date="{{ .SourceDate }}" data-preview-excerpt="{{ .ContextSnippet }}" title="{{ .SourceTitle }} ({{ .SourceDate }})">{{ .SourceTitle }}</a>
+      {{- if .SourceIsDraft }}
+      <span class="post-backlinks-draft">[DRAFT]</span>
+      {{- end }}
+      <time class="post-backlinks-date" datetime="{{ .SourceDateISO }}">{{ .SourceDate }}</time>
+    </li>
+    {{- end }}
+  </ul>
+</aside>
+{{- end -}}

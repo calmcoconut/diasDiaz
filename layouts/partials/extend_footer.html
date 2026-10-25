@@ -1,0 +1,40 @@
+{{- /*
+  extend_footer.html
+  ---------------------------------------------------------------------------
+  Emits the fingerprinted JavaScript for Obsidian authoring enhancements.
+
+    - js/link-preview.js          only when the page has wikilinks or backlinks
+    - js/vendor/mermaid.min.js    only when the page rendered a mermaid block
+    - js/mermaid-init.js          the matching initializer
+
+  Every lookup goes through `with resources.Get`, so a missing asset degrades
+  gracefully instead of failing the whole build.
+
+  Idempotency: layouts/partials/footer.html invokes this partial through
+  partialCached (keyed by layout/kind, not by page), so page-dependent script
+  tags are emitted from the page template first, which sets the per-page
+  "obsidianFooterScriptsDone" flag; the cached footer invocation then renders
+  nothing. That keeps mermaid (and the preview script) scoped to the pages
+  that actually need it.
+*/ -}}
+{{- if not (.Store.Get "obsidianFooterScriptsDone") -}}
+  {{- $isBlogPost := and (eq .Kind "page") (eq .Section "blog") -}}
+  {{- $needsPreview := or $isBlogPost (.Store.Get "hasWikilinks") (.Store.Get "hasBacklinks") -}}
+  {{- $needsMermaid := .Store.Get "hasMermaid" -}}
+  {{- if or $needsPreview $needsMermaid -}}
+    {{- .Store.Set "obsidianFooterScriptsDone" true -}}
+    {{- if $needsPreview -}}
+      {{- with resources.Get "js/link-preview.js" -}}
+<script defer src="{{ (. | minify | fingerprint).RelPermalink }}"></script>
+      {{- end -}}
+    {{- end -}}
+    {{- if $needsMermaid -}}
+      {{- with resources.Get "js/vendor/mermaid.min.js" -}}
+<script defer src="{{ (. | minify | fingerprint).RelPermalink }}"></script>
+      {{- end -}}
+      {{- with resources.Get "js/mermaid-init.js" -}}
+<script defer src="{{ (. | minify | fingerprint).RelPermalink }}"></script>
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}

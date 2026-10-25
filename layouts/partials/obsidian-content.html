@@ -1,0 +1,328 @@
+{{- /*
+  obsidian-content.html
+  ---------------------------------------------------------------------------
+  Renders a blog post's .Content with Obsidian authoring syntax resolved.
+  Cached per page:
+
+      {{ partialCached "obsidian-content.html" . .RelPermalink }}
+
+  Pipeline (order matters):
+
+    1. Fail loud on unexpanded Obsidian plugin syntax (dataview / Templater),
+       checked against the raw source because Goldmark turns fenced blocks
+       into pre/code elements.
+    2. Mask pre and code regions so code samples are never rewritten.
+    3. Strip %%author comments%%, failing loud when the delimiters do not pair
+       (an unpaired %% would silently delete the prose that follows it).
+    4. Promote trailing ^block-id markers into a real block anchor id on the
+       enclosing paragraph or list item.
+    5. Unwrap a paragraph that holds nothing but an embed, so the figure or
+       note card it becomes is emitted at block level.
+    6. Resolve ![[image.png|Alt]] embeds through the assets/attachments mount
+       and ![[Note]] / ![[Note#Heading]] transclusions into Depth-1 cards.
+    7. Resolve [[Note]], [[Note|alias]], [[Note#Heading]], [[Note#block]] and
+       [[#Heading]] into wikilink anchors carrying data-preview-* metadata.
+    8. Fail loud when a "[[" survived resolution, i.e. the author never closed
+       the link.
+    9. Unwrap paragraphs that hold nothing but block-level output (figures,
+       mermaid figures, note cards), then restore the masked code regions.
+
+  Text that comes out of .Content has already passed through Goldmark's
+  typographer, so "'", "--" and "..." arrive as HTML entities ("&rsquo;",
+  "&ndash;", "&mldr;"). Wikilink targets and visible text are therefore
+  htmlUnescape'd before they are matched against the lookup map or emitted.
+
+  All integrity problems call errorf with the [obsidian-validate] prefix, in
+  the wording specified by section 8 of the Obsidian authoring plan. errorf
+  does not abort template execution, so every branch that reports a problem
+  also skips the dereference that would otherwise end the build with an opaque
+  Go "index of type map with args [nil]" error after the real diagnostic.
+*/ -}}
+{{- $p := . -}}
+{{- $srcPath := printf "content/%s" $p.File.Path -}}
+{{- $map := partialCached "obsidian-lookup-map.html" "global" "global" -}}
+{{- $byKey := index $map "byKey" -}}
+{{- $previews := index $map "previews" -}}
+
+{{- /* 1. Unexpanded Obsidian plugin syntax ------------------------------- */ -}}
+{{- if findRE "(?m)^[ \t]*(?:`{3,}|~{3,})[ \t]*(?:dataview|dataviewjs)" $p.RawContent -}}
+  {{- errorf "[obsidian-validate] %s: unexpanded Obsidian plugin syntax detected (\"```dataview\" or \"<%% tp.\"). Dynamic plugin blocks cannot be published." $srcPath -}}
+{{- end -}}
+{{- if strings.Contains $p.RawContent "<%" -}}
+  {{- errorf "[obsidian-validate] %s: unexpanded Obsidian plugin syntax detected (\"```dataview\" or \"<%% tp.\"). Dynamic plugin blocks cannot be published." $srcPath -}}
+{{- end -}}
+
+{{- $html := printf "%s" $p.Content -}}
+
+{{- /* 2. Mask code so [[i]], %%x%%, ==y== and ^z in samples stay literal. */ -}}
+{{- $codeRestore := slice -}}
+{{- range $i, $m := findRE `(?s)<pre\b[^>]*>.*?</pre>|<code\b[^>]*>.*?</code>` $html -}}
+  {{- $token := printf "\x00CODE%d\x00" $i -}}
+  {{- $html = strings.Replace $html $m $token 1 -}}
+  {{- $codeRestore = $codeRestore | append (dict "token" $token "orig" $m) -}}
+{{- end -}}
+
+{{- /* 3. Strip %%author comments%%, refusing to guess when they do not pair. */ -}}
+{{- if eq 1 (mod (len (findRE `%%` $html)) 2) -}}
+  {{- errorf "[obsidian-validate] %s: unbalanced '%%%%' author comment. An odd number of \"%%%%\" delimiters would silently delete the prose between them; close every opening \"%%%%\" with a second \"%%%%\"." $srcPath -}}
+{{- end -}}
+{{- $html = replaceRE `(?s)%%.*?%%` "" $html -}}
+
+{{- /* 4. Promote trailing ^block-id markers to real anchor targets. (Chunks
+       are split at each opening tag so a marker can only ever attach to the
+       paragraph or list item that actually contains it.) ------------------ */ -}}
+{{- range $tag := slice "p" "li" -}}
+  {{- $open := printf "<%s" $tag -}}
+  {{- $close := printf "</%s>" $tag -}}
+  {{- $pattern := printf `(?s)^([^>]*)>([\s\S]*?)\s+\^([A-Za-z0-9-]+)\s*(%s)` $close -}}
+  {{- $replacement := printf `$1 id="block-$3">$2$4` -}}
+  {{- $chunks := split $html $open -}}
+  {{- $rebuilt := slice -}}
+  {{- range $i, $chunk := $chunks -}}
+    {{- $out := $chunk -}}
+    {{- if and (gt $i 0) (strings.Contains $chunk $close) -}}
+      {{- $out = replaceRE $pattern $replacement $chunk -}}
+    {{- end -}}
+    {{- $rebuilt = $rebuilt | append $out -}}
+  {{- end -}}
+  {{- $html = delimit $rebuilt $open -}}
+{{- end -}}
+
+{{- /* 5. A paragraph that holds nothing but an embed cannot host a block
+       element: drop the wrapper so the figure or card lands at block level
+       instead of producing a paragraph that contains a figure. ------------ */ -}}
+{{- $html = replaceRE `(?s)<p>\s*(!\[\[[^\]\n]+\]\])\s*</p>` "$1" $html -}}
+
+{{- /* 6a. ![[image.png|Alt]] and ![[image.png|Alt|500]] ------------------- */ -}}
+{{- $imageExts := slice "png" "jpg" "jpeg" "webp" "gif" "svg" "avif" -}}
+{{- range $m := findRE `!\[\[[^\]\n]+?\]\]` $html -}}
+  {{- $inner := replaceRE `^!\[\[([\s\S]*)\]\]$` "$1" $m -}}
+  {{- $parts := split $inner "|" -}}
+  {{- $target := htmlUnescape (strings.TrimSpace (index $parts 0)) -}}
+  {{- $alt := "" -}}
+  {{- if gt (len $parts) 1 -}}
+    {{- $alt = htmlUnescape (strings.TrimSpace (index $parts 1)) -}}
+  {{- end -}}
+  {{- $maxWidth := "" -}}
+  {{- if gt (len $parts) 2 -}}
+    {{- $maxWidth = strings.TrimSpace (index $parts 2) -}}
+  {{- end -}}
+  {{- $ext := lower (strings.TrimPrefix "." (path.Ext $target)) -}}
+  {{- $replacement := "" -}}
+
+  {{- if in $imageExts $ext -}}
+    {{- if eq $alt "" -}}
+      {{- errorf "[obsidian-validate] %s: image embed \"%s\" is missing required accessible alt text. Use \"![[%s|Descriptive alt text]]\" or \"![[%s|decorative]]\"." $srcPath $m $target $target -}}
+    {{- end -}}
+    {{- $res := resources.Get (printf "attachments/%s" $target) -}}
+    {{- if not $res -}}
+      {{- errorf "[obsidian-validate] %s: image embed \"%s\" not found in \"content/blog/_attachments/%s\" (mounted at \"assets/attachments/%s\")." $srcPath $m $target $target -}}
+    {{- else -}}
+      {{- $altAttr := $alt -}}
+      {{- $roleAttr := "" -}}
+      {{- if eq (lower $alt) "decorative" -}}
+        {{- $altAttr = "" -}}
+        {{- $roleAttr = ` role="presentation"` -}}
+      {{- end -}}
+      {{- $dims := "" -}}
+      {{- if in (slice "png" "jpg" "jpeg" "webp" "gif" "avif") $ext -}}
+        {{- $dims = printf ` width="%d" height="%d"` $res.Width $res.Height -}}
+      {{- end -}}
+      {{- $style := "" -}}
+      {{- if ne $maxWidth "" -}}
+        {{- if findRE `^[0-9]+$` $maxWidth -}}
+          {{- $style = printf ` style="max-width: %spx; width: 100%%; height: auto;"` $maxWidth -}}
+        {{- else -}}
+          {{- errorf "[obsidian-validate] %s: image embed \"%s\" has an invalid width \"%s\". The optional third pipe field must be a whole number of pixels, for example \"![[%s|%s|500]]\"." $srcPath $m $maxWidth $target $alt -}}
+        {{- end -}}
+      {{- end -}}
+      {{- $replacement = printf `<figure class="obsidian-image"><img src="%s" alt="%s"%s loading="lazy" decoding="async"%s%s></figure>` $res.RelPermalink (htmlEscape $altAttr) $roleAttr $dims $style -}}
+    {{- end -}}
+
+  {{- else if strings.Contains $target "^" -}}
+    {{- errorf "[obsidian-validate] %s: block transclusion \"%s\" is not supported. Use section transclusion \"![[consensus#Heading]]\" or a blockquote with \"[[consensus^lemma-1|citation]]\"." $srcPath $m -}}
+
+  {{- else -}}
+    {{- /* 6b. ![[Note]] / ![[Note#Heading]] become a non-recursive card. - */ -}}
+    {{- $ref := $target -}}
+    {{- $heading := "" -}}
+    {{- if strings.Contains $target "#" -}}
+      {{- $bits := split $target "#" -}}
+      {{- $ref = strings.TrimSpace (index $bits 0) -}}
+      {{- $heading = strings.TrimSpace (index $bits 1) -}}
+    {{- end -}}
+    {{- $targetPage := $p -}}
+    {{- $resolved := true -}}
+    {{- if ne $ref "" -}}
+      {{- $hits := index $byKey (partial "obsidian-key.html" $ref) -}}
+      {{- if not $hits -}}
+        {{- $resolved = false -}}
+        {{- errorf "[obsidian-validate] %s: unresolved wikilink \"%s\". No published blog post matches filename, slug, alias, or title \"%s\". (If %s is a draft, either publish it or keep %s as draft: true.)" $srcPath $m $ref $ref $p.File.LogicalName -}}
+      {{- else if gt (len $hits) 1 -}}
+        {{- $resolved = false -}}
+        {{- $found := slice -}}
+        {{- range $hit := $hits -}}
+          {{- $found = $found | append (printf "\"content/%s\"" $hit.File.Path) -}}
+        {{- end -}}
+        {{- errorf "[obsidian-validate] %s: ambiguous wikilink \"%s\" matches multiple posts (%s). Link by explicit slug or filename." $srcPath $m (delimit $found " and ") -}}
+      {{- else -}}
+        {{- $targetPage = index $hits 0 -}}
+      {{- end -}}
+    {{- end -}}
+    {{- if $resolved -}}
+      {{- $anchor := "" -}}
+      {{- if ne $heading "" -}}
+        {{- $anchor = anchorize $heading -}}
+        {{- $anchorOK := false -}}
+        {{- with $targetPage.Fragments -}}
+          {{- $anchorOK = .Identifiers.Contains $anchor -}}
+        {{- end -}}
+        {{- if not $anchorOK -}}
+          {{- errorf "[obsidian-validate] %s: wikilink \"%s\" resolves to \"content/%s\", but heading anchor \"#%s\" does not exist in target post." $srcPath $m $targetPage.File.Path $anchor -}}
+        {{- end -}}
+      {{- end -}}
+      {{- $preview := index $previews $targetPage.RelPermalink -}}
+      {{- $label := $targetPage.Title -}}
+      {{- if ne $heading "" -}}
+        {{- $label = printf "%s § %s" $targetPage.Title $heading -}}
+      {{- end -}}
+      {{- $href := $targetPage.RelPermalink -}}
+      {{- if ne $anchor "" -}}
+        {{- $href = printf "%s#%s" $targetPage.RelPermalink $anchor -}}
+      {{- end -}}
+      {{- $replacement = printf `<aside class="obsidian-embed-note"><div class="obsidian-embed-note-head"><a class="wikilink" href="%s" data-preview-title="%s" data-preview-date="%s" data-preview-excerpt="%s" title="%s">%s</a></div><p class="obsidian-embed-note-excerpt">%s</p></aside>` $href (htmlEscape (index $preview "title")) (htmlEscape (index $preview "date")) (htmlEscape (index $preview "excerpt")) (htmlEscape (printf "%s (%s)" (index $preview "title") (index $preview "date"))) (htmlEscape $label) (htmlEscape (index $preview "excerpt")) -}}
+      {{- $p.Store.Set "hasWikilinks" true -}}
+    {{- end -}}
+  {{- end -}}
+
+  {{- $html = strings.Replace $html $m $replacement 1 -}}
+{{- end -}}
+
+{{- /* 7. [[wikilinks]] with hover-preview attributes ---------------------- */ -}}
+{{- range $m := findRE `\[\[[^\]\n]+?\]\]` $html -}}
+  {{- $inner := replaceRE `^\[\[([\s\S]*)\]\]$` "$1" $m -}}
+  {{- $parts := split $inner "|" -}}
+  {{- $target := htmlUnescape (strings.TrimSpace (index $parts 0)) -}}
+  {{- $alias := "" -}}
+  {{- if gt (len $parts) 1 -}}
+    {{- $alias = htmlUnescape (strings.TrimSpace (index $parts 1)) -}}
+  {{- end -}}
+  {{- $ref := $target -}}
+  {{- $frag := "" -}}
+  {{- $fragKind := "" -}}
+  {{- if strings.Contains $target "#^" -}}
+    {{- $bits := split $target "#^" -}}
+    {{- $ref = strings.TrimSpace (index $bits 0) -}}
+    {{- $frag = strings.TrimSpace (index $bits 1) -}}
+    {{- $fragKind = "block" -}}
+  {{- else if strings.Contains $target "^" -}}
+    {{- $bits := split $target "^" -}}
+    {{- $ref = strings.TrimSpace (index $bits 0) -}}
+    {{- $frag = strings.TrimSpace (index $bits 1) -}}
+    {{- $fragKind = "block" -}}
+  {{- else if strings.Contains $target "#" -}}
+    {{- $bits := split $target "#" -}}
+    {{- $ref = strings.TrimSpace (index $bits 0) -}}
+    {{- $frag = strings.TrimSpace (index $bits 1) -}}
+    {{- $fragKind = "heading" -}}
+  {{- end -}}
+  {{- $ok := true -}}
+  {{- $replacement := htmlEscape ($alias | default $ref | default $target) -}}
+
+  {{- if eq $ref "" -}}
+    {{- /* [[#Heading]] / [[#^block]] are same-page anchors. */ -}}
+    {{- $anchor := "" -}}
+    {{- if eq $fragKind "heading" -}}
+      {{- $anchor = anchorize $frag -}}
+      {{- $anchorOK := false -}}
+      {{- with $p.Fragments -}}
+        {{- $anchorOK = .Identifiers.Contains $anchor -}}
+      {{- end -}}
+      {{- if not $anchorOK -}}
+        {{- $ok = false -}}
+        {{- errorf "[obsidian-validate] %s: wikilink \"%s\" resolves to \"content/%s\", but heading anchor \"#%s\" does not exist in target post." $srcPath $m $p.File.Path $anchor -}}
+      {{- end -}}
+    {{- else if eq $fragKind "block" -}}
+      {{- $anchor = printf "block-%s" $frag -}}
+      {{- if not (findRE (printf `(?m)\^%s\s*$` $frag) $p.RawContent) -}}
+        {{- $ok = false -}}
+        {{- errorf "[obsidian-validate] %s: wikilink \"%s\" resolves to \"content/%s\", but block anchor \"^%s\" does not exist in target post." $srcPath $m $p.File.Path $frag -}}
+      {{- end -}}
+    {{- else -}}
+      {{- $ok = false -}}
+      {{- errorf "[obsidian-validate] %s: wikilink \"%s\" has an empty target. Write \"[[#Heading]]\" for a same-page heading or \"[[Some Note]]\" for another post." $srcPath $m -}}
+    {{- end -}}
+    {{- if $ok -}}
+      {{- $text := $alias | default $frag -}}
+      {{- $replacement = printf `<a class="wikilink wikilink-self" href="#%s">%s</a>` $anchor (htmlEscape $text) -}}
+    {{- end -}}
+
+  {{- else -}}
+    {{- $hits := index $byKey (partial "obsidian-key.html" $ref) -}}
+    {{- if not $hits -}}
+      {{- $ok = false -}}
+      {{- errorf "[obsidian-validate] %s: unresolved wikilink \"%s\". No published blog post matches filename, slug, alias, or title \"%s\". (If %s is a draft, either publish it or keep %s as draft: true.)" $srcPath $m $ref $ref $p.File.LogicalName -}}
+    {{- else if gt (len $hits) 1 -}}
+      {{- $ok = false -}}
+      {{- $found := slice -}}
+      {{- range $hit := $hits -}}
+        {{- $found = $found | append (printf "\"content/%s\"" $hit.File.Path) -}}
+      {{- end -}}
+      {{- errorf "[obsidian-validate] %s: ambiguous wikilink \"%s\" matches multiple posts (%s). Link by explicit slug or filename." $srcPath $m (delimit $found " and ") -}}
+    {{- else -}}
+      {{- $targetPage := index $hits 0 -}}
+      {{- $anchor := "" -}}
+      {{- if ne $frag "" -}}
+        {{- if eq $fragKind "heading" -}}
+          {{- $anchor = anchorize $frag -}}
+          {{- $anchorOK := false -}}
+          {{- with $targetPage.Fragments -}}
+            {{- $anchorOK = .Identifiers.Contains $anchor -}}
+          {{- end -}}
+          {{- if not $anchorOK -}}
+            {{- $ok = false -}}
+            {{- errorf "[obsidian-validate] %s: wikilink \"%s\" resolves to \"content/%s\", but heading anchor \"#%s\" does not exist in target post." $srcPath $m $targetPage.File.Path $anchor -}}
+          {{- end -}}
+        {{- else if eq $fragKind "block" -}}
+          {{- $anchor = printf "block-%s" $frag -}}
+          {{- if not (findRE (printf `(?m)\^%s\s*$` $frag) $targetPage.RawContent) -}}
+            {{- $ok = false -}}
+            {{- errorf "[obsidian-validate] %s: wikilink \"%s\" resolves to \"content/%s\", but block anchor \"^%s\" does not exist in target post." $srcPath $m $targetPage.File.Path $frag -}}
+          {{- end -}}
+        {{- end -}}
+      {{- end -}}
+      {{- if $ok -}}
+        {{- $href := $targetPage.RelPermalink -}}
+        {{- if ne $anchor "" -}}
+          {{- $href = printf "%s#%s" $targetPage.RelPermalink $anchor -}}
+        {{- end -}}
+        {{- $preview := index $previews $targetPage.RelPermalink -}}
+        {{- $previewTitle := $targetPage.Title -}}
+        {{- if and (eq $fragKind "heading") (ne $frag "") -}}
+          {{- $previewTitle = printf "%s § %s" $targetPage.Title $frag -}}
+        {{- end -}}
+        {{- $text := $alias | default $previewTitle -}}
+        {{- $replacement = printf `<a class="wikilink" href="%s" data-preview-title="%s" data-preview-date="%s" data-preview-excerpt="%s" title="%s">%s</a>` $href (htmlEscape $previewTitle) (htmlEscape (index $preview "date")) (htmlEscape (index $preview "excerpt")) (htmlEscape (printf "%s (%s)" $previewTitle (index $preview "date"))) (htmlEscape $text) -}}
+        {{- $p.Store.Set "hasWikilinks" true -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+
+  {{- $html = strings.Replace $html $m $replacement 1 -}}
+{{- end -}}
+
+{{- /* 8. A "[[" that survived resolution is an author typo, not content. ---- */ -}}
+{{- if findRE `\[\[` $html -}}
+  {{- errorf "[obsidian-validate] %s: malformed wikilink syntax. An opening \"[[\" was never closed by \"]]\"; write \"[[Some Note]]\" for a link, or wrap the brackets in backticks to show them literally." $srcPath -}}
+{{- end -}}
+
+{{- /* 9. Unwrap paragraphs that hold nothing but block-level output. ------- */ -}}
+{{- $blockEl := `<figure class="(?:obsidian-image|mermaid-figure)">[\s\S]*?</figure>|<aside class="obsidian-embed-note">[\s\S]*?</aside>` -}}
+{{- $html = replaceRE (printf `(?s)<p>\s*((?:%s)(?:\s*(?:%s))*)\s*</p>` $blockEl $blockEl) "$1" $html -}}
+
+{{- /* 10. Restore masked code regions ------------------------------------- */ -}}
+{{- range $codeRestore -}}
+  {{- $html = strings.Replace $html .token .orig 1 -}}
+{{- end -}}
+
+{{- $html | safeHTML -}}

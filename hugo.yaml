@@ -51,8 +51,44 @@ params:
       - "content"
       - "summary"
 
+# Obsidian authoring: attachments live in content/blog/_attachments/ and are
+# mounted into Hugo's lazy assets pipeline at assets/attachments/ so that an
+# image referenced only from a draft post is never published.
+#
+# NOTE: `module.mounts.content.files` is an INCLUDE list (Hugo removed
+# `excludeFiles` in v0.153). Restricting the content mount to Markdown keeps
+# attachment binaries out of public/ while the assets mount below still lets
+# `resources.Get "attachments/<file>"` resolve them on demand.
+module:
+  mounts:
+    - source: content
+      target: content
+      files:
+        - "*.md"
+        - "**/*.md"
+    - source: assets
+      target: assets
+    - source: content/blog/_attachments
+      target: assets/attachments
+
 markup:
   goldmark:
     renderer:
       # posts migrated from Jekyll contain raw HTML blocks
       unsafe: true
+    extensions:
+      # ==highlight== becomes a mark element
+      extras:
+        mark:
+          enable: true
+      # Inline and block math, rendered server-side by
+      # layouts/_default/_markup/render-passthrough.html
+      passthrough:
+        enable: true
+        delimiters:
+          block:
+            - - $$
+              - $$
+          inline:
+            - - $
+              - $

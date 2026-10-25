@@ -1,0 +1,122 @@
+{{- /*
+  obsidian-lookup-map.html
+  ---------------------------------------------------------------------------
+  Global, cached index of blog posts used to resolve Obsidian [[wikilinks]],
+  ![[note embeds]] and standard Markdown links to notes.
+
+  Returns a dict:
+
+    "byKey"    normalized key to slice of matching Pages. Keys registered per
+               post (all lowercased, trimmed of surrounding "/"):
+                 - filename stem          (2026-10-consensus)
+                 - path inside blog/      (2026-10-consensus)
+                 - front-matter slug      (2026-10-consensus)
+                 - every front-matter alias (/Old-URL/ normalized to old-url)
+                 - title                  (Consensus Under Partition)
+             A key mapping to more than one Page is reported as an ambiguous
+             wikilink by the caller, naming the candidate files.
+
+    "previews" RelPermalink to dict with "title", "date", "dateISO",
+               "excerpt" and "permalink" for data-preview-* attributes.
+
+    "pages"    the blog pages that were indexed.
+
+  Required front matter (title, date, slug) is validated here, once per build,
+  following the fail-loud contract of layouts/partials/shelves-data.html.
+
+  Both maps are filled through a Scratch with SetInMap: a merge-per-insert
+  copies the whole dictionary on every page, which turned the build
+  superlinear (measured 3.72 s for 1600 pages).
+*/ -}}
+{{- $scratch := newScratch -}}
+{{- $blogPages := where site.RegularPages "Section" "blog" -}}
+
+{{- range $blogPages -}}
+  {{- $p := . -}}
+  {{- $srcPath := printf "content/%s" $p.File.Path -}}
+
+  {{- /* ---- Required front matter -------------------------------------- */ -}}
+  {{- if not $p.Params.title -}}
+    {{- errorf "[obsidian-validate] %s: missing required front-matter field \"title\". Every blog post must declare a \"title\"." $srcPath -}}
+  {{- end -}}
+  {{- if $p.Date.IsZero -}}
+    {{- errorf "[obsidian-validate] %s: missing required front-matter field \"date\". Every blog post must declare a \"date\"." $srcPath -}}
+  {{- end -}}
+  {{- $slug := "" -}}
+  {{- with $p.Params.slug -}}
+    {{- $slug = printf "%v" . -}}
+  {{- end -}}
+  {{- if eq (strings.TrimSpace $slug) "" -}}
+    {{- errorf "[obsidian-validate] %s: missing required front-matter field \"slug\". Every blog post must declare an explicit \"slug\" to preserve permalinks across Obsidian file renames." $srcPath -}}
+  {{- end -}}
+
+  {{- /* Meta/og/twitter descriptions fall back to .Summary (the rendered
+         summary) when .Description is empty, which would publish unresolved
+         [[wikilinks]] and %%comments%%. Any post that carries Obsidian syntax
+         must therefore declare its own description. Posts without Obsidian
+         syntax cannot leak either token, so they keep building unchanged.
+
+         The scan runs over the source with fenced and inline code removed: a
+         sample such as `[[Not A Note]]` neither renders a link nor leaks
+         brackets, so it must not force a description either. */ -}}
+  {{- $scan := $p.RawContent -}}
+  {{- $scan = replaceRE "(?s)```[\\s\\S]*?```|~~~[\\s\\S]*?~~~" "" $scan -}}
+  {{- $scan = replaceRE "`[^`\n]+`" "" $scan -}}
+  {{- $usesObsidianSyntax := or (strings.Contains $scan "[[") (strings.Contains $scan "%%") -}}
+  {{- if $usesObsidianSyntax -}}
+    {{- $description := "" -}}
+    {{- with $p.Params.description -}}
+      {{- $description = strings.TrimSpace (printf "%v" .) -}}
+    {{- end -}}
+    {{- if eq $description "" -}}
+      {{- errorf "[obsidian-validate] %s: missing required front-matter field \"description\". Every blog post that uses Obsidian wikilinks or comments must declare a \"description\" so meta/og/twitter snippets never fall back to raw .Summary containing unresolved [[wikilinks]]." $srcPath -}}
+    {{- end -}}
+  {{- end -}}
+
+  {{- /* ---- Preview payload (built without rendering page content, so the
+           lookup map cannot recurse into the render hooks). The excerpt is
+           produced by the shared sanitizer so it never carries raw syntax
+           such as callout markers or heading hashes. -------------------- */ -}}
+  {{- $excerpt := partial "obsidian-excerpt.html" (dict "text" $p.RawContent) -}}
+  {{- $scratch.SetInMap "previews" $p.RelPermalink (dict
+        "title" $p.Title
+        "date" ($p.Date.Format "2006-01-02")
+        "dateISO" ($p.Date.Format "2006-01-02")
+        "excerpt" $excerpt
+        "permalink" $p.RelPermalink) -}}
+
+  {{- /* ---- Lookup keys ------------------------------------------------ */ -}}
+  {{- $keys := slice -}}
+  {{- $stem := $p.File.TranslationBaseName -}}
+  {{- if ne $stem "index" -}}
+    {{- $keys = $keys | append $stem -}}
+  {{- end -}}
+  {{- $keys = $keys | append (strings.TrimSuffix ".md" (strings.TrimPrefix "blog/" $p.File.Path)) -}}
+  {{- $keys = $keys | append $slug -}}
+  {{- $keys = $keys | append $p.Title -}}
+  {{- with $p.Params.aliases -}}
+    {{- range . -}}
+      {{- $keys = $keys | append (printf "%v" .) -}}
+    {{- end -}}
+  {{- end -}}
+
+  {{- range $keys -}}
+    {{- $key := partial "obsidian-key.html" . -}}
+    {{- if ne $key "" -}}
+      {{- $existing := "" -}}
+      {{- with $scratch.Get "byKey" -}}
+        {{- $existing = index . $key -}}
+      {{- end -}}
+      {{- if not $existing -}}
+        {{- $scratch.SetInMap "byKey" $key (slice $p) -}}
+      {{- else if not (in $existing $p) -}}
+        {{- $scratch.SetInMap "byKey" $key ($existing | append $p) -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- return (dict
+      "byKey" ($scratch.Get "byKey" | default dict)
+      "previews" ($scratch.Get "previews" | default dict)
+      "pages" $blogPages) -}}

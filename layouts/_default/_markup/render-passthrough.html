@@ -1,0 +1,59 @@
+{{- /*
+  render-passthrough.html
+  ---------------------------------------------------------------------------
+  Renders Obsidian/Goldmark passthrough math at build time as native MathML:
+
+    $E = mc^2$      inline   (math-inline wrapper)
+    $$ ... $$       block    (math-block wrapper, horizontally scrollable)
+
+  Invalid LaTeX halts the build with the [obsidian-validate] diagnostic.
+
+  Currency guard: legacy posts contain prose amounts such as
+  "owe $10 on a taxable amount of $100". Goldmark's inline `$` delimiter pairs
+  those dollars, and KaTeX happily typesets the prose. To keep that content
+  readable, an inline candidate that is plainly prose (contains no TeX control
+  tokens and ends at, or contains, ordinary spaced words) is emitted verbatim
+  instead of being typeset. Genuine LaTeX parse errors still fail the build.
+*/ -}}
+{{- $inner := .Inner -}}
+{{- $isProse := false -}}
+{{- if eq .Type "inline" -}}
+  {{- /* A TeX control token (\in, \iff, \rightarrow, ...) means the author
+         meant math, whatever words the expression happens to contain. */ -}}
+  {{- $texTokens := findRE `\\[A-Za-z]+` $inner -}}
+  {{- if not $texTokens -}}
+    {{- $words := findRE "(?:^|\\s)[A-Za-z]{2,}" $inner -}}
+    {{- if or (ge (len $words) 2) (hasSuffix $inner " ") -}}
+      {{- $isProse = true -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- if $isProse -}}
+{{- printf "$%s$" $inner -}}
+{{- else -}}
+  {{- $opts := dict "output" "mathml" "display" (eq .Type "block") -}}
+  {{- with try (transform.ToMath $inner $opts) -}}
+    {{- with .Err -}}
+      {{- $reason := printf "%v" . -}}
+      {{- $reason = replaceRE `^.*error calling ToMath: ` "" $reason -}}
+      {{- $srcPath := "" -}}
+      {{- with $.Page.File -}}
+        {{- $srcPath = printf "content/%s" .Path -}}
+      {{- end -}}
+      {{- if eq $.Type "block" -}}
+        {{- errorf "[obsidian-validate] %s: invalid LaTeX math expression \"$$%s$$\" - %s" $srcPath $inner $reason -}}
+      {{- else -}}
+        {{- errorf "[obsidian-validate] %s: invalid LaTeX math expression \"$%s$\" - %s" $srcPath $inner $reason -}}
+      {{- end -}}
+    {{- else -}}
+      {{- if eq $.Type "block" -}}
+{{- /* A span, not a div: a block-level element that Goldmark places inside a
+       paragraph would auto-close that paragraph and shatter the sentence.
+       display:block in assets/css/extended/style.css keeps the visual result. */ -}}
+<span class="math-block">{{ .Value }}</span>
+      {{- else -}}
+<span class="math-inline">{{ .Value }}</span>
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
