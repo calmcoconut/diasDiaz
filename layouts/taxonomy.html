@@ -9,15 +9,11 @@
 
     {{- if .Data.Terms }}
     <ul class="terms-tags" aria-label="Tags list">
-        {{- $type := .Type }}
         {{- range .Data.Terms.Alphabetical }}
-            {{- $name := .Name }}
             {{- $count := .Count }}
-            {{- with site.GetPage (printf "/%s/%s" $type $name) }}
             <li>
-                <a href="{{ .Permalink }}" class="tag-link"><span class="tag-name">#{{ .Title }}</span> <span class="tag-count">({{ $count }})</span></a>
+                <a href="{{ .Page.RelPermalink }}" class="tag-link"><span class="tag-name">#{{ .Page.Title }}</span> <span class="tag-count">({{ $count }})</span></a>
             </li>
-            {{- end }}
         {{- end }}
     </ul>
     {{- else }}

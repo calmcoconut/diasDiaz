@@ -33,7 +33,7 @@
                 {{- with .Params.tags }}
                 <div class="entry-tags">
                     {{- range . }}
-                    <a href="{{ "/tags/" | relLangURL }}{{ . | urlize }}/" class="entry-tag">#{{ . }}</a>
+                    <a href="{{ partial "tag-url.html" . }}" class="entry-tag">#{{ . }}</a>
                     {{- end }}
                 </div>
                 {{- end }}

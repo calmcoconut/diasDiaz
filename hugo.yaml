@@ -50,3 +50,9 @@ params:
       - "title"
       - "content"
       - "summary"
+
+markup:
+  goldmark:
+    renderer:
+      # posts migrated from Jekyll contain raw HTML blocks
+      unsafe: true

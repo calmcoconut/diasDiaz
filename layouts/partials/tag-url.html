@@ -1,0 +1,16 @@
+{{- /*
+Returns the permalink for a tag's term page.
+
+Tag names like "C++" do not survive `urlize` (it yields "c", colliding with the
+"C" tag), so resolve the real term page first and only fall back to a guess.
+*/ -}}
+{{- $tag := . -}}
+{{- $href := printf "/tags/%s/" ($tag | urlize) -}}
+{{- with site.GetPage (printf "/tags/%s" (lower $tag)) -}}
+    {{- $href = .RelPermalink -}}
+{{- else -}}
+    {{- with site.GetPage (printf "/tags/%s" ($tag | urlize)) -}}
+        {{- $href = .RelPermalink -}}
+    {{- end -}}
+{{- end -}}
+{{- return $href -}}
