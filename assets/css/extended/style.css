@@ -533,6 +533,9 @@ hr, .section-divider, .footer-divider {
   object-fit: cover;
   border: 1px solid var(--color-rule);
   display: block;
+  /* Pixel-art assets must stay crisp instead of being smoothed when scaled. */
+  image-rendering: pixelated;
+  -ms-interpolation-mode: nearest-neighbor;
 }
 
 .shelf-cover {

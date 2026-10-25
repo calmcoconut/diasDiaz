@@ -124,7 +124,15 @@
     {{- end -}}
   {{- end -}}
 
-  {{- /* Filtering: skip draft items unless site.BuildDrafts is enabled */ -}}
+  {{- /* Filtering: skip draft items unless draft publishing is enabled.
+         NOTE: site.BuildDrafts is deprecated as of Hugo v0.156 and has no
+         direct replacement by design — upstream intends --buildDrafts to
+         filter pages, not data. It is retained here because the documented
+         preview workflow (`hugo server --buildDrafts`) must still surface
+         shelf drafts. If a future Hugo turns this into an error, gate on a
+         custom parameter instead, e.g. site.Params.shelves.showDrafts, and
+         pass HUGO_PARAMS_SHELVES_SHOWDRAFTS=true when previewing.
+  */ -}}
   {{- $isDraft := false -}}
   {{- if and (isset $item "draft") (ne $item.draft nil) -}}
     {{- if eq $item.draft true -}}

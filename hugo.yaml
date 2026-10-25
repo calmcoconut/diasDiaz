@@ -3,6 +3,11 @@ locale: en-us
 title: "[Your Name]"
 theme: "PaperMod"
 
+enableRobotsTXT: true
+
+pagination:
+  pagerSize: 10
+
 mainSections:
   - "blog"
 

@@ -38,7 +38,7 @@
                 {{- end }}
                 {{- $isActive := or (eq $menu_item_url $page_url) (and (ne .URL "/") (hasPrefix $page_url $menu_item_url)) }}
                 <li>
-                    <a href="{{ .URL | absLangURL }}" title="{{ .Title | default .Name }}">
+                    <a href="{{ .URL | absLangURL }}" title="{{ .Title | default .Name }}"{{ if $isActive }} aria-current="page"{{ end }}>
                         <span class="nav-item-inner{{ if $isActive }} active{{ end }}">
                             {{- if $iconName }}
                                 {{ partial "icon.html" (dict "name" $iconName "size" 16) }}
