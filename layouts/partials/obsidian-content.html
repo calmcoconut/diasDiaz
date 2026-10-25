@@ -190,7 +190,21 @@
       {{- if ne $anchor "" -}}
         {{- $href = printf "%s#%s" $targetPage.RelPermalink $anchor -}}
       {{- end -}}
-      {{- $replacement = printf `<aside class="obsidian-embed-note"><div class="obsidian-embed-note-head"><a class="wikilink" href="%s" data-preview-title="%s" data-preview-date="%s" data-preview-excerpt="%s" title="%s">%s</a></div><p class="obsidian-embed-note-excerpt">%s</p></aside>` $href (htmlEscape (index $preview "title")) (htmlEscape (index $preview "date")) (htmlEscape (index $preview "excerpt")) (htmlEscape (printf "%s (%s)" (index $preview "title") (index $preview "date"))) (htmlEscape $label) (htmlEscape (index $preview "excerpt")) -}}
+      {{- /* Embeds are block elements, so they are only valid when they own the
+             whole paragraph. Isolated embeds have already been unwrapped from
+             their <p> by the earlier pass, so "isolated" is detected as the
+             absence of sibling prose inside a paragraph. A mid-sentence embed
+             degrades to an inline wikilink, which is phrasing content and so is
+             valid inside a <p>. */ -}}
+      {{- $mEsc := replaceRE `([\\.^$|?*+()\[\]{}])` `\$1` $m -}}
+      {{- $proseBefore := findRE (printf `<p>[^<]+%s` $mEsc) $html -}}
+      {{- $proseAfter := findRE (printf `%s[^<]+</p>` $mEsc) $html -}}
+      {{- $midSentence := or (gt (len $proseBefore) 0) (gt (len $proseAfter) 0) -}}
+      {{- if $midSentence -}}
+        {{- $replacement = printf `<a class="wikilink" href="%s" data-preview-title="%s" data-preview-date="%s" data-preview-excerpt="%s" title="%s">%s</a>` $href (htmlEscape (index $preview "title")) (htmlEscape (index $preview "date")) (htmlEscape (index $preview "excerpt")) (htmlEscape (printf "%s (%s)" (index $preview "title") (index $preview "date"))) (htmlEscape $label) -}}
+      {{- else -}}
+        {{- $replacement = printf `<aside class="obsidian-embed-note"><div class="obsidian-embed-note-head"><a class="wikilink" href="%s" data-preview-title="%s" data-preview-date="%s" data-preview-excerpt="%s" title="%s">%s</a></div><p class="obsidian-embed-note-excerpt">%s</p></aside>` $href (htmlEscape (index $preview "title")) (htmlEscape (index $preview "date")) (htmlEscape (index $preview "excerpt")) (htmlEscape (printf "%s (%s)" (index $preview "title") (index $preview "date"))) (htmlEscape $label) (htmlEscape (index $preview "excerpt")) -}}
+      {{- end -}}
       {{- $p.Store.Set "hasWikilinks" true -}}
     {{- end -}}
   {{- end -}}

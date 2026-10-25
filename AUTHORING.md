@@ -125,7 +125,7 @@ Incorrect front matter fails the build with an `[obsidian-validate]` error namin
 | `[[Note^block\|text]]` | Link to a paragraph block ID |
 | `![[image.png\|Alt text]]` | Image; **alt text is mandatory** |
 | `![[image.png\|Alt text\|500]]` | Image with a maximum width of 500px |
-| `![[Note]]` | Citation card linking to that post. Must sit on its own line and be the only thing in its paragraph. |
+| `![[Note]]` | Citation card linking to that post when it sits alone on its line, or a plain inline link when used mid-sentence. |
 | `> [!note] Title` | Callout |
 | `> [!tip]+ Title` | Foldable callout, open by default |
 | `> [!warning]- Title` | Foldable callout, closed by default |

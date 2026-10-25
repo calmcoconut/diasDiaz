@@ -296,9 +296,10 @@ adding both the asset and the allowlist entry.
 - `layouts/_default/single.html` renders **zero pages** today (blog uses `blog/single.html`;
   résumé/shelves/archive/search have dedicated layouts). It is kept as a safety net and must
   stay in sync with `blog/single.html`.
-- `![[Note]]` embeds must stand alone in their own paragraph. A mid-sentence embed would
-  produce invalid `<p><aside>…</aside></p>` nesting. Documented as a constraint rather than
-  solved; fixing it means an inline card variant plus CSS.
+- `![[Note]]` renders a full card only when it owns its paragraph; mid-sentence it degrades
+  to an inline wikilink, so the markup stays valid. Detection is textual (sibling prose inside
+  the `<p>`), so if the *same* target is embedded both isolated and mid-sentence in one post,
+  both render inline.
 - `[text](missing.md)` reports the error twice (once from `render-link.html`, once from the
   backlinks scan). Both messages are `[obsidian-validate]`, so the contract holds, but it is
   noisy.
