@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Writing a Time Management Android Application- TimeTime | dias Diaz</title>
+<meta name="keywords" content="computer, science, android, java, timetime">
+<meta name="description" content="Motivation and Overview
+TimeTime was my first large, independent project. My motivation was two-fold. First, I wanted a project to help build my understanding of software architecture and the Android framework. Second, I wanted an application centered on privacy and gathering personal and work metrics.
+TimeTime took inspiration from an already existing application on the Android App Store. However, this application lacked desired features, stored data remotely, and locked premium features behind a subscription model.">
+<meta name="author" content="map[name:Alejandro Diaz]">
+<link rel="canonical" href="https://diasdiaz.net/blog/writing-a-time-management-android-application-timetime/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.9ff2c7c14ab137364c1cea68d63bbac1bd5d58a3bc15d55f9ce84b5af66de678.css" integrity="sha256-n/LHwUqxNzZMHOpo1ju6wb1dWKO8FdVfnOhLWvZt5ng=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://diasdiaz.net/favicon.svg">
+<link rel="icon" type="image/png" sizes="16x16" href="https://diasdiaz.net/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://diasdiaz.net/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://diasdiaz.net/apple-touch-icon.png">
+<link rel="mask-icon" href="https://diasdiaz.net/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="https://diasdiaz.net/blog/writing-a-time-management-android-application-timetime/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><meta property="og:url" content="https://diasdiaz.net/blog/writing-a-time-management-android-application-timetime/">
+  <meta property="og:site_name" content="dias Diaz">
+  <meta property="og:title" content="Writing a Time Management Android Application- TimeTime">
+  <meta property="og:description" content="Motivation and Overview TimeTime was my first large, independent project. My motivation was two-fold. First, I wanted a project to help build my understanding of software architecture and the Android framework. Second, I wanted an application centered on privacy and gathering personal and work metrics.
+TimeTime took inspiration from an already existing application on the Android App Store. However, this application lacked desired features, stored data remotely, and locked premium features behind a subscription model.">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="blog">
+    <meta property="article:published_time" content="2022-01-30T00:00:00+00:00">
+    <meta property="article:modified_time" content="2022-01-30T00:00:00+00:00">
+    <meta property="article:tag" content="Computer">
+    <meta property="article:tag" content="Science">
+    <meta property="article:tag" content="Android">
+    <meta property="article:tag" content="Java">
+    <meta property="article:tag" content="Timetime">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Writing a Time Management Android Application- TimeTime">
+  <meta name="twitter:description" content="Motivation and Overview TimeTime was my first large, independent project. My motivation was two-fold. First, I wanted a project to help build my understanding of software architecture and the Android framework. Second, I wanted an application centered on privacy and gathering personal and work metrics.
+TimeTime took inspiration from an already existing application on the Android App Store. However, this application lacked desired features, stored data remotely, and locked premium features behind a subscription model.">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Blog",
+      "item": "https://diasdiaz.net/blog/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Writing a Time Management Android Application- TimeTime",
+      "item": "https://diasdiaz.net/blog/writing-a-time-management-android-application-timetime/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Writing a Time Management Android Application- TimeTime",
+  "name": "Writing a Time Management Android Application- TimeTime",
+  "description": "Motivation and Overview TimeTime was my first large, independent project. My motivation was two-fold. First, I wanted a project to help build my understanding of software architecture and the Android framework. Second, I wanted an application centered on privacy and gathering personal and work metrics.\nTimeTime took inspiration from an already existing application on the Android App Store. However, this application lacked desired features, stored data remotely, and locked premium features behind a subscription model.\n",
+  "keywords": [
+    "computer", "science", "android", "java", "timetime"
+  ],
+  "articleBody": "Motivation and Overview TimeTime was my first large, independent project. My motivation was two-fold. First, I wanted a project to help build my understanding of software architecture and the Android framework. Second, I wanted an application centered on privacy and gathering personal and work metrics.\nTimeTime took inspiration from an already existing application on the Android App Store. However, this application lacked desired features, stored data remotely, and locked premium features behind a subscription model.\nWith my new goal in mind, I started to layout requirements and an initial design.\nDefining the project requirements I had a rough idea of my requirements going in because another app on the Appstore inspired me to make my own:\nLockscreen prompts A log screen A statistics and graph screen Create activities with different colors and logos Categorize activities A localized database that allows export of data into CSV format These are a lot of features for someone learning Android. I made the mistake of trying to brute-force an application and create it without a plan. The result was bad code. The key takeaway from this project is always to have a plan. Even a poor plan is better than an absent plan.\nDesigning the software I started by creating a wireframe prototype of my ideal app. The wireframe captured the look I wanted for each screen and component of the application.\nThen I needed to think about the software architecture of the app. What will time logs look like? How will they be stored in the database? What type of database will I use? How will the application talk to the database to retrieve and display logs?\nAfter some research, I decided to adopt a Model View Controller (MVC) approach. The user interacts with the app, the app interfaces through a controller class that abstracts communication with the database in my application (I used RoomDB with DAO support). Then when the app needs to display data from the database it uses the View class interface to make the appropriate calls to the database.\nWhy is this important? It creates layers of abstraction. Layers separate responsibility while making the code maintainable.\nA user’s primary interaction with the application is to log their time. Each log is associated with an activity (sleeping), a category (health), and a duration (11 PM-8 AM). These requirements naturally gave a database schema. However, the issue of time is sticky. How should we store it? The application requires us to present the duration in a human-readable format, but this does not mean we should store it as a string.\nStoring the period as a string would make the database inflexible and cumbersome. Instead, I chose to store duration as a start and end epoch. Java has several good standard library functions to deal with epoch and human-readable format. The log class made use of these standard applications and abstracted any complexity between epoch and human-readable formats.\nThe backend architecture of the app is in place. However, this does not handle what the user sees, just the organization of our program.\nIn android, a given page is represented using fragments. Let’s walk through the application starting with the homepage.\nDesigning the Front-end The wireframe I built earlier provided a solid foundation to build the frontend (colors, UI, etc.). After initializing a tabbed layout, I went to work on creating the home fragment.\n{: width=“250” }\nThe home page needed to be populated by cards showing the user’s recent activities. Furthermore, it needed to be a RecyclerView (“infinite” scrolling) to provide efficient retrieval.\nThe other requirement of the home page was to provide a way to log activities. I used a Floating Action Button (FAB) with a “+” on it. The FAB will also be present on most other fragments but with a responsibility corresponding to that tab.\n{: width=“250” }\nThe activity and categories fragments are similar. They show the user the activities or categories they have in their database. Users can create custom categories or activities via the FAB.\n{: width=“250” }\n{: width=“250” }\n{: width=“250” }\nFinally, A statistics page aggregates the user’s database and presents data visualizations.\n{: width=“250” }\n{: width=“250” }\nTidbits: Notifications and Lockscreen prompt I wanted the application to be opened maybe once a week by a user. Ideally, the user only interacts with the application via notifications. In TimeTime, there are two types of notifications: traditional and full-lockscreen. Both notification types must use a daemon thread and an alarm to trigger them.\nThe challenge was to create a full-lock screen notification. This notification would “take over” the user’s lock screen to show the “log your time” screen, so the user can log what they’ve been up to without having to remember to open the application, or having to stop what they’re doing. I built this type of notification with Android’s PendingIntents.\n",
+  "wordCount" : "809",
+  "inLanguage": "en",
+  "datePublished": "2022-01-30T00:00:00Z",
+  "dateModified": "2022-01-30T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"name":"Alejandro Diaz"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://diasdiaz.net/blog/writing-a-time-management-android-application-timetime/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "dias Diaz",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://diasdiaz.net/favicon.svg"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <a href="#content" class="skip-link" id="skip-link">Skip to main content</a>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var skipLink = document.getElementById("skip-link");
+        if (skipLink) {
+            skipLink.addEventListener("click", function (e) {
+                var target = document.getElementById("content");
+                if (target) {
+                    target.setAttribute("tabindex", "-1");
+                    target.focus();
+                }
+            });
+        }
+    });
+</script>
+
+<header class="header">
+    <nav class="header-nav">
+        <div class="logo">
+            <a href="https://diasdiaz.net/" accesskey="h" title="Alejandro Diaz (Alt + H)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" shape-rendering="crispEdges" aria-hidden="true" focusable="false">
+  <rect x="4" y="1" width="2" height="1" fill="#262626"/>
+  <rect x="3" y="2" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="2" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="6" y="2" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="3" width="2" height="1" fill="#262626"/>
+  <rect x="3" y="4" width="4" height="1" fill="#262626"/>
+  <rect x="3" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="5" width="2" height="1" fill="#C9822B"/>
+  <rect x="6" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="15" y="5" width="2" height="1" fill="#262626"/>
+  <rect x="3" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="6" width="2" height="1" fill="#C9822B"/>
+  <rect x="6" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="15" y="6" width="2" height="1" fill="#C85A46"/>
+  <rect x="17" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="7" width="2" height="1" fill="#C9822B"/>
+  <rect x="6" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="13" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="7" width="4" height="1" fill="#C85A46"/>
+  <rect x="18" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="8" width="4" height="1" fill="#262626"/>
+  <rect x="12" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="13" y="8" width="6" height="1" fill="#C85A46"/>
+  <rect x="19" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="9" width="8" height="1" fill="#C85A46"/>
+  <rect x="20" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="10" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="10" width="10" height="1" fill="#C85A46"/>
+  <rect x="21" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="0" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="9" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="10" y="11" width="12" height="1" fill="#9E3B29"/>
+  <rect x="22" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="0" y="12" width="24" height="1" fill="#262626"/>
+  <rect x="1" y="13" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="13" width="20" height="1" fill="#F8F5EB"/>
+  <rect x="22" y="13" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="14" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="14" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="3" y="14" width="5" height="1" fill="#262626"/>
+  <rect x="8" y="14" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="10" y="14" width="4" height="1" fill="#262626"/>
+  <rect x="14" y="14" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="16" y="14" width="5" height="1" fill="#262626"/>
+  <rect x="21" y="14" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="22" y="14" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="15" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="15" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="3" y="15" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="15" width="2" height="1" fill="#5897AB"/>
+  <rect x="6" y="15" width="1" height="1" fill="#3B7286"/>
+  <rect x="7" y="15" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="15" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="9" y="15" width="2" height="1" fill="#262626"/>
+  <rect x="11" y="15" width="2" height="1" fill="#B66F98"/>
+  <rect x="13" y="15" width="2" height="1" fill="#262626"/>
+  <rect x="15" y="15" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="16" y="15" width="1" height="1" fill="#262626"/>
+  <rect x="17" y="15" width="2" height="1" fill="#5897AB"/>
+  <rect x="19" y="15" width="1" height="1" fill="#3B7286"/>
+  <rect x="20" y="15" width="1" height="1" fill="#262626"/>
+  <rect x="21" y="15" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="22" y="15" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="16" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="16" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="3" y="16" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="16" width="1" height="1" fill="#5897AB"/>
+  <rect x="5" y="16" width="1" height="1" fill="#264E5E"/>
+  <rect x="6" y="16" width="1" height="1" fill="#3B7286"/>
+  <rect x="7" y="16" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="16" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="9" y="16" width="1" height="1" fill="#262626"/>
+  <rect x="10" y="16" width="4" height="1" fill="#8A4574"/>
+  <rect x="14" y="16" width="1" height="1" fill="#262626"/>
+  <rect x="15" y="16" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="16" y="16" width="1" height="1" fill="#262626"/>
+  <rect x="17" y="16" width="1" height="1" fill="#5897AB"/>
+  <rect x="18" y="16" width="1" height="1" fill="#264E5E"/>
+  <rect x="19" y="16" width="1" height="1" fill="#3B7286"/>
+  <rect x="20" y="16" width="1" height="1" fill="#262626"/>
+  <rect x="21" y="16" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="22" y="16" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="17" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="17" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="3" y="17" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="17" width="3" height="1" fill="#3B7286"/>
+  <rect x="7" y="17" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="17" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="9" y="17" width="1" height="1" fill="#262626"/>
+  <rect x="10" y="17" width="2" height="1" fill="#8A4574"/>
+  <rect x="12" y="17" width="1" height="1" fill="#C9822B"/>
+  <rect x="13" y="17" width="1" height="1" fill="#B66F98"/>
+  <rect x="14" y="17" width="1" height="1" fill="#262626"/>
+  <rect x="15" y="17" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="16" y="17" width="1" height="1" fill="#262626"/>
+  <rect x="17" y="17" width="3" height="1" fill="#3B7286"/>
+  <rect x="20" y="17" width="1" height="1" fill="#262626"/>
+  <rect x="21" y="17" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="22" y="17" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="18" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="18" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="3" y="18" width="5" height="1" fill="#262626"/>
+  <rect x="8" y="18" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="10" y="18" width="4" height="1" fill="#262626"/>
+  <rect x="14" y="18" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="16" y="18" width="5" height="1" fill="#262626"/>
+  <rect x="21" y="18" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="22" y="18" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="19" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="19" width="7" height="1" fill="#F8F5EB"/>
+  <rect x="9" y="19" width="1" height="1" fill="#262626"/>
+  <rect x="10" y="19" width="4" height="1" fill="#63274F"/>
+  <rect x="14" y="19" width="1" height="1" fill="#262626"/>
+  <rect x="15" y="19" width="7" height="1" fill="#F8F5EB"/>
+  <rect x="22" y="19" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="20" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="20" width="6" height="1" fill="#D4CBB9"/>
+  <rect x="8" y="20" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="9" y="20" width="1" height="1" fill="#262626"/>
+  <rect x="10" y="20" width="4" height="1" fill="#63274F"/>
+  <rect x="14" y="20" width="1" height="1" fill="#262626"/>
+  <rect x="15" y="20" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="16" y="20" width="6" height="1" fill="#D4CBB9"/>
+  <rect x="22" y="20" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="21" width="22" height="1" fill="#262626"/>
+  <rect x="2" y="22" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="22" width="18" height="1" fill="#7D501B"/>
+  <rect x="21" y="22" width="1" height="1" fill="#262626"/>
+</svg>
+
+                <span class="logo-title">Alejandro Diaz</span>
+            </a>
+        </div>
+        <div class="nav-right">
+            <ul id="menu" class="menu">
+                <li>
+                    <a href="https://diasdiaz.net/blog/" title="Blog" aria-current="page">
+                        <span class="nav-item-inner active">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true" focusable="false">
+  <rect x="2" y="1" width="12" height="1" fill="#262626"/>
+  <rect x="1" y="2" width="2" height="1" fill="#262626"/>
+  <rect x="3" y="2" width="9" height="1" fill="#B66F98"/>
+  <rect x="12" y="2" width="2" height="1" fill="#262626"/>
+  <rect x="14" y="2" width="1" height="1" fill="#9E3B29"/>
+  <rect x="15" y="2" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="3" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="3" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="3" width="9" height="1" fill="#B66F98"/>
+  <rect x="13" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="3" width="1" height="1" fill="#9E3B29"/>
+  <rect x="15" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="4" width="2" height="1" fill="#262626"/>
+  <rect x="3" y="4" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="4" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="5" y="4" width="1" height="1" fill="#8A4574"/>
+  <rect x="6" y="4" width="5" height="1" fill="#262626"/>
+  <rect x="11" y="4" width="1" height="1" fill="#8A4574"/>
+  <rect x="12" y="4" width="2" height="1" fill="#262626"/>
+  <rect x="14" y="4" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="15" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="5" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="3" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="5" width="1" height="1" fill="#8A4574"/>
+  <rect x="5" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="6" y="5" width="5" height="1" fill="#F8F5EB"/>
+  <rect x="11" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="5" width="1" height="1" fill="#8A4574"/>
+  <rect x="13" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="5" width="1" height="1" fill="#E5B052"/>
+  <rect x="15" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="6" width="2" height="1" fill="#262626"/>
+  <rect x="3" y="6" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="4" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="5" y="6" width="1" height="1" fill="#8A4574"/>
+  <rect x="6" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="6" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="8" y="6" width="3" height="1" fill="#787878"/>
+  <rect x="11" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="6" width="1" height="1" fill="#8A4574"/>
+  <rect x="13" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="6" width="1" height="1" fill="#C9822B"/>
+  <rect x="15" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="7" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="3" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="7" width="1" height="1" fill="#8A4574"/>
+  <rect x="5" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="6" y="7" width="5" height="1" fill="#F8F5EB"/>
+  <rect x="11" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="7" width="1" height="1" fill="#8A4574"/>
+  <rect x="13" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="7" width="1" height="1" fill="#C9822B"/>
+  <rect x="15" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="8" width="2" height="1" fill="#262626"/>
+  <rect x="3" y="8" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="4" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="5" y="8" width="1" height="1" fill="#8A4574"/>
+  <rect x="6" y="8" width="5" height="1" fill="#262626"/>
+  <rect x="11" y="8" width="1" height="1" fill="#8A4574"/>
+  <rect x="12" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="13" y="8" width="1" height="1" fill="#C9822B"/>
+  <rect x="14" y="8" width="1" height="1" fill="#E5B052"/>
+  <rect x="15" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="9" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="3" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="9" width="9" height="1" fill="#8A4574"/>
+  <rect x="13" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="9" width="1" height="1" fill="#C9822B"/>
+  <rect x="15" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="10" width="2" height="1" fill="#262626"/>
+  <rect x="3" y="10" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="4" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="5" y="10" width="7" height="1" fill="#8A4574"/>
+  <rect x="12" y="10" width="2" height="1" fill="#262626"/>
+  <rect x="14" y="10" width="1" height="1" fill="#C9822B"/>
+  <rect x="15" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="11" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="3" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="11" width="9" height="1" fill="#63274F"/>
+  <rect x="13" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="11" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="15" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="12" width="2" height="1" fill="#262626"/>
+  <rect x="3" y="12" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="4" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="5" y="12" width="8" height="1" fill="#63274F"/>
+  <rect x="13" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="12" width="1" height="1" fill="#1C1C1C"/>
+  <rect x="15" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="13" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="13" width="10" height="1" fill="#D4CBB9"/>
+  <rect x="13" y="13" width="2" height="1" fill="#262626"/>
+  <rect x="2" y="14" width="12" height="1" fill="#262626"/>
+</svg>
+
+                            <span class="nav-label">Blog</span>
+                        </span>
+                    </a>
+                </li>
+                <li>
+                    <a href="https://diasdiaz.net/resume/" title="Résumé">
+                        <span class="nav-item-inner">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true" focusable="false">
+  <rect x="2" y="1" width="10" height="1" fill="#262626"/>
+  <rect x="2" y="2" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="2" width="8" height="1" fill="#F8F5EB"/>
+  <rect x="11" y="2" width="2" height="1" fill="#262626"/>
+  <rect x="2" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="3" width="8" height="1" fill="#F8F5EB"/>
+  <rect x="11" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="3" width="1" height="1" fill="#3B7286"/>
+  <rect x="13" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="4" width="8" height="1" fill="#F8F5EB"/>
+  <rect x="11" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="4" width="2" height="1" fill="#3B7286"/>
+  <rect x="14" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="5" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="5" y="5" width="6" height="1" fill="#8A4574"/>
+  <rect x="11" y="5" width="4" height="1" fill="#262626"/>
+  <rect x="2" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="6" width="12" height="1" fill="#F8F5EB"/>
+  <rect x="15" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="7" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="5" y="7" width="8" height="1" fill="#787878"/>
+  <rect x="13" y="7" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="15" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="8" width="12" height="1" fill="#F8F5EB"/>
+  <rect x="15" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="9" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="5" y="9" width="8" height="1" fill="#787878"/>
+  <rect x="13" y="9" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="15" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="10" width="12" height="1" fill="#F8F5EB"/>
+  <rect x="15" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="11" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="5" y="11" width="6" height="1" fill="#787878"/>
+  <rect x="11" y="11" width="4" height="1" fill="#F8F5EB"/>
+  <rect x="15" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="12" width="12" height="1" fill="#F8F5EB"/>
+  <rect x="15" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="13" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="13" width="12" height="1" fill="#D4CBB9"/>
+  <rect x="15" y="13" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="14" width="14" height="1" fill="#262626"/>
+  <rect x="3" y="15" width="10" height="1" fill="#262626"/>
+</svg>
+
+                            <span class="nav-label">Résumé</span>
+                        </span>
+                    </a>
+                </li>
+                <li>
+                    <a href="https://diasdiaz.net/shelves/" title="Shelves">
+                        <span class="nav-item-inner">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true" focusable="false">
+  <rect x="2" y="2" width="4" height="1" fill="#262626"/>
+  <rect x="2" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="3" width="2" height="1" fill="#B66F98"/>
+  <rect x="5" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="4" width="2" height="1" fill="#8A4574"/>
+  <rect x="5" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="4" width="3" height="1" fill="#262626"/>
+  <rect x="2" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="5" width="2" height="1" fill="#8A4574"/>
+  <rect x="5" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="5" width="1" height="1" fill="#5897AB"/>
+  <rect x="9" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="5" width="3" height="1" fill="#262626"/>
+  <rect x="2" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="6" width="2" height="1" fill="#8A4574"/>
+  <rect x="5" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="6" width="1" height="1" fill="#3B7286"/>
+  <rect x="9" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="6" width="1" height="1" fill="#E5B052"/>
+  <rect x="13" y="6" width="2" height="1" fill="#262626"/>
+  <rect x="15" y="6" width="1" height="1" fill="#9E3B29"/>
+  <rect x="2" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="7" width="2" height="1" fill="#8A4574"/>
+  <rect x="5" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="7" width="1" height="1" fill="#3B7286"/>
+  <rect x="9" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="7" width="1" height="1" fill="#C9822B"/>
+  <rect x="13" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="7" width="2" height="1" fill="#9E3B29"/>
+  <rect x="2" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="8" width="2" height="1" fill="#8A4574"/>
+  <rect x="5" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="8" width="1" height="1" fill="#3B7286"/>
+  <rect x="9" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="8" width="1" height="1" fill="#C9822B"/>
+  <rect x="13" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="8" width="2" height="1" fill="#9E3B29"/>
+  <rect x="2" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="9" width="2" height="1" fill="#8A4574"/>
+  <rect x="5" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="9" width="1" height="1" fill="#3B7286"/>
+  <rect x="9" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="9" width="1" height="1" fill="#C9822B"/>
+  <rect x="13" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="9" width="2" height="1" fill="#9E3B29"/>
+  <rect x="2" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="10" width="2" height="1" fill="#63274F"/>
+  <rect x="5" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="10" width="1" height="1" fill="#264E5E"/>
+  <rect x="9" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="10" width="1" height="1" fill="#7D501B"/>
+  <rect x="13" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="10" width="2" height="1" fill="#9E3B29"/>
+  <rect x="2" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="11" width="2" height="1" fill="#63274F"/>
+  <rect x="5" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="11" width="1" height="1" fill="#264E5E"/>
+  <rect x="9" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="11" width="1" height="1" fill="#7D501B"/>
+  <rect x="13" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="11" width="2" height="1" fill="#9E3B29"/>
+  <rect x="2" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="12" width="2" height="1" fill="#63274F"/>
+  <rect x="5" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="12" width="1" height="1" fill="#264E5E"/>
+  <rect x="9" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="12" width="1" height="1" fill="#7D501B"/>
+  <rect x="13" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="12" width="2" height="1" fill="#9E3B29"/>
+  <rect x="0" y="13" width="16" height="1" fill="#262626"/>
+  <rect x="1" y="14" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="14" width="12" height="1" fill="#7D501B"/>
+  <rect x="14" y="14" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="15" width="12" height="1" fill="#262626"/>
+</svg>
+
+                            <span class="nav-label">Shelves</span>
+                        </span>
+                    </a>
+                </li>
+            </ul>
+            <div class="logo-switches">
+                <button id="theme-toggle" class="theme-toggle" accesskey="t" title="Toggle theme (Alt + T)" aria-label="Toggle theme">
+                    <svg class="moon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg class="sun" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                    <span class="theme-label">Theme</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+</header>
+<main class="main" id="content" tabindex="-1">
+<article class="post-single">
+    <header class="post-header">
+        <h1 class="post-title">Writing a Time Management Android Application- TimeTime</h1>
+        <div class="post-meta">
+            <time datetime="2022-01-30">2022-01-30</time>
+            <span class="meta-sep" aria-hidden="true">·</span>
+            <span class="reading-time">4 min read</span>
+        </div>
+        <div class="post-tags">
+            <a href="/tags/computer/" class="post-tag">#computer</a>
+            <a href="/tags/science/" class="post-tag">#science</a>
+            <a href="/tags/android/" class="post-tag">#android</a>
+            <a href="/tags/java/" class="post-tag">#java</a>
+            <a href="/tags/timetime/" class="post-tag">#timetime</a>
+        </div>
+    </header>
+
+    <div class="post-content md-content">
+        <h2 id="motivation-and-overview">Motivation and Overview</h2>
+<p>TimeTime was my first large, independent project. My motivation was two-fold. First, I wanted a project to help build my understanding of software architecture and the Android framework. Second, I wanted an application centered on privacy and gathering personal and work metrics.</p>
+<p>TimeTime took inspiration from an already existing application on the Android App Store. However, this application lacked desired features, stored data remotely, and locked premium features behind a subscription model.</p>
+<p>With my new goal in mind, I started to layout requirements and an initial design.</p>
+<h2 id="defining-the-project-requirements">Defining the project requirements</h2>
+<p>I had a rough idea of my requirements going in because another app on the Appstore inspired me to make my own:</p>
+<ul>
+<li>
+<pre><code>    Lockscreen prompts
+</code></pre>
+</li>
+<li>
+<pre><code>    A log screen
+</code></pre>
+</li>
+<li>
+<pre><code>    A statistics and graph screen
+</code></pre>
+</li>
+<li>
+<pre><code>    Create activities with different colors and logos
+</code></pre>
+</li>
+<li>
+<pre><code>    Categorize activities
+</code></pre>
+</li>
+<li>
+<pre><code>    A localized database that allows export of data into CSV format
+</code></pre>
+</li>
+</ul>
+<p>These are a lot of features for someone learning Android. I made the mistake of trying to brute-force an application and create it without a plan. The result was bad code. The key takeaway from this project is <strong>always</strong> to have a plan. Even a poor plan is better than an absent plan.</p>
+<h2 id="designing-the-software">Designing the software</h2>
+<p>I started by creating a wireframe prototype of my ideal app. The wireframe captured the look I wanted for each screen and component of the application.</p>
+<p>Then I needed to think about the software architecture of the app. What will time logs look like? How will they be stored in the database? What type of database will I use? How will the application talk to the database to retrieve and display logs?</p>
+<p>After some research, I decided to adopt a Model View Controller (MVC) approach. The user interacts with the app, the app interfaces through a controller class that abstracts communication with the database in my application (I used RoomDB with DAO support).
+Then when the app needs to display data from the database it uses the View class interface to make the appropriate calls to the database.</p>
+<p>Why is this important? It creates layers of abstraction. Layers separate responsibility while making the code maintainable.</p>
+<p>A user&rsquo;s primary interaction with the application is to log their time. Each log is associated with an activity (sleeping), a category (health), and a duration (11 PM-8 AM). These requirements naturally gave a database schema. However, the issue of time is sticky. How should we store it? The application requires us to present the duration in a human-readable format, but this does not mean we should store it as a string.</p>
+<p>Storing the period as a string would make the database inflexible and cumbersome. Instead, I chose to store duration as a start and end epoch. Java has several good standard library functions to deal with epoch and human-readable format. The log class made use of these standard applications and abstracted any complexity between epoch and human-readable formats.</p>
+<p>The backend architecture of the app is in place. However, this does not handle what the user sees, just the organization of our program.</p>
+<p>In android, a given page is represented using fragments. Let&rsquo;s walk through the application starting with the homepage.</p>
+<h2 id="designing-the-front-end">Designing the Front-end</h2>
+<p>The wireframe I built earlier provided a solid foundation to build the frontend (colors, UI, etc.). After initializing a tabbed layout, I went to work on creating the home fragment.</p>
+<p><img alt="home" loading="lazy" src="/images/writing-a-time-management-android-application-timetime/home.png">{: width=&ldquo;250&rdquo; }</p>
+<p>The home page needed to be populated by cards showing the user&rsquo;s recent activities. Furthermore, it needed to be a RecyclerView (&ldquo;infinite&rdquo; scrolling) to provide efficient retrieval.</p>
+<p>The other requirement of the home page was to provide a way to log activities. I used a Floating Action Button (FAB) with a &ldquo;+&rdquo; on it. The FAB will also be present on most other fragments but with a responsibility corresponding to that tab.</p>
+<p><img alt="log" loading="lazy" src="/images/writing-a-time-management-android-application-timetime/logtime.png">{: width=&ldquo;250&rdquo; }</p>
+<p>The activity and categories fragments are similar. They show the user the activities or categories they have in their database. Users can create custom categories or activities via the FAB.</p>
+<p><img alt="activity" loading="lazy" src="/images/writing-a-time-management-android-application-timetime/activity.png">{: width=&ldquo;250&rdquo; }</p>
+<p><img alt="create activity" loading="lazy" src="/images/writing-a-time-management-android-application-timetime/createActivity.png">{: width=&ldquo;250&rdquo; }</p>
+<p><img alt="category" loading="lazy" src="/images/writing-a-time-management-android-application-timetime/category.png">{: width=&ldquo;250&rdquo; }</p>
+<p>Finally, A statistics page aggregates the user&rsquo;s database and presents data visualizations.</p>
+<p><img alt="stats period" loading="lazy" src="/images/writing-a-time-management-android-application-timetime/statperiod.png">{: width=&ldquo;250&rdquo; }</p>
+<p><img alt="stats" loading="lazy" src="/images/writing-a-time-management-android-application-timetime/statpage.png">{: width=&ldquo;250&rdquo; }</p>
+<h2 id="tidbits-notifications-and-lockscreen-prompt">Tidbits: Notifications and Lockscreen prompt</h2>
+<p>I wanted the application to be opened maybe once a week by a user. Ideally, the user only interacts with the application via notifications. In TimeTime, there are two types of notifications: traditional and full-lockscreen. Both notification types must use a daemon thread and an alarm to trigger them.</p>
+<p>The challenge was to create a full-lock screen notification. This notification would &ldquo;take over&rdquo; the user&rsquo;s lock screen to show the &ldquo;log your time&rdquo; screen, so the user can log what they&rsquo;ve been up to without having to remember to open the application, or having to stop what they&rsquo;re doing. I built this type of notification with Android&rsquo;s PendingIntents.</p>
+
+    </div>
+</article>
+    </main>
+    <footer class="footer">
+    <hr class="footer-divider" />
+    <nav class="footer-nav" aria-label="Footer navigation">
+        <a href="/search/" class="footer-link">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true" focusable="false">
+  <rect x="3" y="1" width="5" height="1" fill="#262626"/>
+  <rect x="2" y="2" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="2" width="5" height="1" fill="#5897AB"/>
+  <rect x="8" y="2" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="3" width="2" height="1" fill="#5897AB"/>
+  <rect x="4" y="3" width="3" height="1" fill="#F8F5EB"/>
+  <rect x="7" y="3" width="2" height="1" fill="#5897AB"/>
+  <rect x="9" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="0" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="4" width="2" height="1" fill="#5897AB"/>
+  <rect x="3" y="4" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="5" y="4" width="1" height="1" fill="#3B7286"/>
+  <rect x="6" y="4" width="4" height="1" fill="#5897AB"/>
+  <rect x="10" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="0" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="5" width="2" height="1" fill="#5897AB"/>
+  <rect x="3" y="5" width="7" height="1" fill="#3B7286"/>
+  <rect x="10" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="0" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="6" width="2" height="1" fill="#5897AB"/>
+  <rect x="3" y="6" width="7" height="1" fill="#3B7286"/>
+  <rect x="10" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="0" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="7" width="1" height="1" fill="#5897AB"/>
+  <rect x="2" y="7" width="4" height="1" fill="#3B7286"/>
+  <rect x="6" y="7" width="3" height="1" fill="#264E5E"/>
+  <rect x="9" y="7" width="1" height="1" fill="#3B7286"/>
+  <rect x="10" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="8" width="2" height="1" fill="#3B7286"/>
+  <rect x="4" y="8" width="4" height="1" fill="#264E5E"/>
+  <rect x="8" y="8" width="1" height="1" fill="#3B7286"/>
+  <rect x="9" y="8" width="2" height="1" fill="#262626"/>
+  <rect x="2" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="9" width="2" height="1" fill="#3B7286"/>
+  <rect x="5" y="9" width="2" height="1" fill="#264E5E"/>
+  <rect x="7" y="9" width="1" height="1" fill="#3B7286"/>
+  <rect x="8" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="9" y="9" width="2" height="1" fill="#C85A46"/>
+  <rect x="11" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="10" width="5" height="1" fill="#262626"/>
+  <rect x="9" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="10" y="10" width="2" height="1" fill="#9E3B29"/>
+  <rect x="12" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="10" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="11" width="2" height="1" fill="#9E3B29"/>
+  <rect x="13" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="12" width="2" height="1" fill="#9E3B29"/>
+  <rect x="14" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="13" width="1" height="1" fill="#262626"/>
+  <rect x="13" y="13" width="1" height="1" fill="#8A4574"/>
+  <rect x="14" y="13" width="1" height="1" fill="#262626"/>
+  <rect x="13" y="14" width="2" height="1" fill="#262626"/>
+</svg>
+
+            <span>Search</span>
+        </a>
+        <span class="footer-sep" aria-hidden="true">·</span>
+        <a href="/archive/" class="footer-link">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true" focusable="false">
+  <rect x="1" y="2" width="14" height="1" fill="#262626"/>
+  <rect x="0" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="3" width="14" height="1" fill="#E5B052"/>
+  <rect x="15" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="0" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="4" width="14" height="1" fill="#C9822B"/>
+  <rect x="15" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="0" y="5" width="16" height="1" fill="#262626"/>
+  <rect x="1" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="6" width="12" height="1" fill="#C9822B"/>
+  <rect x="14" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="7" width="2" height="1" fill="#C9822B"/>
+  <rect x="4" y="7" width="8" height="1" fill="#262626"/>
+  <rect x="12" y="7" width="2" height="1" fill="#C9822B"/>
+  <rect x="14" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="8" width="2" height="1" fill="#C9822B"/>
+  <rect x="4" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="5" y="8" width="6" height="1" fill="#F8F5EB"/>
+  <rect x="11" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="8" width="2" height="1" fill="#C9822B"/>
+  <rect x="14" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="9" width="2" height="1" fill="#C9822B"/>
+  <rect x="4" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="5" y="9" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="7" y="9" width="3" height="1" fill="#787878"/>
+  <rect x="10" y="9" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="11" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="9" width="2" height="1" fill="#C9822B"/>
+  <rect x="14" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="10" width="2" height="1" fill="#C9822B"/>
+  <rect x="4" y="10" width="8" height="1" fill="#262626"/>
+  <rect x="12" y="10" width="2" height="1" fill="#C9822B"/>
+  <rect x="14" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="11" width="2" height="1" fill="#C9822B"/>
+  <rect x="4" y="11" width="8" height="1" fill="#7D501B"/>
+  <rect x="12" y="11" width="2" height="1" fill="#C9822B"/>
+  <rect x="14" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="12" width="12" height="1" fill="#7D501B"/>
+  <rect x="14" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="13" width="14" height="1" fill="#262626"/>
+  <rect x="2" y="14" width="12" height="1" fill="#262626"/>
+</svg>
+
+            <span>Archive</span>
+        </a>
+        <span class="footer-sep" aria-hidden="true">·</span>
+        <a href="/tags/" class="footer-link">
+            <span>Tags</span>
+        </a>
+        <span class="footer-sep" aria-hidden="true">·</span>
+        <a href="/index.xml" class="footer-link">
+            <span>RSS</span>
+        </a>
+    </nav>
+</footer>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            var href = this.getAttribute("href");
+            if (!href || href === "#") return;
+            var id = href.substr(1);
+            var targetEl = document.getElementById(decodeURIComponent(id));
+            if (!targetEl) return;
+            e.preventDefault();
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                targetEl.scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                targetEl.scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+            if (id === "content") {
+                targetEl.setAttribute("tabindex", "-1");
+                targetEl.focus();
+            }
+        });
+    });
+</script>
+<script>
+    var themeToggle = document.getElementById("theme-toggle");
+    if (themeToggle) {
+        themeToggle.addEventListener("click", () => {
+            const html = document.querySelector("html");
+            if (html.dataset.theme === "dark") {
+                html.dataset.theme = 'light';
+                localStorage.setItem("pref-theme", 'light');
+            } else {
+                html.dataset.theme = 'dark';
+                localStorage.setItem("pref-theme", 'dark');
+            }
+        });
+    }
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', () => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { }
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode && container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode && codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+
+</body>
+
+</html>

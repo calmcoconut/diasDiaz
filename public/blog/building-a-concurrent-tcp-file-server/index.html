@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Building a Concurrent TCP File Server in C | dias Diaz</title>
+<meta name="keywords" content="computer, science, C, TCP">
+<meta name="description" content="
+tl;dr
+
+We start build-up from our starting point of a simple echo-client and server, to a file-server
+Make use of IPv4/IPv6 agnostic TCP sockets
+Create a simple HTTP-like protocol to standardize and parse client requests
+
+
+Overview
+Overall requirements: IPv4/IPv6 agnostic, TCP, multi-threaded (server can service multiple clients simultaneously, parse and respond to requests in C (i.e., memory management, buffer allocation, byte parsing), implement a simple HTTP RESTful client-server application.
+The server needs to receive and parse file requests from a connected client. Once the request is verified the server needs to serve the file&rsquo;s data to the client. Moreover, the server should handle multiple, concurrent connections.">
+<meta name="author" content="map[name:Alejandro Diaz]">
+<link rel="canonical" href="https://diasdiaz.net/blog/building-a-concurrent-tcp-file-server/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.9ff2c7c14ab137364c1cea68d63bbac1bd5d58a3bc15d55f9ce84b5af66de678.css" integrity="sha256-n/LHwUqxNzZMHOpo1ju6wb1dWKO8FdVfnOhLWvZt5ng=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://diasdiaz.net/favicon.svg">
+<link rel="icon" type="image/png" sizes="16x16" href="https://diasdiaz.net/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://diasdiaz.net/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://diasdiaz.net/apple-touch-icon.png">
+<link rel="mask-icon" href="https://diasdiaz.net/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="https://diasdiaz.net/blog/building-a-concurrent-tcp-file-server/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><meta property="og:url" content="https://diasdiaz.net/blog/building-a-concurrent-tcp-file-server/">
+  <meta property="og:site_name" content="dias Diaz">
+  <meta property="og:title" content="Building a Concurrent TCP File Server in C">
+  <meta property="og:description" content="tl;dr We start build-up from our starting point of a simple echo-client and server, to a file-server Make use of IPv4/IPv6 agnostic TCP sockets Create a simple HTTP-like protocol to standardize and parse client requests Overview Overall requirements: IPv4/IPv6 agnostic, TCP, multi-threaded (server can service multiple clients simultaneously, parse and respond to requests in C (i.e., memory management, buffer allocation, byte parsing), implement a simple HTTP RESTful client-server application.
+The server needs to receive and parse file requests from a connected client. Once the request is verified the server needs to serve the file’s data to the client. Moreover, the server should handle multiple, concurrent connections.">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="blog">
+    <meta property="article:published_time" content="2021-12-30T00:00:00+00:00">
+    <meta property="article:modified_time" content="2021-12-30T00:00:00+00:00">
+    <meta property="article:tag" content="Computer">
+    <meta property="article:tag" content="Science">
+    <meta property="article:tag" content="C">
+    <meta property="article:tag" content="TCP">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Building a Concurrent TCP File Server in C">
+  <meta name="twitter:description" content="tl;dr We start build-up from our starting point of a simple echo-client and server, to a file-server Make use of IPv4/IPv6 agnostic TCP sockets Create a simple HTTP-like protocol to standardize and parse client requests Overview Overall requirements: IPv4/IPv6 agnostic, TCP, multi-threaded (server can service multiple clients simultaneously, parse and respond to requests in C (i.e., memory management, buffer allocation, byte parsing), implement a simple HTTP RESTful client-server application.
+The server needs to receive and parse file requests from a connected client. Once the request is verified the server needs to serve the file’s data to the client. Moreover, the server should handle multiple, concurrent connections.">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Blog",
+      "item": "https://diasdiaz.net/blog/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Building a Concurrent TCP File Server in C",
+      "item": "https://diasdiaz.net/blog/building-a-concurrent-tcp-file-server/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Building a Concurrent TCP File Server in C",
+  "name": "Building a Concurrent TCP File Server in C",
+  "description": " tl;dr We start build-up from our starting point of a simple echo-client and server, to a file-server Make use of IPv4/IPv6 agnostic TCP sockets Create a simple HTTP-like protocol to standardize and parse client requests Overview Overall requirements: IPv4/IPv6 agnostic, TCP, multi-threaded (server can service multiple clients simultaneously, parse and respond to requests in C (i.e., memory management, buffer allocation, byte parsing), implement a simple HTTP RESTful client-server application.\nThe server needs to receive and parse file requests from a connected client. Once the request is verified the server needs to serve the file\u0026rsquo;s data to the client. Moreover, the server should handle multiple, concurrent connections.\n",
+  "keywords": [
+    "computer", "science", "C", "TCP"
+  ],
+  "articleBody": " tl;dr We start build-up from our starting point of a simple echo-client and server, to a file-server Make use of IPv4/IPv6 agnostic TCP sockets Create a simple HTTP-like protocol to standardize and parse client requests Overview Overall requirements: IPv4/IPv6 agnostic, TCP, multi-threaded (server can service multiple clients simultaneously, parse and respond to requests in C (i.e., memory management, buffer allocation, byte parsing), implement a simple HTTP RESTful client-server application.\nThe server needs to receive and parse file requests from a connected client. Once the request is verified the server needs to serve the file’s data to the client. Moreover, the server should handle multiple, concurrent connections.\nThese specifications are quite challenging if taken as is. However, if we break down the problem and build back up we can come to a good solution. Let’s start from an echo-client and echo-server.\nEcho this: Sockets and such Socket communication can be broken down into a few steps. From the server’s perspective to communicate with a client, we want to: allocate a socket, bind that socket, listen for incoming connections, and accept connections (allocating a new socket to that client). Similarly, from the client’s perspective, we want to allocate a socket, try to connect to a host, receive a response.\nSeveral resources explain how to create an echo server and client application (I recommend this book, but this site is excellent as well). We need these sockets to be IPv4/IPv6 agnostic. Thankfully, from the standard library has an interface to help with this problem. The server needs to bind a socket able to service IPv4 and IPv6 TCP clients. Is there a way to do this succinctly without hacky or branching code?\nI will be using the getaddrinfo function with the AI_PASSIVE flag to ensure our server can handle both protocol types. Similarly, the client should be capable of connecting to either IPv4 or IPv6 servers. Similarly, the client will also use the getaddrinfo function to determine what socket to allocate for (what is the host’s protocol?). We are careful to use the AF_UNSPEC flag to let getaddrinfo know we want to wildcard our address family (IPv4/IPv6).\nSending a message is pretty simple. The client can call the send function with its newly allocated socket. Note that the send function does not guarantee the entire message can be sent in a single call. To ensure we’ve sent the entire message, we call send iteratively. We stop the total sent bytes is equivalent to the size of the message. A nearly identical process plays out on the server-side when we call the rcv function iteratively.\nStatic File Server The server and client can send and receive strings. We can make this a little more useful by serving connecting clients with a file instead of just echoing their message.\nNot much needs to be changed. We alter the server so that it now sends a stream of data. This stream comes from the file. Similarly, we modify the client, so it receives data iteratively from its connected socket until no more data is received. The client should write this data to its local directory, saving it as a new file.\nDynamic File Server: taking client requests OK. Now we have a server that serves a single static file. This is not very dynamic. Let’s instead have the server take a request from a connected client. This means we will need to have the server receive and parse requests.\nWhenever two parties are talking to one another, they need a set of rules. In a real web communication context, this is something like HTTP. Here we will use an HTTP-like interface. The result is that communication is structured.\nclient requests with a predictable request format the server parses the received string, validates the request, and responds with a status If validation is successful, the server proceeds by transferring the requested file’s data the client is disconnected and should connect again to make another request Recall, this project is written in C. We send strings over the TCP socket via single char bytes. We put these characters into an array, then start to parse it. I found that using functions in C’s standard library made the project much simpler than writing my own. I made great use of the strtok function.\nDepending on the results of the parse and validation, the server responds to the client with either an OK, ERROR, or INVALID status. The client will block until this status message is received.\nOn an OK status, the client will receive the data of the file in the same manner as the earlier implementation.\nConcurrency: Serving and requesting files simultaneously We’ve gone from a simple echo client and server to a full-fledge server capable of serving files to clients. However, there is a final limitation. This server is only capable of serving one client at a time. What do we do if more than one client wants to connect and receive a file simultaneously?\nOne option is to have the clients queue up in a line and wait their turn (Imagine having to wait your turn to watch a YouTube video!). This is not a very good option.\nAnother option is to have the server launch another copy of itself when accepting a client. This copy of the program will handle the client while leaving the main instance of the server free to accept more clients. However, there is a lot of overhead associated with creating copies of programs. This option would work but would scale poorly.\nThe third option, which is what I chose, was to make the server multi-threaded. A multi-threaded server would have its main thread accept incoming clients, then load these clients into a queue. The queue, in turn, would be handled by a child thread that would fulfill the request.\nI implemented this using the pthread’s library. A callback function is registered with each thread. The function kicks off the client-handling portion of our implementation. These threads would sleep until the main thread signals that a client needs to be served.\n",
+  "wordCount" : "1011",
+  "inLanguage": "en",
+  "datePublished": "2021-12-30T00:00:00Z",
+  "dateModified": "2021-12-30T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"name":"Alejandro Diaz"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://diasdiaz.net/blog/building-a-concurrent-tcp-file-server/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "dias Diaz",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://diasdiaz.net/favicon.svg"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <a href="#content" class="skip-link" id="skip-link">Skip to main content</a>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var skipLink = document.getElementById("skip-link");
+        if (skipLink) {
+            skipLink.addEventListener("click", function (e) {
+                var target = document.getElementById("content");
+                if (target) {
+                    target.setAttribute("tabindex", "-1");
+                    target.focus();
+                }
+            });
+        }
+    });
+</script>
+
+<header class="header">
+    <nav class="header-nav">
+        <div class="logo">
+            <a href="https://diasdiaz.net/" accesskey="h" title="Alejandro Diaz (Alt + H)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" shape-rendering="crispEdges" aria-hidden="true" focusable="false">
+  <rect x="4" y="1" width="2" height="1" fill="#262626"/>
+  <rect x="3" y="2" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="2" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="6" y="2" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="3" width="2" height="1" fill="#262626"/>
+  <rect x="3" y="4" width="4" height="1" fill="#262626"/>
+  <rect x="3" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="5" width="2" height="1" fill="#C9822B"/>
+  <rect x="6" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="15" y="5" width="2" height="1" fill="#262626"/>
+  <rect x="3" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="6" width="2" height="1" fill="#C9822B"/>
+  <rect x="6" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="15" y="6" width="2" height="1" fill="#C85A46"/>
+  <rect x="17" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="7" width="2" height="1" fill="#C9822B"/>
+  <rect x="6" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="13" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="7" width="4" height="1" fill="#C85A46"/>
+  <rect x="18" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="8" width="4" height="1" fill="#262626"/>
+  <rect x="12" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="13" y="8" width="6" height="1" fill="#C85A46"/>
+  <rect x="19" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="9" width="8" height="1" fill="#C85A46"/>
+  <rect x="20" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="10" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="10" width="10" height="1" fill="#C85A46"/>
+  <rect x="21" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="0" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="9" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="10" y="11" width="12" height="1" fill="#9E3B29"/>
+  <rect x="22" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="0" y="12" width="24" height="1" fill="#262626"/>
+  <rect x="1" y="13" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="13" width="20" height="1" fill="#F8F5EB"/>
+  <rect x="22" y="13" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="14" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="14" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="3" y="14" width="5" height="1" fill="#262626"/>
+  <rect x="8" y="14" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="10" y="14" width="4" height="1" fill="#262626"/>
+  <rect x="14" y="14" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="16" y="14" width="5" height="1" fill="#262626"/>
+  <rect x="21" y="14" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="22" y="14" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="15" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="15" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="3" y="15" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="15" width="2" height="1" fill="#5897AB"/>
+  <rect x="6" y="15" width="1" height="1" fill="#3B7286"/>
+  <rect x="7" y="15" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="15" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="9" y="15" width="2" height="1" fill="#262626"/>
+  <rect x="11" y="15" width="2" height="1" fill="#B66F98"/>
+  <rect x="13" y="15" width="2" height="1" fill="#262626"/>
+  <rect x="15" y="15" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="16" y="15" width="1" height="1" fill="#262626"/>
+  <rect x="17" y="15" width="2" height="1" fill="#5897AB"/>
+  <rect x="19" y="15" width="1" height="1" fill="#3B7286"/>
+  <rect x="20" y="15" width="1" height="1" fill="#262626"/>
+  <rect x="21" y="15" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="22" y="15" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="16" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="16" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="3" y="16" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="16" width="1" height="1" fill="#5897AB"/>
+  <rect x="5" y="16" width="1" height="1" fill="#264E5E"/>
+  <rect x="6" y="16" width="1" height="1" fill="#3B7286"/>
+  <rect x="7" y="16" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="16" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="9" y="16" width="1" height="1" fill="#262626"/>
+  <rect x="10" y="16" width="4" height="1" fill="#8A4574"/>
+  <rect x="14" y="16" width="1" height="1" fill="#262626"/>
+  <rect x="15" y="16" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="16" y="16" width="1" height="1" fill="#262626"/>
+  <rect x="17" y="16" width="1" height="1" fill="#5897AB"/>
+  <rect x="18" y="16" width="1" height="1" fill="#264E5E"/>
+  <rect x="19" y="16" width="1" height="1" fill="#3B7286"/>
+  <rect x="20" y="16" width="1" height="1" fill="#262626"/>
+  <rect x="21" y="16" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="22" y="16" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="17" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="17" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="3" y="17" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="17" width="3" height="1" fill="#3B7286"/>
+  <rect x="7" y="17" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="17" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="9" y="17" width="1" height="1" fill="#262626"/>
+  <rect x="10" y="17" width="2" height="1" fill="#8A4574"/>
+  <rect x="12" y="17" width="1" height="1" fill="#C9822B"/>
+  <rect x="13" y="17" width="1" height="1" fill="#B66F98"/>
+  <rect x="14" y="17" width="1" height="1" fill="#262626"/>
+  <rect x="15" y="17" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="16" y="17" width="1" height="1" fill="#262626"/>
+  <rect x="17" y="17" width="3" height="1" fill="#3B7286"/>
+  <rect x="20" y="17" width="1" height="1" fill="#262626"/>
+  <rect x="21" y="17" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="22" y="17" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="18" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="18" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="3" y="18" width="5" height="1" fill="#262626"/>
+  <rect x="8" y="18" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="10" y="18" width="4" height="1" fill="#262626"/>
+  <rect x="14" y="18" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="16" y="18" width="5" height="1" fill="#262626"/>
+  <rect x="21" y="18" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="22" y="18" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="19" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="19" width="7" height="1" fill="#F8F5EB"/>
+  <rect x="9" y="19" width="1" height="1" fill="#262626"/>
+  <rect x="10" y="19" width="4" height="1" fill="#63274F"/>
+  <rect x="14" y="19" width="1" height="1" fill="#262626"/>
+  <rect x="15" y="19" width="7" height="1" fill="#F8F5EB"/>
+  <rect x="22" y="19" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="20" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="20" width="6" height="1" fill="#D4CBB9"/>
+  <rect x="8" y="20" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="9" y="20" width="1" height="1" fill="#262626"/>
+  <rect x="10" y="20" width="4" height="1" fill="#63274F"/>
+  <rect x="14" y="20" width="1" height="1" fill="#262626"/>
+  <rect x="15" y="20" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="16" y="20" width="6" height="1" fill="#D4CBB9"/>
+  <rect x="22" y="20" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="21" width="22" height="1" fill="#262626"/>
+  <rect x="2" y="22" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="22" width="18" height="1" fill="#7D501B"/>
+  <rect x="21" y="22" width="1" height="1" fill="#262626"/>
+</svg>
+
+                <span class="logo-title">Alejandro Diaz</span>
+            </a>
+        </div>
+        <div class="nav-right">
+            <ul id="menu" class="menu">
+                <li>
+                    <a href="https://diasdiaz.net/blog/" title="Blog" aria-current="page">
+                        <span class="nav-item-inner active">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true" focusable="false">
+  <rect x="2" y="1" width="12" height="1" fill="#262626"/>
+  <rect x="1" y="2" width="2" height="1" fill="#262626"/>
+  <rect x="3" y="2" width="9" height="1" fill="#B66F98"/>
+  <rect x="12" y="2" width="2" height="1" fill="#262626"/>
+  <rect x="14" y="2" width="1" height="1" fill="#9E3B29"/>
+  <rect x="15" y="2" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="3" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="3" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="3" width="9" height="1" fill="#B66F98"/>
+  <rect x="13" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="3" width="1" height="1" fill="#9E3B29"/>
+  <rect x="15" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="4" width="2" height="1" fill="#262626"/>
+  <rect x="3" y="4" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="4" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="5" y="4" width="1" height="1" fill="#8A4574"/>
+  <rect x="6" y="4" width="5" height="1" fill="#262626"/>
+  <rect x="11" y="4" width="1" height="1" fill="#8A4574"/>
+  <rect x="12" y="4" width="2" height="1" fill="#262626"/>
+  <rect x="14" y="4" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="15" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="5" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="3" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="5" width="1" height="1" fill="#8A4574"/>
+  <rect x="5" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="6" y="5" width="5" height="1" fill="#F8F5EB"/>
+  <rect x="11" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="5" width="1" height="1" fill="#8A4574"/>
+  <rect x="13" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="5" width="1" height="1" fill="#E5B052"/>
+  <rect x="15" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="6" width="2" height="1" fill="#262626"/>
+  <rect x="3" y="6" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="4" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="5" y="6" width="1" height="1" fill="#8A4574"/>
+  <rect x="6" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="6" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="8" y="6" width="3" height="1" fill="#787878"/>
+  <rect x="11" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="6" width="1" height="1" fill="#8A4574"/>
+  <rect x="13" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="6" width="1" height="1" fill="#C9822B"/>
+  <rect x="15" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="7" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="3" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="7" width="1" height="1" fill="#8A4574"/>
+  <rect x="5" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="6" y="7" width="5" height="1" fill="#F8F5EB"/>
+  <rect x="11" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="7" width="1" height="1" fill="#8A4574"/>
+  <rect x="13" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="7" width="1" height="1" fill="#C9822B"/>
+  <rect x="15" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="8" width="2" height="1" fill="#262626"/>
+  <rect x="3" y="8" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="4" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="5" y="8" width="1" height="1" fill="#8A4574"/>
+  <rect x="6" y="8" width="5" height="1" fill="#262626"/>
+  <rect x="11" y="8" width="1" height="1" fill="#8A4574"/>
+  <rect x="12" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="13" y="8" width="1" height="1" fill="#C9822B"/>
+  <rect x="14" y="8" width="1" height="1" fill="#E5B052"/>
+  <rect x="15" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="9" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="3" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="9" width="9" height="1" fill="#8A4574"/>
+  <rect x="13" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="9" width="1" height="1" fill="#C9822B"/>
+  <rect x="15" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="10" width="2" height="1" fill="#262626"/>
+  <rect x="3" y="10" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="4" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="5" y="10" width="7" height="1" fill="#8A4574"/>
+  <rect x="12" y="10" width="2" height="1" fill="#262626"/>
+  <rect x="14" y="10" width="1" height="1" fill="#C9822B"/>
+  <rect x="15" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="11" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="3" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="11" width="9" height="1" fill="#63274F"/>
+  <rect x="13" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="11" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="15" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="12" width="2" height="1" fill="#262626"/>
+  <rect x="3" y="12" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="4" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="5" y="12" width="8" height="1" fill="#63274F"/>
+  <rect x="13" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="12" width="1" height="1" fill="#1C1C1C"/>
+  <rect x="15" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="13" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="13" width="10" height="1" fill="#D4CBB9"/>
+  <rect x="13" y="13" width="2" height="1" fill="#262626"/>
+  <rect x="2" y="14" width="12" height="1" fill="#262626"/>
+</svg>
+
+                            <span class="nav-label">Blog</span>
+                        </span>
+                    </a>
+                </li>
+                <li>
+                    <a href="https://diasdiaz.net/resume/" title="Résumé">
+                        <span class="nav-item-inner">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true" focusable="false">
+  <rect x="2" y="1" width="10" height="1" fill="#262626"/>
+  <rect x="2" y="2" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="2" width="8" height="1" fill="#F8F5EB"/>
+  <rect x="11" y="2" width="2" height="1" fill="#262626"/>
+  <rect x="2" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="3" width="8" height="1" fill="#F8F5EB"/>
+  <rect x="11" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="3" width="1" height="1" fill="#3B7286"/>
+  <rect x="13" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="4" width="8" height="1" fill="#F8F5EB"/>
+  <rect x="11" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="4" width="2" height="1" fill="#3B7286"/>
+  <rect x="14" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="5" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="5" y="5" width="6" height="1" fill="#8A4574"/>
+  <rect x="11" y="5" width="4" height="1" fill="#262626"/>
+  <rect x="2" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="6" width="12" height="1" fill="#F8F5EB"/>
+  <rect x="15" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="7" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="5" y="7" width="8" height="1" fill="#787878"/>
+  <rect x="13" y="7" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="15" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="8" width="12" height="1" fill="#F8F5EB"/>
+  <rect x="15" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="9" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="5" y="9" width="8" height="1" fill="#787878"/>
+  <rect x="13" y="9" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="15" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="10" width="12" height="1" fill="#F8F5EB"/>
+  <rect x="15" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="11" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="5" y="11" width="6" height="1" fill="#787878"/>
+  <rect x="11" y="11" width="4" height="1" fill="#F8F5EB"/>
+  <rect x="15" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="12" width="12" height="1" fill="#F8F5EB"/>
+  <rect x="15" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="13" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="13" width="12" height="1" fill="#D4CBB9"/>
+  <rect x="15" y="13" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="14" width="14" height="1" fill="#262626"/>
+  <rect x="3" y="15" width="10" height="1" fill="#262626"/>
+</svg>
+
+                            <span class="nav-label">Résumé</span>
+                        </span>
+                    </a>
+                </li>
+                <li>
+                    <a href="https://diasdiaz.net/shelves/" title="Shelves">
+                        <span class="nav-item-inner">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true" focusable="false">
+  <rect x="2" y="2" width="4" height="1" fill="#262626"/>
+  <rect x="2" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="3" width="2" height="1" fill="#B66F98"/>
+  <rect x="5" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="4" width="2" height="1" fill="#8A4574"/>
+  <rect x="5" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="4" width="3" height="1" fill="#262626"/>
+  <rect x="2" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="5" width="2" height="1" fill="#8A4574"/>
+  <rect x="5" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="5" width="1" height="1" fill="#5897AB"/>
+  <rect x="9" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="5" width="3" height="1" fill="#262626"/>
+  <rect x="2" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="6" width="2" height="1" fill="#8A4574"/>
+  <rect x="5" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="6" width="1" height="1" fill="#3B7286"/>
+  <rect x="9" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="6" width="1" height="1" fill="#E5B052"/>
+  <rect x="13" y="6" width="2" height="1" fill="#262626"/>
+  <rect x="15" y="6" width="1" height="1" fill="#9E3B29"/>
+  <rect x="2" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="7" width="2" height="1" fill="#8A4574"/>
+  <rect x="5" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="7" width="1" height="1" fill="#3B7286"/>
+  <rect x="9" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="7" width="1" height="1" fill="#C9822B"/>
+  <rect x="13" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="7" width="2" height="1" fill="#9E3B29"/>
+  <rect x="2" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="8" width="2" height="1" fill="#8A4574"/>
+  <rect x="5" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="8" width="1" height="1" fill="#3B7286"/>
+  <rect x="9" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="8" width="1" height="1" fill="#C9822B"/>
+  <rect x="13" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="8" width="2" height="1" fill="#9E3B29"/>
+  <rect x="2" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="9" width="2" height="1" fill="#8A4574"/>
+  <rect x="5" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="9" width="1" height="1" fill="#3B7286"/>
+  <rect x="9" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="9" width="1" height="1" fill="#C9822B"/>
+  <rect x="13" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="9" width="2" height="1" fill="#9E3B29"/>
+  <rect x="2" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="10" width="2" height="1" fill="#63274F"/>
+  <rect x="5" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="10" width="1" height="1" fill="#264E5E"/>
+  <rect x="9" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="10" width="1" height="1" fill="#7D501B"/>
+  <rect x="13" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="10" width="2" height="1" fill="#9E3B29"/>
+  <rect x="2" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="11" width="2" height="1" fill="#63274F"/>
+  <rect x="5" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="11" width="1" height="1" fill="#264E5E"/>
+  <rect x="9" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="11" width="1" height="1" fill="#7D501B"/>
+  <rect x="13" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="11" width="2" height="1" fill="#9E3B29"/>
+  <rect x="2" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="12" width="2" height="1" fill="#63274F"/>
+  <rect x="5" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="12" width="1" height="1" fill="#264E5E"/>
+  <rect x="9" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="12" width="1" height="1" fill="#7D501B"/>
+  <rect x="13" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="12" width="2" height="1" fill="#9E3B29"/>
+  <rect x="0" y="13" width="16" height="1" fill="#262626"/>
+  <rect x="1" y="14" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="14" width="12" height="1" fill="#7D501B"/>
+  <rect x="14" y="14" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="15" width="12" height="1" fill="#262626"/>
+</svg>
+
+                            <span class="nav-label">Shelves</span>
+                        </span>
+                    </a>
+                </li>
+            </ul>
+            <div class="logo-switches">
+                <button id="theme-toggle" class="theme-toggle" accesskey="t" title="Toggle theme (Alt + T)" aria-label="Toggle theme">
+                    <svg class="moon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg class="sun" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                    <span class="theme-label">Theme</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+</header>
+<main class="main" id="content" tabindex="-1">
+<article class="post-single">
+    <header class="post-header">
+        <h1 class="post-title">Building a Concurrent TCP File Server in C</h1>
+        <div class="post-meta">
+            <time datetime="2021-12-30">2021-12-30</time>
+            <span class="meta-sep" aria-hidden="true">·</span>
+            <span class="reading-time">5 min read</span>
+        </div>
+        <div class="post-tags">
+            <a href="/tags/computer/" class="post-tag">#computer</a>
+            <a href="/tags/science/" class="post-tag">#science</a>
+            <a href="/tags/c/" class="post-tag">#C</a>
+            <a href="/tags/tcp/" class="post-tag">#TCP</a>
+        </div>
+    </header>
+
+    <div class="post-content md-content">
+        <blockquote>
+<h3 id="tldr">tl;dr</h3>
+<ul>
+<li>We start build-up from our starting point of a simple echo-client and server, to a file-server</li>
+<li>Make use of IPv4/IPv6 agnostic TCP sockets</li>
+<li>Create a simple HTTP-like protocol to standardize and parse client requests</li>
+</ul>
+</blockquote>
+<h2 id="overview">Overview</h2>
+<p><em>Overall requirements: IPv4/IPv6 agnostic, TCP, multi-threaded (server can service multiple clients simultaneously, parse and respond to requests in C (i.e., memory management, buffer allocation, byte parsing), implement a simple HTTP RESTful client-server application.</em></p>
+<p>The server needs to receive and parse file requests from a connected client. Once the request is verified the server needs to serve the file&rsquo;s data to the client. Moreover, the server should handle multiple, concurrent connections.</p>
+<p>These specifications are quite challenging if taken as is. However, if we break down the problem and build back up we can come to a good solution. Let&rsquo;s start from an echo-client and echo-server.</p>
+<h3 id="echo-this-sockets-and-such">Echo this: Sockets and such</h3>
+<p>Socket communication can be broken down into a few steps. From the server’s perspective to communicate with a client, we want to: allocate a socket, bind that socket, listen for incoming connections, and accept connections (allocating a new socket to that client). Similarly, from the client’s perspective, we want to allocate a socket, try to connect to a host, receive a response.</p>
+<p>Several resources explain how to create an echo server and client application (I recommend this <a href="https://www.google.co.jp/books/edition/TCP_IP_Sockets_in_C/11YK8bbqYkEC?hl=en&amp;gbpv=0">book</a>, but this <a href="https://beej.us/guide/bgnet/">site</a> is excellent as well). We need these sockets to be IPv4/IPv6 agnostic. Thankfully, <em>&lt;sys/socket.h&gt;</em> from the standard library has an interface to help with this problem.
+The server needs to bind a socket able to service IPv4 and IPv6 TCP clients. Is there a way to do this succinctly without hacky or branching code?</p>
+<p>I will be using the <em>getaddrinfo</em> function with the AI_PASSIVE flag to ensure our server can handle both protocol types. Similarly, the client should be capable of connecting to either IPv4 or IPv6 servers. Similarly, the client will also use the <em>getaddrinfo</em> function to determine what socket to allocate for (what is the host&rsquo;s protocol?). We are careful to use the <em>AF_UNSPEC</em> flag to let <em>getaddrinfo</em> know we want to wildcard our address family (IPv4/IPv6).</p>
+<p>Sending a message is pretty simple. The client can call the <em>send</em> function with its newly allocated socket. Note that the send function does not guarantee the entire message can be sent in a single call. To ensure we&rsquo;ve sent the entire message, we call send iteratively. We stop the total sent bytes is equivalent to the size of the message. A nearly identical process plays out on the server-side when we call the <em>rcv</em> function iteratively.</p>
+<h3 id="static-file-server">Static File Server</h3>
+<p>The server and client can send and receive strings. We can make this a little more useful by serving connecting clients with a file instead of just echoing their message.</p>
+<p>Not much needs to be changed. We alter the server so that it now sends a stream of data. This stream comes from the file. Similarly, we modify the client, so it receives data iteratively from its connected socket until no more data is received. The client should write this data to its local directory, saving it as a new file.</p>
+<h3 id="dynamic-file-server-taking-client-requests">Dynamic File Server: taking client requests</h3>
+<p>OK. Now we have a server that serves a single static file. This is not very dynamic. Let&rsquo;s instead have the server take a request from a connected client. This means we will need to have the server receive and parse requests.</p>
+<p>Whenever two parties are talking to one another, they need a set of rules. In a real web communication context, this is something like HTTP. Here we will use an HTTP-like interface. The result is that communication is structured.</p>
+<ol>
+<li>client requests with a predictable request format</li>
+<li>the server parses the received string, validates the request, and responds with a status</li>
+<li>If validation is successful, the server proceeds by transferring the requested file&rsquo;s data</li>
+<li>the client is disconnected and should connect again to make another request</li>
+</ol>
+<p>Recall, this project is written in C. We send strings over the TCP socket via single char bytes. We put these characters into an array, then start to parse it. I found that using functions in C&rsquo;s standard library made the project much simpler than writing my own. I made great use of the <em>strtok</em> function.</p>
+<p>Depending on the results of the parse and validation, the server responds to the client with either an OK, ERROR, or INVALID status. The client will block until this status message is received.</p>
+<p>On an OK status, the client will receive the data of the file in the same manner as the earlier implementation.</p>
+<h3 id="concurrency-serving-and-requesting-files-simultaneously">Concurrency: Serving and requesting files simultaneously</h3>
+<p>We&rsquo;ve gone from a simple echo client and server to a full-fledge server capable of serving files to clients. However, there is a final limitation. This server is only capable of serving one client at a time. What do we do if more than one client wants to connect and receive a file simultaneously?</p>
+<p>One option is to have the clients queue up in a line and wait their turn (Imagine having to wait your turn to watch a YouTube video!). This is not a very good option.</p>
+<p>Another option is to have the server launch another copy of itself when accepting a client. This copy of the program will handle the client while leaving the main instance of the server free to accept more clients. However, there is a lot of overhead associated with creating copies of programs. This option would work but would scale poorly.</p>
+<p>The third option, which is what I chose, was to make the server multi-threaded. A multi-threaded server would have its main thread accept incoming clients, then load these clients into a queue. The queue, in turn, would be handled by a child thread that would fulfill the request.</p>
+<p>I implemented this using the pthread&rsquo;s library. A callback function is registered with each thread. The function kicks off the client-handling portion of our implementation. These threads would sleep until the main thread signals that a client needs to be served.</p>
+
+    </div>
+</article>
+    </main>
+    <footer class="footer">
+    <hr class="footer-divider" />
+    <nav class="footer-nav" aria-label="Footer navigation">
+        <a href="/search/" class="footer-link">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true" focusable="false">
+  <rect x="3" y="1" width="5" height="1" fill="#262626"/>
+  <rect x="2" y="2" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="2" width="5" height="1" fill="#5897AB"/>
+  <rect x="8" y="2" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="3" width="2" height="1" fill="#5897AB"/>
+  <rect x="4" y="3" width="3" height="1" fill="#F8F5EB"/>
+  <rect x="7" y="3" width="2" height="1" fill="#5897AB"/>
+  <rect x="9" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="0" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="4" width="2" height="1" fill="#5897AB"/>
+  <rect x="3" y="4" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="5" y="4" width="1" height="1" fill="#3B7286"/>
+  <rect x="6" y="4" width="4" height="1" fill="#5897AB"/>
+  <rect x="10" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="0" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="5" width="2" height="1" fill="#5897AB"/>
+  <rect x="3" y="5" width="7" height="1" fill="#3B7286"/>
+  <rect x="10" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="0" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="6" width="2" height="1" fill="#5897AB"/>
+  <rect x="3" y="6" width="7" height="1" fill="#3B7286"/>
+  <rect x="10" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="0" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="7" width="1" height="1" fill="#5897AB"/>
+  <rect x="2" y="7" width="4" height="1" fill="#3B7286"/>
+  <rect x="6" y="7" width="3" height="1" fill="#264E5E"/>
+  <rect x="9" y="7" width="1" height="1" fill="#3B7286"/>
+  <rect x="10" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="8" width="2" height="1" fill="#3B7286"/>
+  <rect x="4" y="8" width="4" height="1" fill="#264E5E"/>
+  <rect x="8" y="8" width="1" height="1" fill="#3B7286"/>
+  <rect x="9" y="8" width="2" height="1" fill="#262626"/>
+  <rect x="2" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="9" width="2" height="1" fill="#3B7286"/>
+  <rect x="5" y="9" width="2" height="1" fill="#264E5E"/>
+  <rect x="7" y="9" width="1" height="1" fill="#3B7286"/>
+  <rect x="8" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="9" y="9" width="2" height="1" fill="#C85A46"/>
+  <rect x="11" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="10" width="5" height="1" fill="#262626"/>
+  <rect x="9" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="10" y="10" width="2" height="1" fill="#9E3B29"/>
+  <rect x="12" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="10" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="11" width="2" height="1" fill="#9E3B29"/>
+  <rect x="13" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="12" width="2" height="1" fill="#9E3B29"/>
+  <rect x="14" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="13" width="1" height="1" fill="#262626"/>
+  <rect x="13" y="13" width="1" height="1" fill="#8A4574"/>
+  <rect x="14" y="13" width="1" height="1" fill="#262626"/>
+  <rect x="13" y="14" width="2" height="1" fill="#262626"/>
+</svg>
+
+            <span>Search</span>
+        </a>
+        <span class="footer-sep" aria-hidden="true">·</span>
+        <a href="/archive/" class="footer-link">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true" focusable="false">
+  <rect x="1" y="2" width="14" height="1" fill="#262626"/>
+  <rect x="0" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="3" width="14" height="1" fill="#E5B052"/>
+  <rect x="15" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="0" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="4" width="14" height="1" fill="#C9822B"/>
+  <rect x="15" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="0" y="5" width="16" height="1" fill="#262626"/>
+  <rect x="1" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="6" width="12" height="1" fill="#C9822B"/>
+  <rect x="14" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="7" width="2" height="1" fill="#C9822B"/>
+  <rect x="4" y="7" width="8" height="1" fill="#262626"/>
+  <rect x="12" y="7" width="2" height="1" fill="#C9822B"/>
+  <rect x="14" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="8" width="2" height="1" fill="#C9822B"/>
+  <rect x="4" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="5" y="8" width="6" height="1" fill="#F8F5EB"/>
+  <rect x="11" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="8" width="2" height="1" fill="#C9822B"/>
+  <rect x="14" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="9" width="2" height="1" fill="#C9822B"/>
+  <rect x="4" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="5" y="9" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="7" y="9" width="3" height="1" fill="#787878"/>
+  <rect x="10" y="9" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="11" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="9" width="2" height="1" fill="#C9822B"/>
+  <rect x="14" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="10" width="2" height="1" fill="#C9822B"/>
+  <rect x="4" y="10" width="8" height="1" fill="#262626"/>
+  <rect x="12" y="10" width="2" height="1" fill="#C9822B"/>
+  <rect x="14" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="11" width="2" height="1" fill="#C9822B"/>
+  <rect x="4" y="11" width="8" height="1" fill="#7D501B"/>
+  <rect x="12" y="11" width="2" height="1" fill="#C9822B"/>
+  <rect x="14" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="12" width="12" height="1" fill="#7D501B"/>
+  <rect x="14" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="13" width="14" height="1" fill="#262626"/>
+  <rect x="2" y="14" width="12" height="1" fill="#262626"/>
+</svg>
+
+            <span>Archive</span>
+        </a>
+        <span class="footer-sep" aria-hidden="true">·</span>
+        <a href="/tags/" class="footer-link">
+            <span>Tags</span>
+        </a>
+        <span class="footer-sep" aria-hidden="true">·</span>
+        <a href="/index.xml" class="footer-link">
+            <span>RSS</span>
+        </a>
+    </nav>
+</footer>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            var href = this.getAttribute("href");
+            if (!href || href === "#") return;
+            var id = href.substr(1);
+            var targetEl = document.getElementById(decodeURIComponent(id));
+            if (!targetEl) return;
+            e.preventDefault();
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                targetEl.scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                targetEl.scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+            if (id === "content") {
+                targetEl.setAttribute("tabindex", "-1");
+                targetEl.focus();
+            }
+        });
+    });
+</script>
+<script>
+    var themeToggle = document.getElementById("theme-toggle");
+    if (themeToggle) {
+        themeToggle.addEventListener("click", () => {
+            const html = document.querySelector("html");
+            if (html.dataset.theme === "dark") {
+                html.dataset.theme = 'light';
+                localStorage.setItem("pref-theme", 'light');
+            } else {
+                html.dataset.theme = 'dark';
+                localStorage.setItem("pref-theme", 'dark');
+            }
+        });
+    }
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', () => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { }
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode && container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode && codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+
+</body>
+
+</html>

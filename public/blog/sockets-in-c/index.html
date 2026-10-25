@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Sockets in C | dias Diaz</title>
+<meta name="keywords" content="computer, science, socket, C, programming">
+<meta name="description" content="A high-level introduction to sockets, or what I’ve been reading for the past week.
+Introduction
+When computer networks (the prelude to the internet) were conceived, it was up to programmers at the time to create an architecture that was reliable and future-proof. Sockets came about as a middle layer between the metal of the machine and software applications.
+The nice thing about this layer is that it lends to abstracting away details. Abstracting the hardware and software layer means that these layers of independent of one another. That is, software applications are unaffected by hardware architecture and vice versa. In fact, we’ve seen this happen many times already with the transition from dial-up to broadband (and from Netscape to Chrome). The convenience of the abstraction allows programmers to not worry about the underlying hardware. So, what exactly is a socket? And why are they important?">
+<meta name="author" content="map[name:Alejandro Diaz]">
+<link rel="canonical" href="https://diasdiaz.net/blog/sockets-in-c/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.9ff2c7c14ab137364c1cea68d63bbac1bd5d58a3bc15d55f9ce84b5af66de678.css" integrity="sha256-n/LHwUqxNzZMHOpo1ju6wb1dWKO8FdVfnOhLWvZt5ng=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://diasdiaz.net/favicon.svg">
+<link rel="icon" type="image/png" sizes="16x16" href="https://diasdiaz.net/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://diasdiaz.net/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://diasdiaz.net/apple-touch-icon.png">
+<link rel="mask-icon" href="https://diasdiaz.net/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="https://diasdiaz.net/blog/sockets-in-c/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><meta property="og:url" content="https://diasdiaz.net/blog/sockets-in-c/">
+  <meta property="og:site_name" content="dias Diaz">
+  <meta property="og:title" content="Sockets in C">
+  <meta property="og:description" content="A high-level introduction to sockets, or what I’ve been reading for the past week.
+Introduction When computer networks (the prelude to the internet) were conceived, it was up to programmers at the time to create an architecture that was reliable and future-proof. Sockets came about as a middle layer between the metal of the machine and software applications.
+The nice thing about this layer is that it lends to abstracting away details. Abstracting the hardware and software layer means that these layers of independent of one another. That is, software applications are unaffected by hardware architecture and vice versa. In fact, we’ve seen this happen many times already with the transition from dial-up to broadband (and from Netscape to Chrome). The convenience of the abstraction allows programmers to not worry about the underlying hardware. So, what exactly is a socket? And why are they important?">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="blog">
+    <meta property="article:published_time" content="2021-06-16T00:00:00+00:00">
+    <meta property="article:modified_time" content="2021-06-16T00:00:00+00:00">
+    <meta property="article:tag" content="Computer">
+    <meta property="article:tag" content="Science">
+    <meta property="article:tag" content="Socket">
+    <meta property="article:tag" content="C">
+    <meta property="article:tag" content="Programming">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Sockets in C">
+  <meta name="twitter:description" content="A high-level introduction to sockets, or what I’ve been reading for the past week.
+Introduction When computer networks (the prelude to the internet) were conceived, it was up to programmers at the time to create an architecture that was reliable and future-proof. Sockets came about as a middle layer between the metal of the machine and software applications.
+The nice thing about this layer is that it lends to abstracting away details. Abstracting the hardware and software layer means that these layers of independent of one another. That is, software applications are unaffected by hardware architecture and vice versa. In fact, we’ve seen this happen many times already with the transition from dial-up to broadband (and from Netscape to Chrome). The convenience of the abstraction allows programmers to not worry about the underlying hardware. So, what exactly is a socket? And why are they important?">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Blog",
+      "item": "https://diasdiaz.net/blog/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Sockets in C",
+      "item": "https://diasdiaz.net/blog/sockets-in-c/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Sockets in C",
+  "name": "Sockets in C",
+  "description": "A high-level introduction to sockets, or what I’ve been reading for the past week.\nIntroduction When computer networks (the prelude to the internet) were conceived, it was up to programmers at the time to create an architecture that was reliable and future-proof. Sockets came about as a middle layer between the metal of the machine and software applications.\nThe nice thing about this layer is that it lends to abstracting away details. Abstracting the hardware and software layer means that these layers of independent of one another. That is, software applications are unaffected by hardware architecture and vice versa. In fact, we’ve seen this happen many times already with the transition from dial-up to broadband (and from Netscape to Chrome). The convenience of the abstraction allows programmers to not worry about the underlying hardware. So, what exactly is a socket? And why are they important?\n",
+  "keywords": [
+    "computer", "science", "socket", "C", "programming"
+  ],
+  "articleBody": "A high-level introduction to sockets, or what I’ve been reading for the past week.\nIntroduction When computer networks (the prelude to the internet) were conceived, it was up to programmers at the time to create an architecture that was reliable and future-proof. Sockets came about as a middle layer between the metal of the machine and software applications.\nThe nice thing about this layer is that it lends to abstracting away details. Abstracting the hardware and software layer means that these layers of independent of one another. That is, software applications are unaffected by hardware architecture and vice versa. In fact, we’ve seen this happen many times already with the transition from dial-up to broadband (and from Netscape to Chrome). The convenience of the abstraction allows programmers to not worry about the underlying hardware. So, what exactly is a socket? And why are they important?\nThis article will aim to give a brief overview. I leave it up to the reader to chase more information about what they find interesting, but this article summarizes what I have learned from multiple sources (cited at the bottom).\nSockets Sockets have changed remarkably little since their inception. Conceptually, you can think of them as akin to file buffers! The socket follows the UNIX ideology that everything is a file. The socket allows one to read, write, and send off data to the machine’s hardware. The socket’s API was designed to be expanded to have many, many protocols, but all you need to know about is two socket families and two IP protocols.\nUser-Datagram Protocol (UDP) UDP sockets do not guarantee data delivery. It is a best-effort protocol The best-effort method provides faster sends and requires less information than its counterpart UDP is commonly used for gaming and other applications that can afford packet-loss Transmission Control Protocol (TCP) TCP guarantees that the data is sent to the receiver sequentially and error-free TCP is slower but handles any critical data transmissions where both sides need to be sure that the data has been sent and received This socket type is extremely common Sockets essentially ‘bind’ to an address on your local computer that corresponds to the hardware. There can only be one socket per address reserved, and the operating system tends to reserve ports below 1024. Once bound, you can write and read to and from that address. It’s important to remember that neither TCP nor UDP sockets can guarantee that the data can be sent/read in one cycle. Be conscious of buffer limitations, especially from a C/C++ perspective where keeping track of memory is essential.\nIP versions complicate sockets Life was once simple, there were IP addresses to go around. We all used IPv4 without a second thought. Unfortunately, these addresses (you’ve seen them, something like 192.168.1.0) need to be unique to be used on the web. We’ve run low.\nTo future proof the web, the big wigs that set standards came out with IPv6 (something like 2001:0db8:0000:0000:0000:8a2e:0370:7334). IPv6 gives many, many more addresses. The two IP addresses don’t mix out of the box. That said IPv6 does provide interoperability. You still need to be wary of making client/server applications that can handle both IP standards. Let’s discuss that now.\nThe Basic Pattern of networking There are two classes of applications on the web. There is the client and the server. A server application waits for a client to connect to an address that the application is bound to. Upon a client connection, the server application will use an additional socket (so that the original can keep watch for new clients), and on the new socket serves the client with data or wait for a command.\nA client will bind to a socket on its machine, then take an address or name and attempt to connect to the address.\nBoth the server and client applications can send, write, and receive. There is a difference, however. A user controls the client program and typically sends commands to the server. A server runs forever and reacts to given commands. This basic pattern repeats itself on the internet. Anything from Spotify to your bank website follows this pattern.\nWe are going to replicate the pattern here with a simple program. The program will be IP agnostic, with the caveat that we will have to explain quite a few concepts, but the payoff is you can copy this style and get rolling (if traffic isn’t insane). Without further ado:\nClient code This code example implements a TCP client, composed of four steps:\nCreate a TCP socket using socket() Establish a connection to the server using connect() communicate using send() and recv() close the connection using close() The client takes a server address/ domain name, a string, and, optionally, a port. This example borrows heavily from (Donahoo, Calvert, 2009).\nincludes\n#include #include #include #include #include #include #include main\nint main(int argc, char *argv[]) { // we want 4 args the program name and the last 1 is optional if (argc \u003c 3 || argc \u003e 4){ fputs(\"Parameter(s): []\", stderr); exit(-1); } char *server = argv[1]; // first argument, after the program name, is the server address/name char *echoString = argv[2]; // second arg: string to echo // third argument is optional server/port number char *service = (argc == 4) ? argv[3] : \"echo\"; int sock = setupTcpClientSocket(server, service); if (sock \u003c 0) { fputs(\"setupTcpClientSocket() failed: unable to connected\", stderr); exit(1); } size_t echoStringLen = strlen(echoString); ssize_t numBytes = send(sock, echoString, echoStringLen, 0); if (numBytes \u003c 0) { fputs(\"send() failed\", stderr); exit(1); } else if (numBytes != echoStringLen) { fputs(\"send() sent an unexpected number of bytes\", stderr); exit(1); } // receive the same string from the server unsigned int totalBytesRecvd = 0; fputs(\"Received: \", stdout); while (totalBytesRecvd \u003c echoStringLen) { char buffer[256]; numBytes = recv(sock, buffer, 256-1, 0); // receive up to the buffer size - 1 for the \\0 character if (numBytes \u003c 0) { fputs(\"recv() failed\", stderr); exit(1); } else if (numBytes == 0) { fputs(\"recv() connection closed prematurely\", stderr); exit(1); } totalBytesRecvd += numBytes; buffer[numBytes] = '\\0'; fputs(buffer, stdout); } fputc('\\n', stdout); } setupTcpClientSocket\nint setupTcpClientSocket(const char *host, const char *service) { struct addrinfo addrCriteria; // addrCriteria used to filter on available addresses memset(\u0026addrCriteria, 0, sizeof(addrCriteria)); addrCriteria.ai_family = AF_UNSPEC; // dont care if ipv4 or ipv6 addrCriteria.ai_socktype = SOCK_STREAM; // want a TCP addrCriteria.ai_protocol = IPPROTO_TCP; // again, tcp protocol struct addrinfo *servAddr; // will hold the returned linked list of addresses int rtnVal = getaddrinfo(host, service, \u0026addrCriteria, \u0026servAddr); // getaddrinfo is your friend! very important function if (rtnVal != 0) { fputs(\"getaddrinfo() failed\", stderr); exit(1); } int sock = -1; // default a sock as negative, so we know if it does not bind for (struct addrinfo *addr = servAddr; addr != NULL; addr = addr-\u003eai_next) { sock = socket(addr-\u003eai_family, addr-\u003eai_socktype, addr-\u003eai_protocol); // try to bind for each addr in linked-list until successful if (sock \u003c 0) continue; if (connect(sock, addr-\u003eai_addr, addr-\u003eai_addrlen) == 0) break; // break out of loop if success close(sock); sock = -1; // finished loop without a success! bad! } freeaddrinfo(servAddr); // remove the linked list from memory since we're finished with it return sock; // our new socket } Server code The code implements a TCP server, composed of four steps:\nCreate a TCP socket using socket()\nAssign a port number to the socket with bind()\nTell the system to allow for connections to the port using listen()\nRepeat the following:\na. Call accept() to get a new socket for each client connection\nb. communicate with the client with send() and recv\nc. close the client connection with close()\nThe server takes a port as its argument. The code borrows from (Donahoo, Calvert, 2009).\nincludes\n#include #include #include #include #include #include #include #include // we will use this to specify the queue of connections to our server static const int MAXCON = 5; main\nint main(int argc, char *argv[]) { if (argc != 2) { // we want two arguments, the program itself and the port fputs(\"Parameter(s): ",
+  "wordCount" : "2203",
+  "inLanguage": "en",
+  "datePublished": "2021-06-16T00:00:00Z",
+  "dateModified": "2021-06-16T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"name":"Alejandro Diaz"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://diasdiaz.net/blog/sockets-in-c/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "dias Diaz",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://diasdiaz.net/favicon.svg"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <a href="#content" class="skip-link" id="skip-link">Skip to main content</a>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var skipLink = document.getElementById("skip-link");
+        if (skipLink) {
+            skipLink.addEventListener("click", function (e) {
+                var target = document.getElementById("content");
+                if (target) {
+                    target.setAttribute("tabindex", "-1");
+                    target.focus();
+                }
+            });
+        }
+    });
+</script>
+
+<header class="header">
+    <nav class="header-nav">
+        <div class="logo">
+            <a href="https://diasdiaz.net/" accesskey="h" title="Alejandro Diaz (Alt + H)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" shape-rendering="crispEdges" aria-hidden="true" focusable="false">
+  <rect x="4" y="1" width="2" height="1" fill="#262626"/>
+  <rect x="3" y="2" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="2" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="6" y="2" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="3" width="2" height="1" fill="#262626"/>
+  <rect x="3" y="4" width="4" height="1" fill="#262626"/>
+  <rect x="3" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="5" width="2" height="1" fill="#C9822B"/>
+  <rect x="6" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="15" y="5" width="2" height="1" fill="#262626"/>
+  <rect x="3" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="6" width="2" height="1" fill="#C9822B"/>
+  <rect x="6" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="15" y="6" width="2" height="1" fill="#C85A46"/>
+  <rect x="17" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="7" width="2" height="1" fill="#C9822B"/>
+  <rect x="6" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="13" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="7" width="4" height="1" fill="#C85A46"/>
+  <rect x="18" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="8" width="4" height="1" fill="#262626"/>
+  <rect x="12" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="13" y="8" width="6" height="1" fill="#C85A46"/>
+  <rect x="19" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="9" width="8" height="1" fill="#C85A46"/>
+  <rect x="20" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="10" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="10" width="10" height="1" fill="#C85A46"/>
+  <rect x="21" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="0" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="9" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="10" y="11" width="12" height="1" fill="#9E3B29"/>
+  <rect x="22" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="0" y="12" width="24" height="1" fill="#262626"/>
+  <rect x="1" y="13" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="13" width="20" height="1" fill="#F8F5EB"/>
+  <rect x="22" y="13" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="14" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="14" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="3" y="14" width="5" height="1" fill="#262626"/>
+  <rect x="8" y="14" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="10" y="14" width="4" height="1" fill="#262626"/>
+  <rect x="14" y="14" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="16" y="14" width="5" height="1" fill="#262626"/>
+  <rect x="21" y="14" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="22" y="14" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="15" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="15" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="3" y="15" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="15" width="2" height="1" fill="#5897AB"/>
+  <rect x="6" y="15" width="1" height="1" fill="#3B7286"/>
+  <rect x="7" y="15" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="15" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="9" y="15" width="2" height="1" fill="#262626"/>
+  <rect x="11" y="15" width="2" height="1" fill="#B66F98"/>
+  <rect x="13" y="15" width="2" height="1" fill="#262626"/>
+  <rect x="15" y="15" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="16" y="15" width="1" height="1" fill="#262626"/>
+  <rect x="17" y="15" width="2" height="1" fill="#5897AB"/>
+  <rect x="19" y="15" width="1" height="1" fill="#3B7286"/>
+  <rect x="20" y="15" width="1" height="1" fill="#262626"/>
+  <rect x="21" y="15" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="22" y="15" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="16" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="16" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="3" y="16" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="16" width="1" height="1" fill="#5897AB"/>
+  <rect x="5" y="16" width="1" height="1" fill="#264E5E"/>
+  <rect x="6" y="16" width="1" height="1" fill="#3B7286"/>
+  <rect x="7" y="16" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="16" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="9" y="16" width="1" height="1" fill="#262626"/>
+  <rect x="10" y="16" width="4" height="1" fill="#8A4574"/>
+  <rect x="14" y="16" width="1" height="1" fill="#262626"/>
+  <rect x="15" y="16" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="16" y="16" width="1" height="1" fill="#262626"/>
+  <rect x="17" y="16" width="1" height="1" fill="#5897AB"/>
+  <rect x="18" y="16" width="1" height="1" fill="#264E5E"/>
+  <rect x="19" y="16" width="1" height="1" fill="#3B7286"/>
+  <rect x="20" y="16" width="1" height="1" fill="#262626"/>
+  <rect x="21" y="16" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="22" y="16" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="17" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="17" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="3" y="17" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="17" width="3" height="1" fill="#3B7286"/>
+  <rect x="7" y="17" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="17" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="9" y="17" width="1" height="1" fill="#262626"/>
+  <rect x="10" y="17" width="2" height="1" fill="#8A4574"/>
+  <rect x="12" y="17" width="1" height="1" fill="#C9822B"/>
+  <rect x="13" y="17" width="1" height="1" fill="#B66F98"/>
+  <rect x="14" y="17" width="1" height="1" fill="#262626"/>
+  <rect x="15" y="17" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="16" y="17" width="1" height="1" fill="#262626"/>
+  <rect x="17" y="17" width="3" height="1" fill="#3B7286"/>
+  <rect x="20" y="17" width="1" height="1" fill="#262626"/>
+  <rect x="21" y="17" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="22" y="17" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="18" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="18" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="3" y="18" width="5" height="1" fill="#262626"/>
+  <rect x="8" y="18" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="10" y="18" width="4" height="1" fill="#262626"/>
+  <rect x="14" y="18" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="16" y="18" width="5" height="1" fill="#262626"/>
+  <rect x="21" y="18" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="22" y="18" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="19" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="19" width="7" height="1" fill="#F8F5EB"/>
+  <rect x="9" y="19" width="1" height="1" fill="#262626"/>
+  <rect x="10" y="19" width="4" height="1" fill="#63274F"/>
+  <rect x="14" y="19" width="1" height="1" fill="#262626"/>
+  <rect x="15" y="19" width="7" height="1" fill="#F8F5EB"/>
+  <rect x="22" y="19" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="20" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="20" width="6" height="1" fill="#D4CBB9"/>
+  <rect x="8" y="20" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="9" y="20" width="1" height="1" fill="#262626"/>
+  <rect x="10" y="20" width="4" height="1" fill="#63274F"/>
+  <rect x="14" y="20" width="1" height="1" fill="#262626"/>
+  <rect x="15" y="20" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="16" y="20" width="6" height="1" fill="#D4CBB9"/>
+  <rect x="22" y="20" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="21" width="22" height="1" fill="#262626"/>
+  <rect x="2" y="22" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="22" width="18" height="1" fill="#7D501B"/>
+  <rect x="21" y="22" width="1" height="1" fill="#262626"/>
+</svg>
+
+                <span class="logo-title">Alejandro Diaz</span>
+            </a>
+        </div>
+        <div class="nav-right">
+            <ul id="menu" class="menu">
+                <li>
+                    <a href="https://diasdiaz.net/blog/" title="Blog" aria-current="page">
+                        <span class="nav-item-inner active">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true" focusable="false">
+  <rect x="2" y="1" width="12" height="1" fill="#262626"/>
+  <rect x="1" y="2" width="2" height="1" fill="#262626"/>
+  <rect x="3" y="2" width="9" height="1" fill="#B66F98"/>
+  <rect x="12" y="2" width="2" height="1" fill="#262626"/>
+  <rect x="14" y="2" width="1" height="1" fill="#9E3B29"/>
+  <rect x="15" y="2" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="3" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="3" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="3" width="9" height="1" fill="#B66F98"/>
+  <rect x="13" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="3" width="1" height="1" fill="#9E3B29"/>
+  <rect x="15" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="4" width="2" height="1" fill="#262626"/>
+  <rect x="3" y="4" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="4" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="5" y="4" width="1" height="1" fill="#8A4574"/>
+  <rect x="6" y="4" width="5" height="1" fill="#262626"/>
+  <rect x="11" y="4" width="1" height="1" fill="#8A4574"/>
+  <rect x="12" y="4" width="2" height="1" fill="#262626"/>
+  <rect x="14" y="4" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="15" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="5" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="3" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="5" width="1" height="1" fill="#8A4574"/>
+  <rect x="5" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="6" y="5" width="5" height="1" fill="#F8F5EB"/>
+  <rect x="11" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="5" width="1" height="1" fill="#8A4574"/>
+  <rect x="13" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="5" width="1" height="1" fill="#E5B052"/>
+  <rect x="15" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="6" width="2" height="1" fill="#262626"/>
+  <rect x="3" y="6" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="4" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="5" y="6" width="1" height="1" fill="#8A4574"/>
+  <rect x="6" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="6" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="8" y="6" width="3" height="1" fill="#787878"/>
+  <rect x="11" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="6" width="1" height="1" fill="#8A4574"/>
+  <rect x="13" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="6" width="1" height="1" fill="#C9822B"/>
+  <rect x="15" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="7" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="3" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="7" width="1" height="1" fill="#8A4574"/>
+  <rect x="5" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="6" y="7" width="5" height="1" fill="#F8F5EB"/>
+  <rect x="11" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="7" width="1" height="1" fill="#8A4574"/>
+  <rect x="13" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="7" width="1" height="1" fill="#C9822B"/>
+  <rect x="15" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="8" width="2" height="1" fill="#262626"/>
+  <rect x="3" y="8" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="4" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="5" y="8" width="1" height="1" fill="#8A4574"/>
+  <rect x="6" y="8" width="5" height="1" fill="#262626"/>
+  <rect x="11" y="8" width="1" height="1" fill="#8A4574"/>
+  <rect x="12" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="13" y="8" width="1" height="1" fill="#C9822B"/>
+  <rect x="14" y="8" width="1" height="1" fill="#E5B052"/>
+  <rect x="15" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="9" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="3" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="9" width="9" height="1" fill="#8A4574"/>
+  <rect x="13" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="9" width="1" height="1" fill="#C9822B"/>
+  <rect x="15" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="10" width="2" height="1" fill="#262626"/>
+  <rect x="3" y="10" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="4" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="5" y="10" width="7" height="1" fill="#8A4574"/>
+  <rect x="12" y="10" width="2" height="1" fill="#262626"/>
+  <rect x="14" y="10" width="1" height="1" fill="#C9822B"/>
+  <rect x="15" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="11" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="3" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="11" width="9" height="1" fill="#63274F"/>
+  <rect x="13" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="11" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="15" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="12" width="2" height="1" fill="#262626"/>
+  <rect x="3" y="12" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="4" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="5" y="12" width="8" height="1" fill="#63274F"/>
+  <rect x="13" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="12" width="1" height="1" fill="#1C1C1C"/>
+  <rect x="15" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="13" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="13" width="10" height="1" fill="#D4CBB9"/>
+  <rect x="13" y="13" width="2" height="1" fill="#262626"/>
+  <rect x="2" y="14" width="12" height="1" fill="#262626"/>
+</svg>
+
+                            <span class="nav-label">Blog</span>
+                        </span>
+                    </a>
+                </li>
+                <li>
+                    <a href="https://diasdiaz.net/resume/" title="Résumé">
+                        <span class="nav-item-inner">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true" focusable="false">
+  <rect x="2" y="1" width="10" height="1" fill="#262626"/>
+  <rect x="2" y="2" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="2" width="8" height="1" fill="#F8F5EB"/>
+  <rect x="11" y="2" width="2" height="1" fill="#262626"/>
+  <rect x="2" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="3" width="8" height="1" fill="#F8F5EB"/>
+  <rect x="11" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="3" width="1" height="1" fill="#3B7286"/>
+  <rect x="13" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="4" width="8" height="1" fill="#F8F5EB"/>
+  <rect x="11" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="4" width="2" height="1" fill="#3B7286"/>
+  <rect x="14" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="5" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="5" y="5" width="6" height="1" fill="#8A4574"/>
+  <rect x="11" y="5" width="4" height="1" fill="#262626"/>
+  <rect x="2" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="6" width="12" height="1" fill="#F8F5EB"/>
+  <rect x="15" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="7" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="5" y="7" width="8" height="1" fill="#787878"/>
+  <rect x="13" y="7" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="15" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="8" width="12" height="1" fill="#F8F5EB"/>
+  <rect x="15" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="9" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="5" y="9" width="8" height="1" fill="#787878"/>
+  <rect x="13" y="9" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="15" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="10" width="12" height="1" fill="#F8F5EB"/>
+  <rect x="15" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="11" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="5" y="11" width="6" height="1" fill="#787878"/>
+  <rect x="11" y="11" width="4" height="1" fill="#F8F5EB"/>
+  <rect x="15" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="12" width="12" height="1" fill="#F8F5EB"/>
+  <rect x="15" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="13" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="13" width="12" height="1" fill="#D4CBB9"/>
+  <rect x="15" y="13" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="14" width="14" height="1" fill="#262626"/>
+  <rect x="3" y="15" width="10" height="1" fill="#262626"/>
+</svg>
+
+                            <span class="nav-label">Résumé</span>
+                        </span>
+                    </a>
+                </li>
+                <li>
+                    <a href="https://diasdiaz.net/shelves/" title="Shelves">
+                        <span class="nav-item-inner">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true" focusable="false">
+  <rect x="2" y="2" width="4" height="1" fill="#262626"/>
+  <rect x="2" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="3" width="2" height="1" fill="#B66F98"/>
+  <rect x="5" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="4" width="2" height="1" fill="#8A4574"/>
+  <rect x="5" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="4" width="3" height="1" fill="#262626"/>
+  <rect x="2" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="5" width="2" height="1" fill="#8A4574"/>
+  <rect x="5" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="5" width="1" height="1" fill="#5897AB"/>
+  <rect x="9" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="5" width="3" height="1" fill="#262626"/>
+  <rect x="2" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="6" width="2" height="1" fill="#8A4574"/>
+  <rect x="5" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="6" width="1" height="1" fill="#3B7286"/>
+  <rect x="9" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="6" width="1" height="1" fill="#E5B052"/>
+  <rect x="13" y="6" width="2" height="1" fill="#262626"/>
+  <rect x="15" y="6" width="1" height="1" fill="#9E3B29"/>
+  <rect x="2" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="7" width="2" height="1" fill="#8A4574"/>
+  <rect x="5" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="7" width="1" height="1" fill="#3B7286"/>
+  <rect x="9" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="7" width="1" height="1" fill="#C9822B"/>
+  <rect x="13" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="7" width="2" height="1" fill="#9E3B29"/>
+  <rect x="2" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="8" width="2" height="1" fill="#8A4574"/>
+  <rect x="5" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="8" width="1" height="1" fill="#3B7286"/>
+  <rect x="9" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="8" width="1" height="1" fill="#C9822B"/>
+  <rect x="13" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="8" width="2" height="1" fill="#9E3B29"/>
+  <rect x="2" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="9" width="2" height="1" fill="#8A4574"/>
+  <rect x="5" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="9" width="1" height="1" fill="#3B7286"/>
+  <rect x="9" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="9" width="1" height="1" fill="#C9822B"/>
+  <rect x="13" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="9" width="2" height="1" fill="#9E3B29"/>
+  <rect x="2" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="10" width="2" height="1" fill="#63274F"/>
+  <rect x="5" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="10" width="1" height="1" fill="#264E5E"/>
+  <rect x="9" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="10" width="1" height="1" fill="#7D501B"/>
+  <rect x="13" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="10" width="2" height="1" fill="#9E3B29"/>
+  <rect x="2" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="11" width="2" height="1" fill="#63274F"/>
+  <rect x="5" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="11" width="1" height="1" fill="#264E5E"/>
+  <rect x="9" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="11" width="1" height="1" fill="#7D501B"/>
+  <rect x="13" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="11" width="2" height="1" fill="#9E3B29"/>
+  <rect x="2" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="12" width="2" height="1" fill="#63274F"/>
+  <rect x="5" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="12" width="1" height="1" fill="#264E5E"/>
+  <rect x="9" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="12" width="1" height="1" fill="#7D501B"/>
+  <rect x="13" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="12" width="2" height="1" fill="#9E3B29"/>
+  <rect x="0" y="13" width="16" height="1" fill="#262626"/>
+  <rect x="1" y="14" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="14" width="12" height="1" fill="#7D501B"/>
+  <rect x="14" y="14" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="15" width="12" height="1" fill="#262626"/>
+</svg>
+
+                            <span class="nav-label">Shelves</span>
+                        </span>
+                    </a>
+                </li>
+            </ul>
+            <div class="logo-switches">
+                <button id="theme-toggle" class="theme-toggle" accesskey="t" title="Toggle theme (Alt + T)" aria-label="Toggle theme">
+                    <svg class="moon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg class="sun" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                    <span class="theme-label">Theme</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+</header>
+<main class="main" id="content" tabindex="-1">
+<article class="post-single">
+    <header class="post-header">
+        <h1 class="post-title">Sockets in C</h1>
+        <div class="post-meta">
+            <time datetime="2021-06-16">2021-06-16</time>
+            <span class="meta-sep" aria-hidden="true">·</span>
+            <span class="reading-time">11 min read</span>
+        </div>
+        <div class="post-tags">
+            <a href="/tags/computer/" class="post-tag">#computer</a>
+            <a href="/tags/science/" class="post-tag">#science</a>
+            <a href="/tags/socket/" class="post-tag">#socket</a>
+            <a href="/tags/c/" class="post-tag">#C</a>
+            <a href="/tags/programming/" class="post-tag">#programming</a>
+        </div>
+    </header>
+
+    <div class="post-content md-content">
+        <p>A high-level introduction to sockets, or what I’ve been reading for the past week.</p>
+<h2 id="introduction">Introduction</h2>
+<p>When computer networks (the prelude to the internet) were conceived, it was up to programmers at the time to create an architecture that was reliable and future-proof. Sockets came about as a middle layer between the metal of the machine and software applications.</p>
+<p>The nice thing about this layer is that it lends to abstracting away details. Abstracting the hardware and software layer means that these layers of independent of one another. That is, software applications are unaffected by hardware architecture and vice versa. In fact, we’ve seen this happen many times already with the transition from dial-up to broadband (and from Netscape to Chrome). The convenience of the abstraction allows programmers to not worry about the underlying hardware. So, what exactly is a socket? And why are they important?</p>
+<p>This article will aim to give a brief overview. I leave it up to the reader to chase more information about what they find interesting, but this article summarizes what I have learned from multiple sources (cited at the bottom).</p>
+<h2 id="sockets">Sockets</h2>
+<p>Sockets have changed remarkably little since their inception. Conceptually, you can think of them as akin to file buffers! The socket follows the UNIX ideology that everything is a file. The socket allows one to read, write, and send off data to the machine&rsquo;s hardware. The socket&rsquo;s API was designed to be expanded to have many, many protocols, but all you need to know about is <strong>two socket families</strong> and <strong>two IP protocols</strong>.</p>
+<ul>
+<li>User-Datagram Protocol (UDP)
+<ul>
+<li>UDP sockets do not guarantee data delivery. It is a best-effort protocol</li>
+<li>The best-effort method provides faster sends and requires less information than its counterpart</li>
+<li>UDP is commonly used for gaming and other applications that can afford packet-loss</li>
+</ul>
+</li>
+<li>Transmission Control Protocol (TCP)
+<ul>
+<li>TCP guarantees that the data is sent to the receiver sequentially and error-free</li>
+<li>TCP is slower but handles any critical data transmissions where both sides need to be sure that the data has been sent and received</li>
+<li>This socket type is extremely common</li>
+</ul>
+</li>
+</ul>
+<p>Sockets essentially ‘bind’ to an address on your local computer that corresponds to the hardware. There can only be one socket per address reserved, and the operating system tends to reserve ports below 1024. Once bound, you can write and read to and from that address. It&rsquo;s important to remember that neither TCP nor UDP sockets can guarantee that the data can be sent/read in one cycle. Be conscious of buffer limitations, especially from a C/C++ perspective where keeping track of memory is essential.</p>
+<h3 id="ip-versions-complicate-sockets">IP versions complicate sockets</h3>
+<p>Life was once simple, there were IP addresses to go around. We all used IPv4 without a second thought. Unfortunately, these addresses (you’ve seen them, something like 192.168.1.0) need to be unique to be used on the web. We’ve run low.</p>
+<p>To future proof the web, the big wigs that set standards came out with IPv6 (something like 2001:0db8:0000:0000:0000:8a2e:0370:7334). IPv6 gives many, many more addresses. The two IP addresses don’t mix out of the box. That said IPv6 does provide interoperability. You still need to be wary of making client/server applications that can handle both IP standards. Let’s discuss that now.</p>
+<h2 id="the-basic-pattern-of-networking">The Basic Pattern of networking</h2>
+<p>There are two classes of applications on the web. There is the client and the server. A server application waits for a client to connect to an address that the application is bound to. Upon a client connection, the server application will use an additional socket (so that the original can keep watch for new clients), and on the new socket serves the client with data or wait for a command.</p>
+<p>A client will bind to a socket on its machine, then take an address or name and attempt to connect to the address.</p>
+<p>Both the server and client applications can send, write, and receive. There is a difference, however. A user controls the client program and typically sends commands to the server. A server runs forever and reacts to given commands.
+This basic pattern repeats itself on the internet. Anything from Spotify to your bank website follows this pattern.</p>
+<p>We are going to replicate the pattern here with a simple program. The program will be IP agnostic, with the caveat that we will have to explain quite a few concepts, but the payoff is you can copy this style and get rolling (if traffic isn’t insane). Without further ado:</p>
+<h2 id="client-code">Client code</h2>
+<p>This code example implements a TCP client, composed of four steps:</p>
+<ol>
+<li>Create a TCP socket using socket()</li>
+<li>Establish a connection to the server using connect()</li>
+<li>communicate using send() and recv()</li>
+<li>close the connection using close()</li>
+</ol>
+<p>The client takes a server address/ domain name, a string, and, optionally, a port. This example borrows heavily from (Donahoo, Calvert, 2009).</p>
+<p><strong>includes</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdlib.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;string.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;unistd.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;sys/types.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;sys/socket.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;netdb.h&gt;</span><span style="color:#75715e">
+</span></span></span></code></pre></div><p><strong>main</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">int</span> argc, <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>argv[]) {
+</span></span><span style="display:flex;"><span> <span style="color:#75715e">// we want 4 args the program name and the last 1 is optional
+</span></span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (argc <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">3</span> <span style="color:#f92672">||</span> argc <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">4</span>){
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">fputs</span>(<span style="color:#e6db74">&#34;Parameter(s): &lt;Server Address/Name&gt; &lt;Echo String&gt; [&lt;Server Port/Service&gt;]&#34;</span>, stderr);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">exit</span>(<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>server <span style="color:#f92672">=</span> argv[<span style="color:#ae81ff">1</span>]; <span style="color:#75715e">// first argument, after the program name, is the server address/name
+</span></span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>echoString <span style="color:#f92672">=</span> argv[<span style="color:#ae81ff">2</span>]; <span style="color:#75715e">// second arg: string to echo
+</span></span></span><span style="display:flex;"><span>  <span style="color:#75715e">// third argument is optional server/port number
+</span></span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>service <span style="color:#f92672">=</span> (argc <span style="color:#f92672">==</span> <span style="color:#ae81ff">4</span>) <span style="color:#f92672">?</span> argv[<span style="color:#ae81ff">3</span>] <span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;echo&#34;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">int</span> sock <span style="color:#f92672">=</span> <span style="color:#a6e22e">setupTcpClientSocket</span>(server, service);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (sock <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">0</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">fputs</span>(<span style="color:#e6db74">&#34;setupTcpClientSocket() failed: unable to connected&#34;</span>, stderr);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">exit</span>(<span style="color:#ae81ff">1</span>);
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">size_t</span> echoStringLen <span style="color:#f92672">=</span> <span style="color:#a6e22e">strlen</span>(echoString);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">ssize_t</span> numBytes <span style="color:#f92672">=</span> <span style="color:#a6e22e">send</span>(sock, echoString, echoStringLen, <span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (numBytes <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">0</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">fputs</span>(<span style="color:#e6db74">&#34;send() failed&#34;</span>, stderr);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">exit</span>(<span style="color:#ae81ff">1</span>);
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> (numBytes <span style="color:#f92672">!=</span> echoStringLen) {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">fputs</span>(<span style="color:#e6db74">&#34;send() sent an unexpected number of bytes&#34;</span>, stderr);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">exit</span>(<span style="color:#ae81ff">1</span>);
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// receive the same string from the server
+</span></span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span> totalBytesRecvd <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">fputs</span>(<span style="color:#e6db74">&#34;Received: &#34;</span>, stdout);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">while</span> (totalBytesRecvd <span style="color:#f92672">&lt;</span> echoStringLen) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">char</span> buffer[<span style="color:#ae81ff">256</span>];
+</span></span><span style="display:flex;"><span>    numBytes <span style="color:#f92672">=</span> <span style="color:#a6e22e">recv</span>(sock, buffer, <span style="color:#ae81ff">256</span><span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">0</span>); <span style="color:#75715e">// receive up to the buffer size - 1 for the \0 character
+</span></span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (numBytes <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">0</span>) {
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">fputs</span>(<span style="color:#e6db74">&#34;recv() failed&#34;</span>, stderr);
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">exit</span>(<span style="color:#ae81ff">1</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> (numBytes <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>) {
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">fputs</span>(<span style="color:#e6db74">&#34;recv() connection closed prematurely&#34;</span>, stderr);
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">exit</span>(<span style="color:#ae81ff">1</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    totalBytesRecvd <span style="color:#f92672">+=</span> numBytes;
+</span></span><span style="display:flex;"><span>    buffer[numBytes] <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;\0&#39;</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">fputs</span>(buffer, stdout);
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">fputc</span>(<span style="color:#e6db74">&#39;\n&#39;</span>, stdout);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><strong>setupTcpClientSocket</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">setupTcpClientSocket</span>(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>host, <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>service)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">struct</span> addrinfo addrCriteria; <span style="color:#75715e">// addrCriteria used to filter on available addresses
+</span></span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">memset</span>(<span style="color:#f92672">&amp;</span>addrCriteria, <span style="color:#ae81ff">0</span>, <span style="color:#66d9ef">sizeof</span>(addrCriteria));
+</span></span><span style="display:flex;"><span>  addrCriteria.ai_family <span style="color:#f92672">=</span> AF_UNSPEC; <span style="color:#75715e">// dont care if ipv4 or ipv6
+</span></span></span><span style="display:flex;"><span>  addrCriteria.ai_socktype <span style="color:#f92672">=</span> SOCK_STREAM; <span style="color:#75715e">// want a TCP
+</span></span></span><span style="display:flex;"><span>  addrCriteria.ai_protocol <span style="color:#f92672">=</span> IPPROTO_TCP; <span style="color:#75715e">// again, tcp protocol
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">struct</span> addrinfo <span style="color:#f92672">*</span>servAddr; <span style="color:#75715e">// will hold the returned linked list of addresses
+</span></span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">int</span> rtnVal <span style="color:#f92672">=</span> <span style="color:#a6e22e">getaddrinfo</span>(host, service, <span style="color:#f92672">&amp;</span>addrCriteria, <span style="color:#f92672">&amp;</span>servAddr); <span style="color:#75715e">// getaddrinfo is your friend! very important function
+</span></span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (rtnVal <span style="color:#f92672">!=</span> <span style="color:#ae81ff">0</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">fputs</span>(<span style="color:#e6db74">&#34;getaddrinfo() failed&#34;</span>, stderr);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">exit</span>(<span style="color:#ae81ff">1</span>);
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">int</span> sock <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>; <span style="color:#75715e">// default a sock as negative, so we know if it does not bind
+</span></span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">struct</span> addrinfo <span style="color:#f92672">*</span>addr <span style="color:#f92672">=</span> servAddr; addr <span style="color:#f92672">!=</span> NULL; addr <span style="color:#f92672">=</span> addr<span style="color:#f92672">-&gt;</span>ai_next) {
+</span></span><span style="display:flex;"><span>    sock <span style="color:#f92672">=</span> <span style="color:#a6e22e">socket</span>(addr<span style="color:#f92672">-&gt;</span>ai_family, addr<span style="color:#f92672">-&gt;</span>ai_socktype, addr<span style="color:#f92672">-&gt;</span>ai_protocol); <span style="color:#75715e">// try to bind for each addr in linked-list until successful
+</span></span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (sock <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">continue</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">connect</span>(sock, addr<span style="color:#f92672">-&gt;</span>ai_addr, addr<span style="color:#f92672">-&gt;</span>ai_addrlen) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">break</span>; <span style="color:#75715e">// break out of loop if success
+</span></span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">close</span>(sock);
+</span></span><span style="display:flex;"><span>    sock <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>;  <span style="color:#75715e">// finished loop without a success! bad!
+</span></span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">freeaddrinfo</span>(servAddr); <span style="color:#75715e">// remove the linked list from memory since we&#39;re finished with it
+</span></span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> sock; <span style="color:#75715e">// our new socket
+</span></span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="server-code">Server code</h2>
+<p>The code implements a TCP server, composed of four steps:</p>
+<ol>
+<li>
+<p>Create a TCP socket using socket()</p>
+</li>
+<li>
+<p>Assign a port number to the socket with bind()</p>
+</li>
+<li>
+<p>Tell the system to allow for connections to the port using listen()</p>
+</li>
+<li>
+<p>Repeat the following:</p>
+<p>a. Call accept() to get a new socket for each client connection</p>
+<p>b. communicate with the client with send() and recv</p>
+<p>c. close the client connection with close()</p>
+</li>
+</ol>
+<p>The server takes a port as its argument. The code borrows from (Donahoo, Calvert, 2009).</p>
+<p><strong>includes</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdlib.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;string.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;unistd.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;sys/types.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;sys/socket.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;netdb.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;arpa/inet.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span> <span style="color:#75715e">// we will use this to specify the queue of connections to our server
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">static</span> <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">int</span> MAXCON <span style="color:#f92672">=</span> <span style="color:#ae81ff">5</span>;
+</span></span></code></pre></div><p><strong>main</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">int</span> argc, <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>argv[])
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (argc <span style="color:#f92672">!=</span> <span style="color:#ae81ff">2</span>) { <span style="color:#75715e">// we want two arguments, the program itself and the port
+</span></span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">fputs</span>(<span style="color:#e6db74">&#34;Parameter(s): &lt;Server Port/ Service&#34;</span>, stderr);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">exit</span>(<span style="color:#ae81ff">1</span>);
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>service <span style="color:#f92672">=</span> argv[<span style="color:#ae81ff">1</span>]; <span style="color:#75715e">// the port we want to serve bind
+</span></span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">int</span> servSock <span style="color:#f92672">=</span> <span style="color:#a6e22e">setupTcpServerSocket</span>(service); <span style="color:#75715e">// let&#39;s make our server socket
+</span></span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (servSock <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">0</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">fputs</span>(<span style="color:#e6db74">&#34;setupTcpServerSocket() failed&#34;</span>, stderr);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">exit</span>(<span style="color:#ae81ff">1</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">for</span> (;;) { <span style="color:#75715e">// run forever
+</span></span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> clntSock <span style="color:#f92672">=</span> <span style="color:#a6e22e">acceptTcpConnection</span>(servSock);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">handleTcpClient</span>(clntSock);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">close</span>(clntSock);
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><strong>setupTcpSocket</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">setupTcpServerSocket</span>(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>service)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">struct</span> addrinfo addrCriteria; <span style="color:#75715e">// we use the addrinfo structure to hold the info... addrinfo is flexible
+</span></span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">memset</span>(<span style="color:#f92672">&amp;</span>addrCriteria, <span style="color:#ae81ff">0</span>, <span style="color:#66d9ef">sizeof</span>(addrCriteria)); <span style="color:#75715e">// clear out the struct
+</span></span></span><span style="display:flex;"><span>  addrCriteria.ai_family <span style="color:#f92672">=</span> AF_UNSPEC; <span style="color:#75715e">// IP agnostic
+</span></span></span><span style="display:flex;"><span>  addrCriteria.ai_flags <span style="color:#f92672">=</span> AI_PASSIVE; <span style="color:#75715e">// any
+</span></span></span><span style="display:flex;"><span>  addrCriteria.ai_socktype <span style="color:#f92672">=</span> SOCK_STREAM; <span style="color:#75715e">// stream socket (TCP)
+</span></span></span><span style="display:flex;"><span>  addrCriteria.ai_protocol <span style="color:#f92672">=</span> IPPROTO_TCP; <span style="color:#75715e">// TCP protocol
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">struct</span> addrinfo <span style="color:#f92672">*</span>servAddr; <span style="color:#75715e">// this will hold all the returned addresses that match the criteria... linked list style
+</span></span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">int</span> rtnVal <span style="color:#f92672">=</span> <span style="color:#a6e22e">getaddrinfo</span>(NULL, service, <span style="color:#f92672">&amp;</span>addrCriteria, <span style="color:#f92672">&amp;</span>servAddr); <span style="color:#75715e">// getaddrinfo is our friend! works with both addresses and names
+</span></span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (rtnVal <span style="color:#f92672">!=</span> <span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>  {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">fputs</span>(<span style="color:#e6db74">&#34;get addrinfo() failed&#34;</span>, stderr);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">fputs</span>(<span style="color:#a6e22e">gai_strerror</span>(rtnVal), stderr);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">exit</span>(<span style="color:#ae81ff">1</span>);
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">int</span> servSock <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">struct</span> addrinfo <span style="color:#f92672">*</span>addr <span style="color:#f92672">=</span> servAddr; addr <span style="color:#f92672">!=</span> NULL; addr <span style="color:#f92672">=</span> addr<span style="color:#f92672">-&gt;</span>ai_next) { <span style="color:#75715e">// loop through all the returned addresses until one works
+</span></span></span><span style="display:flex;"><span>    servSock <span style="color:#f92672">=</span> <span style="color:#a6e22e">socket</span>(servAddr<span style="color:#f92672">-&gt;</span>ai_family, servAddr<span style="color:#f92672">-&gt;</span>ai_socktype, servAddr<span style="color:#f92672">-&gt;</span>ai_protocol); <span style="color:#75715e">// try to bind the socket
+</span></span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (servSock <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">continue</span>; <span style="color:#75715e">// socket creation failed, try the next one
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> ((<span style="color:#a6e22e">bind</span>(servSock, servAddr<span style="color:#f92672">-&gt;</span>ai_addr, servAddr<span style="color:#f92672">-&gt;</span>ai_addrlen) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>) <span style="color:#f92672">&amp;&amp;</span> (<span style="color:#a6e22e">listen</span>(servSock, MAXCON) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>)) <span style="color:#75715e">// if bound works and can listen to socket
+</span></span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">struct</span> sockaddr_storage localAddr; <span style="color:#75715e">// sockaddr_storage is IP agnostic
+</span></span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">socklen_t</span> addrSize <span style="color:#f92672">=</span> <span style="color:#66d9ef">sizeof</span>(localAddr);
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">getsockname</span>(servSock, (<span style="color:#66d9ef">struct</span> sockaddr <span style="color:#f92672">*</span>) <span style="color:#f92672">&amp;</span>localAddr, <span style="color:#f92672">&amp;</span>addrSize) <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">0</span>){
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">fputs</span>(<span style="color:#e6db74">&#34;getsockname() failed&#34;</span>, stderr);
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">exit</span>(<span style="color:#ae81ff">1</span>);
+</span></span><span style="display:flex;"><span>      }
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">fputs</span>(<span style="color:#e6db74">&#34;binding to &#34;</span>, stdout);
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">printSocketAddress</span>((<span style="color:#66d9ef">struct</span> sockaddr <span style="color:#f92672">*</span>) <span style="color:#f92672">&amp;</span>localAddr, stdout); <span style="color:#75715e">// printing what address we bound to
+</span></span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">fputc</span>(<span style="color:#e6db74">&#39;\n&#39;</span>, stdout);
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">close</span>(servSock);
+</span></span><span style="display:flex;"><span>    servSock <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">freeaddrinfo</span>(servAddr);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> servSock;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><strong>acceptTcpConnection</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">acceptTcpConnection</span>(<span style="color:#66d9ef">int</span> servSock)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">struct</span> sockaddr_storage clntAddr; <span style="color:#75715e">// client address
+</span></span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">socklen_t</span> clntAddrLen <span style="color:#f92672">=</span> <span style="color:#66d9ef">sizeof</span>(clntAddr); <span style="color:#75715e">// need the length of the client&#39;s address
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// wait for the client to connect
+</span></span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">int</span> clntSock <span style="color:#f92672">=</span> <span style="color:#a6e22e">accept</span>(servSock, (<span style="color:#66d9ef">struct</span> sockaddr <span style="color:#f92672">*</span>) <span style="color:#f92672">&amp;</span>clntAddr, <span style="color:#f92672">&amp;</span>clntAddrLen); <span style="color:#75715e">// accept a connection
+</span></span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (clntSock <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">0</span>) <span style="color:#75715e">// negative return indicates failure
+</span></span></span><span style="display:flex;"><span>  {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">fputs</span>(<span style="color:#e6db74">&#34;accept() failed&#34;</span>, stderr);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">exit</span>(<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>);
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">fputs</span>(<span style="color:#e6db74">&#34;handling client &#34;</span>, stdout);
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">printSocketAddress</span>((<span style="color:#66d9ef">struct</span> sockaddr <span style="color:#f92672">*</span>) <span style="color:#f92672">&amp;</span>clntAddr, stdout); <span style="color:#75715e">// just printing who connected
+</span></span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">fputc</span>(<span style="color:#e6db74">&#39;\n&#39;</span>, stdout); <span style="color:#75715e">// break line
+</span></span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> clntSock;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><strong>handleTcpClient</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">handleTcpClient</span> (<span style="color:#66d9ef">int</span> clntSocket)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">char</span> buffer[<span style="color:#ae81ff">250</span>]; <span style="color:#75715e">// buffer one byte
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// receive message from client
+</span></span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">ssize_t</span> numBytesRcvd <span style="color:#f92672">=</span> <span style="color:#a6e22e">recv</span>(clntSocket, buffer, <span style="color:#ae81ff">250</span>, <span style="color:#ae81ff">0</span>); <span style="color:#75715e">// 256-1 is to make room for &#39;\0&#39;
+</span></span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (numBytesRcvd <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">0</span>){
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">fputs</span>(<span style="color:#e6db74">&#34;recv() failed&#34;</span>, stderr);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">exit</span>(<span style="color:#ae81ff">1</span>);
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// send received string and receive again until end of stream
+</span></span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">while</span> (numBytesRcvd <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>  {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">ssize_t</span> numBytesSent <span style="color:#f92672">=</span> <span style="color:#a6e22e">send</span>(clntSocket, buffer, numBytesRcvd, <span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (numBytesSent <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">0</span>){
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">fputs</span>(<span style="color:#e6db74">&#34;send() failed&#34;</span>, stderr);
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">exit</span>(<span style="color:#ae81ff">1</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> (numBytesSent <span style="color:#f92672">!=</span> numBytesRcvd){
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">fputs</span>(<span style="color:#e6db74">&#34;send() Sent unexpected number of bytes&#34;</span>, stderr);
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">exit</span>(<span style="color:#ae81ff">1</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// see if there is more data to receive
+</span></span></span><span style="display:flex;"><span>    numBytesRcvd <span style="color:#f92672">=</span> <span style="color:#a6e22e">recv</span>(clntSocket, buffer, <span style="color:#ae81ff">250</span>, <span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (numBytesRcvd <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">0</span>){
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">fputs</span>(<span style="color:#e6db74">&#34;recv() failed on second iteration&#34;</span>, stderr);
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">exit</span>(<span style="color:#ae81ff">1</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">close</span>(clntSocket);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><strong>printSocketAddress</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">printSocketAddress</span>(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">struct</span> sockaddr <span style="color:#f92672">*</span>address, FILE <span style="color:#f92672">*</span>stream) <span style="color:#75715e">// this is just a function to print connection
+</span></span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (address <span style="color:#f92672">==</span> NULL <span style="color:#f92672">||</span> stream <span style="color:#f92672">==</span> NULL)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>numericAddress; <span style="color:#75715e">// we&#39;re not sure of the size yet, so we use void
+</span></span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">char</span> addrBuffer[INET6_ADDRSTRLEN]; <span style="color:#75715e">// INET6_ADDRSTRLEN is the max len of an ipv6 connection, this is enough for both ipv6 and ipv4
+</span></span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">in_port_t</span> port;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">switch</span>(address<span style="color:#f92672">-&gt;</span>sa_family)
+</span></span><span style="display:flex;"><span>  {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// need to convert to given address either to ipv4 or ipv6 compatible structure, using sockaddr_in or sockaddr_in6
+</span></span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">case</span> AF_INET:
+</span></span><span style="display:flex;"><span>      numericAddress <span style="color:#f92672">=</span> <span style="color:#f92672">&amp;</span>((<span style="color:#66d9ef">struct</span> sockaddr_in <span style="color:#f92672">*</span>) address)<span style="color:#f92672">-&gt;</span>sin_addr;
+</span></span><span style="display:flex;"><span>      port <span style="color:#f92672">=</span> <span style="color:#a6e22e">ntohs</span>(((<span style="color:#66d9ef">struct</span> sockaddr_in <span style="color:#f92672">*</span>) address)<span style="color:#f92672">-&gt;</span>sin_port); <span style="color:#75715e">// network to host short
+</span></span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">case</span> AF_INET6:
+</span></span><span style="display:flex;"><span>      numericAddress <span style="color:#f92672">=</span> <span style="color:#f92672">&amp;</span>((<span style="color:#66d9ef">struct</span> sockaddr_in6 <span style="color:#f92672">*</span>) address)<span style="color:#f92672">-&gt;</span>sin6_addr;
+</span></span><span style="display:flex;"><span>      port <span style="color:#f92672">=</span> <span style="color:#a6e22e">ntohs</span>(((<span style="color:#66d9ef">struct</span> sockaddr_in6 <span style="color:#f92672">*</span>) address)<span style="color:#f92672">-&gt;</span>sin6_port); <span style="color:#75715e">// network to host short
+</span></span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">default</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">fputs</span>(<span style="color:#e6db74">&#34;[unknown type]&#34;</span>, stream);
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">return</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">inet_ntop</span>(address<span style="color:#f92672">-&gt;</span>sa_family, numericAddress, addrBuffer, <span style="color:#66d9ef">sizeof</span>(addrBuffer)) <span style="color:#f92672">==</span> NULL) <span style="color:#75715e">// convert ipv4 or ipv6 address (inet) from bytes (network), to printable (string)
+</span></span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">fputs</span>(<span style="color:#e6db74">&#34;[invalid address]&#34;</span>, stream);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">fprintf</span>(stream, <span style="color:#e6db74">&#34;%s&#34;</span>, addrBuffer); <span style="color:#75715e">// print the address
+</span></span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">if</span> (port <span style="color:#f92672">!=</span> <span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">fprintf</span>(stream, <span style="color:#e6db74">&#34;%u&#34;</span>, port); <span style="color:#75715e">// print the port
+</span></span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="running-our-example">Running our example</h3>
+<p><a href="https://github.com/calmcoconut/blog-code-examples/tree/main/2020-06-16-sockets">Here is a github link of the files</a>, which we have names client.c and server.c. We need to do the following to make this example run:</p>
+<ol>
+<li>compile the two programs using a compiler like gcc: <code>gcc client.c -o client</code> &amp;&amp; <code>gcc server.c -o server</code></li>
+<li>run the server first, <code>./server 5000</code> (running at port 5000)
+<img alt="example image of terminal" loading="lazy" src="https://images2.imgbox.com/a2/a0/VfFiht5E_o.png"></li>
+<li>run the client on a <strong>different terminal window</strong> at the server address and port, in this example 0.0.0.0 5000, <code>./client 0.0.0.0 &quot;echo this&quot; 5000</code></li>
+</ol>
+<p>You should see this on the server window
+<img alt="server window" loading="lazy" src="https://images2.imgbox.com/95/ee/jd2LGvZw_o.png">
+and this and on the client window
+<img alt="client window" loading="lazy" src="https://images2.imgbox.com/8a/0c/7fIE73EF_o.png"></p>
+<h2 id="where-to-go-from-here">Where to go from here?</h2>
+<p>To those interested in learning more about sockets and their rich history in networks, I direct you to the following sources. The first is completely free and a high-level overview in a similar style to this article. The second provides more depth and background and comes from an academic setting.</p>
+<h1 id="bib"><strong>Bib</strong></h1>
+<ol>
+<li>Hall, B. &ldquo;Beej J. (n.d.). Beej’s Guide to Network Programming: Using Internet Sockets. <a href="https://beej.us/guide/bgnet/">https://beej.us/guide/bgnet/</a></li>
+<li>Donahoo, M. J., &amp; Calvert, K. L. (2009). TCP/IP sockets in C: Practical guide for programmers (2nd ed). Morgan Kaufmann. <a href="https://www.sciencedirect.com/book/9780123745408/tcp-ip-sockets-in-c">https://www.sciencedirect.com/book/9780123745408/tcp-ip-sockets-in-c</a></li>
+</ol>
+<p>&lsquo;Till next time space cowboy</p>
+<p>&ndash; Alex</p>
+
+    </div>
+</article>
+    </main>
+    <footer class="footer">
+    <hr class="footer-divider" />
+    <nav class="footer-nav" aria-label="Footer navigation">
+        <a href="/search/" class="footer-link">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true" focusable="false">
+  <rect x="3" y="1" width="5" height="1" fill="#262626"/>
+  <rect x="2" y="2" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="2" width="5" height="1" fill="#5897AB"/>
+  <rect x="8" y="2" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="3" width="2" height="1" fill="#5897AB"/>
+  <rect x="4" y="3" width="3" height="1" fill="#F8F5EB"/>
+  <rect x="7" y="3" width="2" height="1" fill="#5897AB"/>
+  <rect x="9" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="0" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="4" width="2" height="1" fill="#5897AB"/>
+  <rect x="3" y="4" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="5" y="4" width="1" height="1" fill="#3B7286"/>
+  <rect x="6" y="4" width="4" height="1" fill="#5897AB"/>
+  <rect x="10" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="0" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="5" width="2" height="1" fill="#5897AB"/>
+  <rect x="3" y="5" width="7" height="1" fill="#3B7286"/>
+  <rect x="10" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="0" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="6" width="2" height="1" fill="#5897AB"/>
+  <rect x="3" y="6" width="7" height="1" fill="#3B7286"/>
+  <rect x="10" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="0" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="7" width="1" height="1" fill="#5897AB"/>
+  <rect x="2" y="7" width="4" height="1" fill="#3B7286"/>
+  <rect x="6" y="7" width="3" height="1" fill="#264E5E"/>
+  <rect x="9" y="7" width="1" height="1" fill="#3B7286"/>
+  <rect x="10" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="8" width="2" height="1" fill="#3B7286"/>
+  <rect x="4" y="8" width="4" height="1" fill="#264E5E"/>
+  <rect x="8" y="8" width="1" height="1" fill="#3B7286"/>
+  <rect x="9" y="8" width="2" height="1" fill="#262626"/>
+  <rect x="2" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="9" width="2" height="1" fill="#3B7286"/>
+  <rect x="5" y="9" width="2" height="1" fill="#264E5E"/>
+  <rect x="7" y="9" width="1" height="1" fill="#3B7286"/>
+  <rect x="8" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="9" y="9" width="2" height="1" fill="#C85A46"/>
+  <rect x="11" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="10" width="5" height="1" fill="#262626"/>
+  <rect x="9" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="10" y="10" width="2" height="1" fill="#9E3B29"/>
+  <rect x="12" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="10" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="11" width="2" height="1" fill="#9E3B29"/>
+  <rect x="13" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="12" width="2" height="1" fill="#9E3B29"/>
+  <rect x="14" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="13" width="1" height="1" fill="#262626"/>
+  <rect x="13" y="13" width="1" height="1" fill="#8A4574"/>
+  <rect x="14" y="13" width="1" height="1" fill="#262626"/>
+  <rect x="13" y="14" width="2" height="1" fill="#262626"/>
+</svg>
+
+            <span>Search</span>
+        </a>
+        <span class="footer-sep" aria-hidden="true">·</span>
+        <a href="/archive/" class="footer-link">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true" focusable="false">
+  <rect x="1" y="2" width="14" height="1" fill="#262626"/>
+  <rect x="0" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="3" width="14" height="1" fill="#E5B052"/>
+  <rect x="15" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="0" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="4" width="14" height="1" fill="#C9822B"/>
+  <rect x="15" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="0" y="5" width="16" height="1" fill="#262626"/>
+  <rect x="1" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="6" width="12" height="1" fill="#C9822B"/>
+  <rect x="14" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="7" width="2" height="1" fill="#C9822B"/>
+  <rect x="4" y="7" width="8" height="1" fill="#262626"/>
+  <rect x="12" y="7" width="2" height="1" fill="#C9822B"/>
+  <rect x="14" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="8" width="2" height="1" fill="#C9822B"/>
+  <rect x="4" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="5" y="8" width="6" height="1" fill="#F8F5EB"/>
+  <rect x="11" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="8" width="2" height="1" fill="#C9822B"/>
+  <rect x="14" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="9" width="2" height="1" fill="#C9822B"/>
+  <rect x="4" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="5" y="9" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="7" y="9" width="3" height="1" fill="#787878"/>
+  <rect x="10" y="9" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="11" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="9" width="2" height="1" fill="#C9822B"/>
+  <rect x="14" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="10" width="2" height="1" fill="#C9822B"/>
+  <rect x="4" y="10" width="8" height="1" fill="#262626"/>
+  <rect x="12" y="10" width="2" height="1" fill="#C9822B"/>
+  <rect x="14" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="11" width="2" height="1" fill="#C9822B"/>
+  <rect x="4" y="11" width="8" height="1" fill="#7D501B"/>
+  <rect x="12" y="11" width="2" height="1" fill="#C9822B"/>
+  <rect x="14" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="12" width="12" height="1" fill="#7D501B"/>
+  <rect x="14" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="13" width="14" height="1" fill="#262626"/>
+  <rect x="2" y="14" width="12" height="1" fill="#262626"/>
+</svg>
+
+            <span>Archive</span>
+        </a>
+        <span class="footer-sep" aria-hidden="true">·</span>
+        <a href="/tags/" class="footer-link">
+            <span>Tags</span>
+        </a>
+        <span class="footer-sep" aria-hidden="true">·</span>
+        <a href="/index.xml" class="footer-link">
+            <span>RSS</span>
+        </a>
+    </nav>
+</footer>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            var href = this.getAttribute("href");
+            if (!href || href === "#") return;
+            var id = href.substr(1);
+            var targetEl = document.getElementById(decodeURIComponent(id));
+            if (!targetEl) return;
+            e.preventDefault();
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                targetEl.scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                targetEl.scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+            if (id === "content") {
+                targetEl.setAttribute("tabindex", "-1");
+                targetEl.focus();
+            }
+        });
+    });
+</script>
+<script>
+    var themeToggle = document.getElementById("theme-toggle");
+    if (themeToggle) {
+        themeToggle.addEventListener("click", () => {
+            const html = document.querySelector("html");
+            if (html.dataset.theme === "dark") {
+                html.dataset.theme = 'light';
+                localStorage.setItem("pref-theme", 'light');
+            } else {
+                html.dataset.theme = 'dark';
+                localStorage.setItem("pref-theme", 'dark');
+            }
+        });
+    }
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', () => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { }
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode && container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode && codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+
+</body>
+
+</html>

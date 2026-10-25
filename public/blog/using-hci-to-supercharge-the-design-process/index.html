@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Using Human Computer Interaction (HCI) to Supercharge the Design Process | dias Diaz</title>
+<meta name="keywords" content="computer, science, HCI, design">
+<meta name="description" content="
+tl;dr
+
+You are not your users
+Always, always conduct needfinding with actual/ potential users before touching code! Avoid bias by planning before gathering data
+Evaluate your prototypes in front of users
+
+
+What is Human Computer Interaction (HCI)?
+Human-computer interaction (HCI) is a relatively new interdisciplinary field involving technology, psychology, and engineering. It is a broad field whose scope includes or overlaps with UI/UX design, &ldquo;smart&rdquo; devices, and VR technology.
+HCI advocates for a structured, iterative approach to design. Ideally, a product will go through multiple stages. These stages present the product to actual users for feedback and evaluation. Designers should then use this feedback to make or brainstorm adjustments. The most important lesson that HCI advocates and the one takeaway you should remember is that: You are not your user.">
+<meta name="author" content="map[name:Alejandro Diaz]">
+<link rel="canonical" href="https://diasdiaz.net/blog/using-hci-to-supercharge-the-design-process/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.9ff2c7c14ab137364c1cea68d63bbac1bd5d58a3bc15d55f9ce84b5af66de678.css" integrity="sha256-n/LHwUqxNzZMHOpo1ju6wb1dWKO8FdVfnOhLWvZt5ng=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://diasdiaz.net/favicon.svg">
+<link rel="icon" type="image/png" sizes="16x16" href="https://diasdiaz.net/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://diasdiaz.net/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://diasdiaz.net/apple-touch-icon.png">
+<link rel="mask-icon" href="https://diasdiaz.net/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="https://diasdiaz.net/blog/using-hci-to-supercharge-the-design-process/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><meta property="og:url" content="https://diasdiaz.net/blog/using-hci-to-supercharge-the-design-process/">
+  <meta property="og:site_name" content="dias Diaz">
+  <meta property="og:title" content="Using Human Computer Interaction (HCI) to Supercharge the Design Process">
+  <meta property="og:description" content="tl;dr You are not your users Always, always conduct needfinding with actual/ potential users before touching code! Avoid bias by planning before gathering data Evaluate your prototypes in front of users What is Human Computer Interaction (HCI)? Human-computer interaction (HCI) is a relatively new interdisciplinary field involving technology, psychology, and engineering. It is a broad field whose scope includes or overlaps with UI/UX design, “smart” devices, and VR technology.
+HCI advocates for a structured, iterative approach to design. Ideally, a product will go through multiple stages. These stages present the product to actual users for feedback and evaluation. Designers should then use this feedback to make or brainstorm adjustments. The most important lesson that HCI advocates and the one takeaway you should remember is that: You are not your user.">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="blog">
+    <meta property="article:published_time" content="2022-02-06T00:00:00+00:00">
+    <meta property="article:modified_time" content="2022-02-06T00:00:00+00:00">
+    <meta property="article:tag" content="Computer">
+    <meta property="article:tag" content="Science">
+    <meta property="article:tag" content="HCI">
+    <meta property="article:tag" content="Design">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Using Human Computer Interaction (HCI) to Supercharge the Design Process">
+  <meta name="twitter:description" content="tl;dr You are not your users Always, always conduct needfinding with actual/ potential users before touching code! Avoid bias by planning before gathering data Evaluate your prototypes in front of users What is Human Computer Interaction (HCI)? Human-computer interaction (HCI) is a relatively new interdisciplinary field involving technology, psychology, and engineering. It is a broad field whose scope includes or overlaps with UI/UX design, “smart” devices, and VR technology.
+HCI advocates for a structured, iterative approach to design. Ideally, a product will go through multiple stages. These stages present the product to actual users for feedback and evaluation. Designers should then use this feedback to make or brainstorm adjustments. The most important lesson that HCI advocates and the one takeaway you should remember is that: You are not your user.">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Blog",
+      "item": "https://diasdiaz.net/blog/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Using Human Computer Interaction (HCI) to Supercharge the Design Process",
+      "item": "https://diasdiaz.net/blog/using-hci-to-supercharge-the-design-process/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Using Human Computer Interaction (HCI) to Supercharge the Design Process",
+  "name": "Using Human Computer Interaction (HCI) to Supercharge the Design Process",
+  "description": " tl;dr You are not your users Always, always conduct needfinding with actual/ potential users before touching code! Avoid bias by planning before gathering data Evaluate your prototypes in front of users What is Human Computer Interaction (HCI)? Human-computer interaction (HCI) is a relatively new interdisciplinary field involving technology, psychology, and engineering. It is a broad field whose scope includes or overlaps with UI/UX design, \u0026ldquo;smart\u0026rdquo; devices, and VR technology.\nHCI advocates for a structured, iterative approach to design. Ideally, a product will go through multiple stages. These stages present the product to actual users for feedback and evaluation. Designers should then use this feedback to make or brainstorm adjustments. The most important lesson that HCI advocates and the one takeaway you should remember is that: You are not your user.\n",
+  "keywords": [
+    "computer", "science", "HCI", "design"
+  ],
+  "articleBody": " tl;dr You are not your users Always, always conduct needfinding with actual/ potential users before touching code! Avoid bias by planning before gathering data Evaluate your prototypes in front of users What is Human Computer Interaction (HCI)? Human-computer interaction (HCI) is a relatively new interdisciplinary field involving technology, psychology, and engineering. It is a broad field whose scope includes or overlaps with UI/UX design, “smart” devices, and VR technology.\nHCI advocates for a structured, iterative approach to design. Ideally, a product will go through multiple stages. These stages present the product to actual users for feedback and evaluation. Designers should then use this feedback to make or brainstorm adjustments. The most important lesson that HCI advocates and the one takeaway you should remember is that: You are not your user.\nIt is counterproductive to assume what your users want, need, or do not like because you are not your user. You have a different background than your users and may use the product differently than users considering your product.\nHerein lies the conflict with contemporary wisdom in Silicon Valley. HCI advocates a user-oriented process, while the common belief is to get a product out to market as fast as possible. What if I told you these two stances do not have to conflict? The rest of this article describes my understanding of HCI and its goal is to impart how you can use user feedback for a more user-centered design.\nAn Overview of the HCI Design Process HCI advises following iterative and repeating design cycle:\nNeedfinding. Determine what users want or need Brainstorming. Propose design alternatives that may address needs discovered in needfinding Prototype the idea Evaluate with users, and repeat The design process advocates for degrees of fidelity. You would not want to build a whole application only to receive poor feedback. Instead, the fidelity of the design should become more granular as the idea matures.\nI will discuss how the process plays out using an example redesign of the dndbeyond.com character sheet.\nHow can needfinding fuel product ideas and designs Needfinding begins with defining a problem space, or a target domain.\nIn the case of dndbeyond, the problem space was the character sheet.\nNext, we identify our target users. We chart relevant questions, including:\nWho would use this product? Why would someone use this product? What are the demographics of these users? What is their expertise level? What is their motivation? What are users’ frustrations in the problem space? What do they like? Should the product be easy to learn or cater to experienced users? The next step of needfinding is to find some actual users. Yes. Go and interview, survey, make observations, read forums, review missed clicks, etc. These methods yield valuable insights to the questions we have charted above.\nDuring needfinding be careful to outline potential biases you may inadvertently introduce. Everything from the design of survey questions, to your predisposition to come to a “correct” answer, may skew your results.\nFor example, I conducted interviews with users of dndbeyond.com. I wanted to reduce bias, so I went with a mostly scripted interview, so all participants were asked the same questions with a similar tone. Furthermore, I quantified responses by creating a rubric and applying it to recorded responses. The results of my needfinding exercise found that users were using dndbeyond.com with a combination of tools (e.g., VoIP like Skype) and mentally occupied by a game setting (playing DnD and talking with a group of people). The interviews led me to conclude that the dndbeyond character sheet application needed the least possible cognitive tax (i.e., summarizing information and presenting relevant actions without obfuscation) and should work well with VoIP applications.\nNeedfinding can fuel Brainstorming and product ideas The results of the needfinding exercise will naturally provide some constraints and goals when brainstorming.\nThe interviews led me to conclude that the dndbeyond character sheet application needed the least possible cognitive tax (i.e., summarizing information and presenting relevant actions without obfuscation) and should work well with VoIP applications.\nWhile this can make brainstorming easier, one should also be aware of research into brainstorming. Some suggestions include:\nCome up with a set number of ideas as a goal. Make yourself reach this number. This helps because you can narrow down ideas later. Don’t critique ideas (“too silly, too expensive”) during brainstorming. At this stage, the goal is to put ideas onto paper. When stuck, use extremes (most expensive, cheapest, smallest, etc.) to help fuel creativity. On a team, give individuals time to brainstorm independently before setting up a meeting. During the meeting, write down all ideas and don’t discredit any. As your brainstorming session matures, you should be ready to pick an idea to prototype.\nPrototypes can vary in fidelity, However they must be presentable to users The goal of a prototype is to represent a product’s design to users for feedback.\nA prototype can be a drawing, a wireframe, a video, a pretend interaction, a version of the product, or even something else entirely. However, it must represent the product and give users a chance to interact with it.\nFor example, when I worked on prototyping a redesign of the dndbeyond.com website I used a wireframe I created in Figma. The wireframe allowed me to present users with a mockup of my ideas to evaluate.\nUsers must evaluate the prototype The evaluation phase is very similar to needfinding. However, this time the users are evaluating your prototype!\nEvaluate the prototype using the methods described in Needfinding (survey, interview). When evaluating your prototype, use the criteria you outlined during needfinding. Using the same criteria will help provide an objective grading of your prototype. It will also reveal where your prototype is better or worse than existing solutions.\nUser feedback during the evaluation will help fuel your next iteration of the design cycle.\nIn the case of dndbeyond.com, I used a survey to gather evaluating the information on my prototype. I found the results of this study to be mixed. Users found my prototype highly favorable in some regards but mixed or worse in others. and this is ok! This is the crux of the design process. If I were to continue wanting to explore improvements to the existing product, I would start the cycle again. HCI supports iteration. Designs should center on the needs of the users. While users do not ultimately decide how a product moves forward, they should always have input in the design process.\nNext Steps The design should continue to iterate through the design cycle. Conveniently, the evaluation phase gave us feedback on our prototype and can act like the needfinding stage, allowing us to move straight into brainstorming. If we are satisfied with the evaluation results, we should make a higher fidelity prototype and continue the process.\nEven when a product is released, the design process should be incessant, making improvements to a design throughout the lifecycle of a product.\nMaking the Design Process relevant to fast-pace engineering Today’s dev environment is lightning fast. Often changes are made in a matter of days. Processes like Agile encourage fast development cycles. How then can we incorporate ideas from the field of HCI into modern software development?\nA/B testing: have one group of users use one version of the product, and another group of users use a second version via random chance. Then collect data about the two user groups and compare.\nIntegrate the design cycle with Agile: after needfinding, have two teams run in parallel. The design team can run a week ahead in a sprint to give time to give data and results to the engineering team to implement\nThe above methods help “caffeinate” the design cycle, while still allowing user feedback and a user-centered design approach.\n",
+  "wordCount" : "1293",
+  "inLanguage": "en",
+  "datePublished": "2022-02-06T00:00:00Z",
+  "dateModified": "2022-02-06T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"name":"Alejandro Diaz"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://diasdiaz.net/blog/using-hci-to-supercharge-the-design-process/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "dias Diaz",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://diasdiaz.net/favicon.svg"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <a href="#content" class="skip-link" id="skip-link">Skip to main content</a>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var skipLink = document.getElementById("skip-link");
+        if (skipLink) {
+            skipLink.addEventListener("click", function (e) {
+                var target = document.getElementById("content");
+                if (target) {
+                    target.setAttribute("tabindex", "-1");
+                    target.focus();
+                }
+            });
+        }
+    });
+</script>
+
+<header class="header">
+    <nav class="header-nav">
+        <div class="logo">
+            <a href="https://diasdiaz.net/" accesskey="h" title="Alejandro Diaz (Alt + H)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" shape-rendering="crispEdges" aria-hidden="true" focusable="false">
+  <rect x="4" y="1" width="2" height="1" fill="#262626"/>
+  <rect x="3" y="2" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="2" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="6" y="2" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="3" width="2" height="1" fill="#262626"/>
+  <rect x="3" y="4" width="4" height="1" fill="#262626"/>
+  <rect x="3" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="5" width="2" height="1" fill="#C9822B"/>
+  <rect x="6" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="15" y="5" width="2" height="1" fill="#262626"/>
+  <rect x="3" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="6" width="2" height="1" fill="#C9822B"/>
+  <rect x="6" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="15" y="6" width="2" height="1" fill="#C85A46"/>
+  <rect x="17" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="7" width="2" height="1" fill="#C9822B"/>
+  <rect x="6" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="13" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="7" width="4" height="1" fill="#C85A46"/>
+  <rect x="18" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="8" width="4" height="1" fill="#262626"/>
+  <rect x="12" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="13" y="8" width="6" height="1" fill="#C85A46"/>
+  <rect x="19" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="9" width="8" height="1" fill="#C85A46"/>
+  <rect x="20" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="10" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="10" width="10" height="1" fill="#C85A46"/>
+  <rect x="21" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="0" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="9" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="10" y="11" width="12" height="1" fill="#9E3B29"/>
+  <rect x="22" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="0" y="12" width="24" height="1" fill="#262626"/>
+  <rect x="1" y="13" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="13" width="20" height="1" fill="#F8F5EB"/>
+  <rect x="22" y="13" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="14" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="14" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="3" y="14" width="5" height="1" fill="#262626"/>
+  <rect x="8" y="14" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="10" y="14" width="4" height="1" fill="#262626"/>
+  <rect x="14" y="14" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="16" y="14" width="5" height="1" fill="#262626"/>
+  <rect x="21" y="14" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="22" y="14" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="15" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="15" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="3" y="15" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="15" width="2" height="1" fill="#5897AB"/>
+  <rect x="6" y="15" width="1" height="1" fill="#3B7286"/>
+  <rect x="7" y="15" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="15" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="9" y="15" width="2" height="1" fill="#262626"/>
+  <rect x="11" y="15" width="2" height="1" fill="#B66F98"/>
+  <rect x="13" y="15" width="2" height="1" fill="#262626"/>
+  <rect x="15" y="15" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="16" y="15" width="1" height="1" fill="#262626"/>
+  <rect x="17" y="15" width="2" height="1" fill="#5897AB"/>
+  <rect x="19" y="15" width="1" height="1" fill="#3B7286"/>
+  <rect x="20" y="15" width="1" height="1" fill="#262626"/>
+  <rect x="21" y="15" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="22" y="15" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="16" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="16" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="3" y="16" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="16" width="1" height="1" fill="#5897AB"/>
+  <rect x="5" y="16" width="1" height="1" fill="#264E5E"/>
+  <rect x="6" y="16" width="1" height="1" fill="#3B7286"/>
+  <rect x="7" y="16" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="16" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="9" y="16" width="1" height="1" fill="#262626"/>
+  <rect x="10" y="16" width="4" height="1" fill="#8A4574"/>
+  <rect x="14" y="16" width="1" height="1" fill="#262626"/>
+  <rect x="15" y="16" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="16" y="16" width="1" height="1" fill="#262626"/>
+  <rect x="17" y="16" width="1" height="1" fill="#5897AB"/>
+  <rect x="18" y="16" width="1" height="1" fill="#264E5E"/>
+  <rect x="19" y="16" width="1" height="1" fill="#3B7286"/>
+  <rect x="20" y="16" width="1" height="1" fill="#262626"/>
+  <rect x="21" y="16" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="22" y="16" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="17" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="17" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="3" y="17" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="17" width="3" height="1" fill="#3B7286"/>
+  <rect x="7" y="17" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="17" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="9" y="17" width="1" height="1" fill="#262626"/>
+  <rect x="10" y="17" width="2" height="1" fill="#8A4574"/>
+  <rect x="12" y="17" width="1" height="1" fill="#C9822B"/>
+  <rect x="13" y="17" width="1" height="1" fill="#B66F98"/>
+  <rect x="14" y="17" width="1" height="1" fill="#262626"/>
+  <rect x="15" y="17" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="16" y="17" width="1" height="1" fill="#262626"/>
+  <rect x="17" y="17" width="3" height="1" fill="#3B7286"/>
+  <rect x="20" y="17" width="1" height="1" fill="#262626"/>
+  <rect x="21" y="17" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="22" y="17" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="18" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="18" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="3" y="18" width="5" height="1" fill="#262626"/>
+  <rect x="8" y="18" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="10" y="18" width="4" height="1" fill="#262626"/>
+  <rect x="14" y="18" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="16" y="18" width="5" height="1" fill="#262626"/>
+  <rect x="21" y="18" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="22" y="18" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="19" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="19" width="7" height="1" fill="#F8F5EB"/>
+  <rect x="9" y="19" width="1" height="1" fill="#262626"/>
+  <rect x="10" y="19" width="4" height="1" fill="#63274F"/>
+  <rect x="14" y="19" width="1" height="1" fill="#262626"/>
+  <rect x="15" y="19" width="7" height="1" fill="#F8F5EB"/>
+  <rect x="22" y="19" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="20" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="20" width="6" height="1" fill="#D4CBB9"/>
+  <rect x="8" y="20" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="9" y="20" width="1" height="1" fill="#262626"/>
+  <rect x="10" y="20" width="4" height="1" fill="#63274F"/>
+  <rect x="14" y="20" width="1" height="1" fill="#262626"/>
+  <rect x="15" y="20" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="16" y="20" width="6" height="1" fill="#D4CBB9"/>
+  <rect x="22" y="20" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="21" width="22" height="1" fill="#262626"/>
+  <rect x="2" y="22" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="22" width="18" height="1" fill="#7D501B"/>
+  <rect x="21" y="22" width="1" height="1" fill="#262626"/>
+</svg>
+
+                <span class="logo-title">Alejandro Diaz</span>
+            </a>
+        </div>
+        <div class="nav-right">
+            <ul id="menu" class="menu">
+                <li>
+                    <a href="https://diasdiaz.net/blog/" title="Blog" aria-current="page">
+                        <span class="nav-item-inner active">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true" focusable="false">
+  <rect x="2" y="1" width="12" height="1" fill="#262626"/>
+  <rect x="1" y="2" width="2" height="1" fill="#262626"/>
+  <rect x="3" y="2" width="9" height="1" fill="#B66F98"/>
+  <rect x="12" y="2" width="2" height="1" fill="#262626"/>
+  <rect x="14" y="2" width="1" height="1" fill="#9E3B29"/>
+  <rect x="15" y="2" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="3" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="3" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="3" width="9" height="1" fill="#B66F98"/>
+  <rect x="13" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="3" width="1" height="1" fill="#9E3B29"/>
+  <rect x="15" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="4" width="2" height="1" fill="#262626"/>
+  <rect x="3" y="4" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="4" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="5" y="4" width="1" height="1" fill="#8A4574"/>
+  <rect x="6" y="4" width="5" height="1" fill="#262626"/>
+  <rect x="11" y="4" width="1" height="1" fill="#8A4574"/>
+  <rect x="12" y="4" width="2" height="1" fill="#262626"/>
+  <rect x="14" y="4" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="15" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="5" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="3" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="5" width="1" height="1" fill="#8A4574"/>
+  <rect x="5" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="6" y="5" width="5" height="1" fill="#F8F5EB"/>
+  <rect x="11" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="5" width="1" height="1" fill="#8A4574"/>
+  <rect x="13" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="5" width="1" height="1" fill="#E5B052"/>
+  <rect x="15" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="6" width="2" height="1" fill="#262626"/>
+  <rect x="3" y="6" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="4" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="5" y="6" width="1" height="1" fill="#8A4574"/>
+  <rect x="6" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="6" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="8" y="6" width="3" height="1" fill="#787878"/>
+  <rect x="11" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="6" width="1" height="1" fill="#8A4574"/>
+  <rect x="13" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="6" width="1" height="1" fill="#C9822B"/>
+  <rect x="15" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="7" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="3" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="7" width="1" height="1" fill="#8A4574"/>
+  <rect x="5" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="6" y="7" width="5" height="1" fill="#F8F5EB"/>
+  <rect x="11" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="7" width="1" height="1" fill="#8A4574"/>
+  <rect x="13" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="7" width="1" height="1" fill="#C9822B"/>
+  <rect x="15" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="8" width="2" height="1" fill="#262626"/>
+  <rect x="3" y="8" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="4" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="5" y="8" width="1" height="1" fill="#8A4574"/>
+  <rect x="6" y="8" width="5" height="1" fill="#262626"/>
+  <rect x="11" y="8" width="1" height="1" fill="#8A4574"/>
+  <rect x="12" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="13" y="8" width="1" height="1" fill="#C9822B"/>
+  <rect x="14" y="8" width="1" height="1" fill="#E5B052"/>
+  <rect x="15" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="9" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="3" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="9" width="9" height="1" fill="#8A4574"/>
+  <rect x="13" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="9" width="1" height="1" fill="#C9822B"/>
+  <rect x="15" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="10" width="2" height="1" fill="#262626"/>
+  <rect x="3" y="10" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="4" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="5" y="10" width="7" height="1" fill="#8A4574"/>
+  <rect x="12" y="10" width="2" height="1" fill="#262626"/>
+  <rect x="14" y="10" width="1" height="1" fill="#C9822B"/>
+  <rect x="15" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="11" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="3" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="11" width="9" height="1" fill="#63274F"/>
+  <rect x="13" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="11" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="15" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="12" width="2" height="1" fill="#262626"/>
+  <rect x="3" y="12" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="4" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="5" y="12" width="8" height="1" fill="#63274F"/>
+  <rect x="13" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="12" width="1" height="1" fill="#1C1C1C"/>
+  <rect x="15" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="13" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="13" width="10" height="1" fill="#D4CBB9"/>
+  <rect x="13" y="13" width="2" height="1" fill="#262626"/>
+  <rect x="2" y="14" width="12" height="1" fill="#262626"/>
+</svg>
+
+                            <span class="nav-label">Blog</span>
+                        </span>
+                    </a>
+                </li>
+                <li>
+                    <a href="https://diasdiaz.net/resume/" title="Résumé">
+                        <span class="nav-item-inner">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true" focusable="false">
+  <rect x="2" y="1" width="10" height="1" fill="#262626"/>
+  <rect x="2" y="2" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="2" width="8" height="1" fill="#F8F5EB"/>
+  <rect x="11" y="2" width="2" height="1" fill="#262626"/>
+  <rect x="2" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="3" width="8" height="1" fill="#F8F5EB"/>
+  <rect x="11" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="3" width="1" height="1" fill="#3B7286"/>
+  <rect x="13" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="4" width="8" height="1" fill="#F8F5EB"/>
+  <rect x="11" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="4" width="2" height="1" fill="#3B7286"/>
+  <rect x="14" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="5" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="5" y="5" width="6" height="1" fill="#8A4574"/>
+  <rect x="11" y="5" width="4" height="1" fill="#262626"/>
+  <rect x="2" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="6" width="12" height="1" fill="#F8F5EB"/>
+  <rect x="15" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="7" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="5" y="7" width="8" height="1" fill="#787878"/>
+  <rect x="13" y="7" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="15" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="8" width="12" height="1" fill="#F8F5EB"/>
+  <rect x="15" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="9" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="5" y="9" width="8" height="1" fill="#787878"/>
+  <rect x="13" y="9" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="15" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="10" width="12" height="1" fill="#F8F5EB"/>
+  <rect x="15" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="11" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="5" y="11" width="6" height="1" fill="#787878"/>
+  <rect x="11" y="11" width="4" height="1" fill="#F8F5EB"/>
+  <rect x="15" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="12" width="12" height="1" fill="#F8F5EB"/>
+  <rect x="15" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="13" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="13" width="12" height="1" fill="#D4CBB9"/>
+  <rect x="15" y="13" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="14" width="14" height="1" fill="#262626"/>
+  <rect x="3" y="15" width="10" height="1" fill="#262626"/>
+</svg>
+
+                            <span class="nav-label">Résumé</span>
+                        </span>
+                    </a>
+                </li>
+                <li>
+                    <a href="https://diasdiaz.net/shelves/" title="Shelves">
+                        <span class="nav-item-inner">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true" focusable="false">
+  <rect x="2" y="2" width="4" height="1" fill="#262626"/>
+  <rect x="2" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="3" width="2" height="1" fill="#B66F98"/>
+  <rect x="5" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="4" width="2" height="1" fill="#8A4574"/>
+  <rect x="5" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="4" width="3" height="1" fill="#262626"/>
+  <rect x="2" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="5" width="2" height="1" fill="#8A4574"/>
+  <rect x="5" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="5" width="1" height="1" fill="#5897AB"/>
+  <rect x="9" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="5" width="3" height="1" fill="#262626"/>
+  <rect x="2" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="6" width="2" height="1" fill="#8A4574"/>
+  <rect x="5" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="6" width="1" height="1" fill="#3B7286"/>
+  <rect x="9" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="6" width="1" height="1" fill="#E5B052"/>
+  <rect x="13" y="6" width="2" height="1" fill="#262626"/>
+  <rect x="15" y="6" width="1" height="1" fill="#9E3B29"/>
+  <rect x="2" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="7" width="2" height="1" fill="#8A4574"/>
+  <rect x="5" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="7" width="1" height="1" fill="#3B7286"/>
+  <rect x="9" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="7" width="1" height="1" fill="#C9822B"/>
+  <rect x="13" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="7" width="2" height="1" fill="#9E3B29"/>
+  <rect x="2" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="8" width="2" height="1" fill="#8A4574"/>
+  <rect x="5" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="8" width="1" height="1" fill="#3B7286"/>
+  <rect x="9" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="8" width="1" height="1" fill="#C9822B"/>
+  <rect x="13" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="8" width="2" height="1" fill="#9E3B29"/>
+  <rect x="2" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="9" width="2" height="1" fill="#8A4574"/>
+  <rect x="5" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="9" width="1" height="1" fill="#3B7286"/>
+  <rect x="9" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="9" width="1" height="1" fill="#C9822B"/>
+  <rect x="13" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="9" width="2" height="1" fill="#9E3B29"/>
+  <rect x="2" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="10" width="2" height="1" fill="#63274F"/>
+  <rect x="5" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="10" width="1" height="1" fill="#264E5E"/>
+  <rect x="9" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="10" width="1" height="1" fill="#7D501B"/>
+  <rect x="13" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="10" width="2" height="1" fill="#9E3B29"/>
+  <rect x="2" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="11" width="2" height="1" fill="#63274F"/>
+  <rect x="5" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="11" width="1" height="1" fill="#264E5E"/>
+  <rect x="9" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="11" width="1" height="1" fill="#7D501B"/>
+  <rect x="13" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="11" width="2" height="1" fill="#9E3B29"/>
+  <rect x="2" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="12" width="2" height="1" fill="#63274F"/>
+  <rect x="5" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="12" width="1" height="1" fill="#264E5E"/>
+  <rect x="9" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="12" width="1" height="1" fill="#7D501B"/>
+  <rect x="13" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="12" width="2" height="1" fill="#9E3B29"/>
+  <rect x="0" y="13" width="16" height="1" fill="#262626"/>
+  <rect x="1" y="14" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="14" width="12" height="1" fill="#7D501B"/>
+  <rect x="14" y="14" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="15" width="12" height="1" fill="#262626"/>
+</svg>
+
+                            <span class="nav-label">Shelves</span>
+                        </span>
+                    </a>
+                </li>
+            </ul>
+            <div class="logo-switches">
+                <button id="theme-toggle" class="theme-toggle" accesskey="t" title="Toggle theme (Alt + T)" aria-label="Toggle theme">
+                    <svg class="moon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg class="sun" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                    <span class="theme-label">Theme</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+</header>
+<main class="main" id="content" tabindex="-1">
+<article class="post-single">
+    <header class="post-header">
+        <h1 class="post-title">Using Human Computer Interaction (HCI) to Supercharge the Design Process</h1>
+        <div class="post-meta">
+            <time datetime="2022-02-06">2022-02-06</time>
+            <span class="meta-sep" aria-hidden="true">·</span>
+            <span class="reading-time">7 min read</span>
+        </div>
+        <div class="post-tags">
+            <a href="/tags/computer/" class="post-tag">#computer</a>
+            <a href="/tags/science/" class="post-tag">#science</a>
+            <a href="/tags/hci/" class="post-tag">#HCI</a>
+            <a href="/tags/design/" class="post-tag">#design</a>
+        </div>
+    </header>
+
+    <div class="post-content md-content">
+        <blockquote>
+<h3 id="tldr">tl;dr</h3>
+<ul>
+<li>You are not your users</li>
+<li>Always, always conduct needfinding with actual/ potential users before touching code! Avoid bias by planning before gathering data</li>
+<li>Evaluate your prototypes in front of users</li>
+</ul>
+</blockquote>
+<h2 id="what-is-human-computer-interaction-hci">What is Human Computer Interaction (HCI)?</h2>
+<p>Human-computer interaction (HCI) is a relatively new interdisciplinary field involving technology, psychology, and engineering. It is a broad field whose scope includes or overlaps with UI/UX design, &ldquo;smart&rdquo; devices, and VR technology.</p>
+<p>HCI advocates for a structured, iterative approach to design. Ideally, a product will go through multiple stages. These stages present the product to actual users for feedback and evaluation. Designers should then use this feedback to make or brainstorm adjustments. The most important lesson that HCI advocates and the one takeaway you should remember is that: <strong>You are not your user.</strong></p>
+<p>It is counterproductive to assume what your users want, need, or do not like because you are not your user. You have a different background than your users and may use the product differently than users considering your product.</p>
+<p>Herein lies the conflict with contemporary wisdom in Silicon Valley. HCI advocates a user-oriented process, while the common belief is to get a product out to market as fast as possible. What if I told you these two stances do not have to conflict? The rest of this article describes my understanding of HCI and its goal is to impart how you can use user feedback for a more user-centered design.</p>
+<h2 id="an-overview-of-the-hci-design-process">An Overview of the HCI Design Process</h2>
+<p>HCI advises following iterative and repeating design cycle:</p>
+<ol>
+<li><strong>Needfinding</strong>. Determine what users want or need</li>
+<li><strong>Brainstorming</strong>. Propose design alternatives that may address needs discovered in needfinding</li>
+<li><strong>Prototype</strong> the idea</li>
+<li><strong>Evaluate</strong> with users, and repeat</li>
+</ol>
+<p>The design process advocates for degrees of fidelity. You would not want to build a whole application only to receive poor feedback. Instead, the fidelity of the design should become more granular as the idea matures.</p>
+<p>I will discuss how the process plays out using an example redesign of the dndbeyond.com character sheet.</p>
+<h2 id="how-can-needfinding-fuel-product-ideas-and-designs">How can needfinding fuel product ideas and designs</h2>
+<p>Needfinding begins with defining a <em>problem space</em>, or a target domain.</p>
+<blockquote>
+<p>In the case of dndbeyond, the problem space was the character sheet.</p>
+</blockquote>
+<p>Next, we identify our target users. We chart relevant questions, including:</p>
+<ul>
+<li>Who would use this product?</li>
+<li>Why would someone use this product?</li>
+<li>What are the demographics of these users?</li>
+<li>What is their expertise level?</li>
+<li>What is their motivation?</li>
+<li>What are users&rsquo; frustrations in the problem space? What do they like?</li>
+<li>Should the product be easy to learn or cater to experienced users?</li>
+</ul>
+<p>The next step of needfinding is to find some actual users. Yes. Go and interview, survey, make observations, read forums, review missed clicks, etc. These methods yield valuable insights to the questions we have charted above.</p>
+<p>During needfinding be careful to outline potential biases you may inadvertently introduce. Everything from the design of survey questions, to your predisposition to come to a &ldquo;correct&rdquo; answer, may skew your results.</p>
+<p>For example, I conducted interviews with users of dndbeyond.com. I wanted to reduce bias, so I went with a <em>mostly scripted interview,</em> so all participants were asked the same questions with a similar tone. Furthermore, I quantified responses by creating a rubric and applying it to recorded responses. The results of my needfinding exercise found that users were using dndbeyond.com with a combination of tools (e.g., VoIP like Skype) and mentally occupied by a game setting (playing DnD and talking with a group of people). The interviews led me to conclude that the dndbeyond character sheet application needed the least possible cognitive tax (i.e., summarizing information and presenting relevant actions without obfuscation) and should work well with VoIP applications.</p>
+<h2 id="needfinding-can-fuel-brainstorming-and-product-ideas">Needfinding can fuel Brainstorming and product ideas</h2>
+<p>The results of the needfinding exercise will naturally provide some constraints and goals when brainstorming.</p>
+<blockquote>
+<p>The interviews led me to conclude that the dndbeyond character sheet application needed the least possible cognitive tax (i.e., summarizing information and presenting relevant actions without obfuscation) and should work well with VoIP applications.</p>
+</blockquote>
+<p>While this can make brainstorming easier, one should also be aware of research into brainstorming. Some suggestions include:</p>
+<ul>
+<li>Come up with a set number of ideas as a goal. Make yourself reach this number. This helps because you can narrow down ideas later.</li>
+<li>Don&rsquo;t critique ideas (&ldquo;too silly, too expensive&rdquo;) during brainstorming. At this stage, the goal is to put ideas onto paper.</li>
+<li>When stuck, use extremes (most expensive, cheapest, smallest, etc.) to help fuel creativity.</li>
+<li>On a team, give individuals time to brainstorm independently before setting up a meeting. During the meeting, write down all ideas and don&rsquo;t discredit any.</li>
+</ul>
+<p>As your brainstorming session matures, you should be ready to pick an idea to prototype.</p>
+<h2 id="prototypes-can-vary-in-fidelity-however-they-must-be-presentable-to-users">Prototypes can vary in fidelity, However they must be presentable to users</h2>
+<p>The goal of a prototype is to represent a product&rsquo;s design to users for feedback.</p>
+<p>A prototype can be a drawing, a wireframe, a video, a pretend interaction, a version of the product, or even something else entirely. However, it must represent the product and give users a chance to interact with it.</p>
+<p>For example, when I worked on prototyping a redesign of the dndbeyond.com website I used a wireframe I created in Figma. The wireframe allowed me to present users with a mockup of my ideas to evaluate.</p>
+<h2 id="users-must-evaluate-the-prototype">Users must evaluate the prototype</h2>
+<p>The evaluation phase is very similar to needfinding. However, this time the users are evaluating your prototype!</p>
+<p>Evaluate the prototype using the methods described in Needfinding (survey, interview). When evaluating your prototype, use the criteria you outlined during needfinding. Using the same criteria will help provide an objective grading of your prototype. It will also reveal where your prototype is better or worse than existing solutions.</p>
+<p>User feedback during the evaluation will help fuel your next iteration of the design cycle.</p>
+<p>In the case of dndbeyond.com, I used a survey to gather evaluating the information on my prototype. I found the results of this study to be mixed. Users found my prototype highly favorable in some regards but mixed or worse in others. and this is ok! This is the crux of the design process. If I were to continue wanting to explore improvements to the existing product, I would start the cycle again. HCI supports iteration. Designs should center on the needs of the users. While users do not ultimately decide how a product moves forward, they should always have input in the design process.</p>
+<h2 id="next-steps">Next Steps</h2>
+<p>The design should continue to iterate through the design cycle. Conveniently, the evaluation phase gave us feedback on our prototype and can act like the needfinding stage, allowing us to move straight into brainstorming. If we are satisfied with the evaluation results, we should make a higher fidelity prototype and continue the process.</p>
+<p>Even when a product is released, the design process should be incessant, making improvements to a design throughout the lifecycle of a product.</p>
+<h2 id="making-the-design-process-relevant-to-fast-pace-engineering">Making the Design Process relevant to fast-pace engineering</h2>
+<p>Today’s dev environment is lightning fast. Often changes are made in a matter of days. Processes like Agile encourage fast development cycles. How then can we incorporate ideas from the field of HCI into modern software development?</p>
+<p>A/B testing: have one group of users use one version of the product, and another group of users use a second version via random chance. Then collect data about the two user groups and compare.</p>
+<p>Integrate the design cycle with Agile: after needfinding, have two teams run in parallel. The design team can run a week ahead in a sprint to give time to give data and results to the engineering team to implement</p>
+<p>The above methods help &ldquo;caffeinate&rdquo; the design cycle, while still allowing user feedback and a user-centered design approach.</p>
+
+    </div>
+</article>
+    </main>
+    <footer class="footer">
+    <hr class="footer-divider" />
+    <nav class="footer-nav" aria-label="Footer navigation">
+        <a href="/search/" class="footer-link">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true" focusable="false">
+  <rect x="3" y="1" width="5" height="1" fill="#262626"/>
+  <rect x="2" y="2" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="2" width="5" height="1" fill="#5897AB"/>
+  <rect x="8" y="2" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="3" width="2" height="1" fill="#5897AB"/>
+  <rect x="4" y="3" width="3" height="1" fill="#F8F5EB"/>
+  <rect x="7" y="3" width="2" height="1" fill="#5897AB"/>
+  <rect x="9" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="0" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="4" width="2" height="1" fill="#5897AB"/>
+  <rect x="3" y="4" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="5" y="4" width="1" height="1" fill="#3B7286"/>
+  <rect x="6" y="4" width="4" height="1" fill="#5897AB"/>
+  <rect x="10" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="0" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="5" width="2" height="1" fill="#5897AB"/>
+  <rect x="3" y="5" width="7" height="1" fill="#3B7286"/>
+  <rect x="10" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="0" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="6" width="2" height="1" fill="#5897AB"/>
+  <rect x="3" y="6" width="7" height="1" fill="#3B7286"/>
+  <rect x="10" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="0" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="7" width="1" height="1" fill="#5897AB"/>
+  <rect x="2" y="7" width="4" height="1" fill="#3B7286"/>
+  <rect x="6" y="7" width="3" height="1" fill="#264E5E"/>
+  <rect x="9" y="7" width="1" height="1" fill="#3B7286"/>
+  <rect x="10" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="8" width="2" height="1" fill="#3B7286"/>
+  <rect x="4" y="8" width="4" height="1" fill="#264E5E"/>
+  <rect x="8" y="8" width="1" height="1" fill="#3B7286"/>
+  <rect x="9" y="8" width="2" height="1" fill="#262626"/>
+  <rect x="2" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="9" width="2" height="1" fill="#3B7286"/>
+  <rect x="5" y="9" width="2" height="1" fill="#264E5E"/>
+  <rect x="7" y="9" width="1" height="1" fill="#3B7286"/>
+  <rect x="8" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="9" y="9" width="2" height="1" fill="#C85A46"/>
+  <rect x="11" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="10" width="5" height="1" fill="#262626"/>
+  <rect x="9" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="10" y="10" width="2" height="1" fill="#9E3B29"/>
+  <rect x="12" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="10" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="11" width="2" height="1" fill="#9E3B29"/>
+  <rect x="13" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="12" width="2" height="1" fill="#9E3B29"/>
+  <rect x="14" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="13" width="1" height="1" fill="#262626"/>
+  <rect x="13" y="13" width="1" height="1" fill="#8A4574"/>
+  <rect x="14" y="13" width="1" height="1" fill="#262626"/>
+  <rect x="13" y="14" width="2" height="1" fill="#262626"/>
+</svg>
+
+            <span>Search</span>
+        </a>
+        <span class="footer-sep" aria-hidden="true">·</span>
+        <a href="/archive/" class="footer-link">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true" focusable="false">
+  <rect x="1" y="2" width="14" height="1" fill="#262626"/>
+  <rect x="0" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="3" width="14" height="1" fill="#E5B052"/>
+  <rect x="15" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="0" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="4" width="14" height="1" fill="#C9822B"/>
+  <rect x="15" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="0" y="5" width="16" height="1" fill="#262626"/>
+  <rect x="1" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="6" width="12" height="1" fill="#C9822B"/>
+  <rect x="14" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="7" width="2" height="1" fill="#C9822B"/>
+  <rect x="4" y="7" width="8" height="1" fill="#262626"/>
+  <rect x="12" y="7" width="2" height="1" fill="#C9822B"/>
+  <rect x="14" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="8" width="2" height="1" fill="#C9822B"/>
+  <rect x="4" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="5" y="8" width="6" height="1" fill="#F8F5EB"/>
+  <rect x="11" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="8" width="2" height="1" fill="#C9822B"/>
+  <rect x="14" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="9" width="2" height="1" fill="#C9822B"/>
+  <rect x="4" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="5" y="9" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="7" y="9" width="3" height="1" fill="#787878"/>
+  <rect x="10" y="9" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="11" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="9" width="2" height="1" fill="#C9822B"/>
+  <rect x="14" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="10" width="2" height="1" fill="#C9822B"/>
+  <rect x="4" y="10" width="8" height="1" fill="#262626"/>
+  <rect x="12" y="10" width="2" height="1" fill="#C9822B"/>
+  <rect x="14" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="11" width="2" height="1" fill="#C9822B"/>
+  <rect x="4" y="11" width="8" height="1" fill="#7D501B"/>
+  <rect x="12" y="11" width="2" height="1" fill="#C9822B"/>
+  <rect x="14" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="12" width="12" height="1" fill="#7D501B"/>
+  <rect x="14" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="13" width="14" height="1" fill="#262626"/>
+  <rect x="2" y="14" width="12" height="1" fill="#262626"/>
+</svg>
+
+            <span>Archive</span>
+        </a>
+        <span class="footer-sep" aria-hidden="true">·</span>
+        <a href="/tags/" class="footer-link">
+            <span>Tags</span>
+        </a>
+        <span class="footer-sep" aria-hidden="true">·</span>
+        <a href="/index.xml" class="footer-link">
+            <span>RSS</span>
+        </a>
+    </nav>
+</footer>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            var href = this.getAttribute("href");
+            if (!href || href === "#") return;
+            var id = href.substr(1);
+            var targetEl = document.getElementById(decodeURIComponent(id));
+            if (!targetEl) return;
+            e.preventDefault();
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                targetEl.scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                targetEl.scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+            if (id === "content") {
+                targetEl.setAttribute("tabindex", "-1");
+                targetEl.focus();
+            }
+        });
+    });
+</script>
+<script>
+    var themeToggle = document.getElementById("theme-toggle");
+    if (themeToggle) {
+        themeToggle.addEventListener("click", () => {
+            const html = document.querySelector("html");
+            if (html.dataset.theme === "dark") {
+                html.dataset.theme = 'light';
+                localStorage.setItem("pref-theme", 'light');
+            } else {
+                html.dataset.theme = 'dark';
+                localStorage.setItem("pref-theme", 'dark');
+            }
+        });
+    }
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', () => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { }
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode && container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode && codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+
+</body>
+
+</html>

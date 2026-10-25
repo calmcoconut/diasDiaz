@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>GitHub Pages with Jekyll&#39;s Static Web Framework | dias Diaz</title>
+<meta name="keywords" content="wsl, wsl2, jekyll, githubpages, web">
+<meta name="description" content="Jekyll is a great tool if you want the simplicity of a static website but with more complicated functionality. It offers a load of plugins and maintenance saving methods.
+The primary advantages are:
+
+templating
+variables and loop functionality
+support for GitHub pages (a free webhosting platform for anyone with a GitHub account)
+plugins, database free solutions, and niche cases
+
+If this is tempting strap in and I’ll describe my weekend setting up Jekyll.">
+<meta name="author" content="map[name:Alejandro Diaz]">
+<link rel="canonical" href="https://diasdiaz.net/blog/jekyll-introductions/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.9ff2c7c14ab137364c1cea68d63bbac1bd5d58a3bc15d55f9ce84b5af66de678.css" integrity="sha256-n/LHwUqxNzZMHOpo1ju6wb1dWKO8FdVfnOhLWvZt5ng=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://diasdiaz.net/favicon.svg">
+<link rel="icon" type="image/png" sizes="16x16" href="https://diasdiaz.net/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://diasdiaz.net/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://diasdiaz.net/apple-touch-icon.png">
+<link rel="mask-icon" href="https://diasdiaz.net/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="https://diasdiaz.net/blog/jekyll-introductions/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><meta property="og:url" content="https://diasdiaz.net/blog/jekyll-introductions/">
+  <meta property="og:site_name" content="dias Diaz">
+  <meta property="og:title" content="GitHub Pages with Jekyll&#39;s Static Web Framework">
+  <meta property="og:description" content="Jekyll is a great tool if you want the simplicity of a static website but with more complicated functionality. It offers a load of plugins and maintenance saving methods.
+The primary advantages are:
+templating variables and loop functionality support for GitHub pages (a free webhosting platform for anyone with a GitHub account) plugins, database free solutions, and niche cases If this is tempting strap in and I’ll describe my weekend setting up Jekyll.">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="blog">
+    <meta property="article:published_time" content="2020-09-08T00:00:00+00:00">
+    <meta property="article:modified_time" content="2020-09-08T00:00:00+00:00">
+    <meta property="article:tag" content="Wsl">
+    <meta property="article:tag" content="Wsl2">
+    <meta property="article:tag" content="Jekyll">
+    <meta property="article:tag" content="Githubpages">
+    <meta property="article:tag" content="Web">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="GitHub Pages with Jekyll&#39;s Static Web Framework">
+  <meta name="twitter:description" content="Jekyll is a great tool if you want the simplicity of a static website but with more complicated functionality. It offers a load of plugins and maintenance saving methods.
+The primary advantages are:
+templating variables and loop functionality support for GitHub pages (a free webhosting platform for anyone with a GitHub account) plugins, database free solutions, and niche cases If this is tempting strap in and I’ll describe my weekend setting up Jekyll.">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Blog",
+      "item": "https://diasdiaz.net/blog/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "GitHub Pages with Jekyll's Static Web Framework",
+      "item": "https://diasdiaz.net/blog/jekyll-introductions/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "GitHub Pages with Jekyll's Static Web Framework",
+  "name": "GitHub Pages with Jekyll\u0027s Static Web Framework",
+  "description": "Jekyll is a great tool if you want the simplicity of a static website but with more complicated functionality. It offers a load of plugins and maintenance saving methods.\nThe primary advantages are:\ntemplating variables and loop functionality support for GitHub pages (a free webhosting platform for anyone with a GitHub account) plugins, database free solutions, and niche cases If this is tempting strap in and I’ll describe my weekend setting up Jekyll.\n",
+  "keywords": [
+    "wsl", "wsl2", "jekyll", "githubpages", "web"
+  ],
+  "articleBody": "Jekyll is a great tool if you want the simplicity of a static website but with more complicated functionality. It offers a load of plugins and maintenance saving methods.\nThe primary advantages are:\ntemplating variables and loop functionality support for GitHub pages (a free webhosting platform for anyone with a GitHub account) plugins, database free solutions, and niche cases If this is tempting strap in and I’ll describe my weekend setting up Jekyll.\nSet up You will want to give the Jekyll [quick setup] (https://jekyllrb.com/docs/) page a look (For this tutorial do only steps 1 \u0026 2). Very friendly if you are on Linux or Mac, not so much on Windows.\nWindows Lucky for you, I am on Windows which means we’re on Linux. Head over to the WSL2 (Windows Subsystem for Linux- what a time to be alive) page and set it up. grab a Linux distro from the Microsoft store (Ubuntu) and run these commands:\nlaunch WSL from command prompt\nwsl run update (sudo is like as adminastrator in windows)\nsudo apt update \u0026\u0026 sudo apt upgrade -y clean system\nsudo apt-get autoremove install Ruby sudo apt-get ruby-full install GCC and Make sudo apt install build-essential follow quick start from Jekyll (Steps 1 \u0026 2) Nice, now we windows users are caught up to the Max and Linux.\nChoosing a theme This is the fun part of the project. Jekyll has been around for a decent amount of time and the community is mature enough to be both helpful and provide loads of materials. Do a google search for Jekyll themes and you will find a ton. For this tutorial we will use https://jekyllthemes.io/\nNow that you have found a theme you fancy click on the “Theme Name on GitHub” button on the right-hand side of the page. If you have never used GitHub before don’t be intimidated, it is at its core a file hosting site for developers.\nFiguring out Git Ok I take it back; this next part may be a little intimidating. Open your terminal (if you are on Windows, open CMD and type WSL) and type the following git command:\ngit --version\nIf you are greeted with a version number, you are good to go. Otherwise give this article a read. Use Linux / Mac instructions.\nPick a folder where you’d like to work on your computer and copy the address. You can navigate to it using the cd (Change Directory) command. If you would like to follow my setup do the following:\n**You are going to want this in a Linux/ Mac location\ngo to home directory\ncd ~\ncreate projects folder\nmkdir projects\ncreate web folder inside projects\ncd projects\nmkdir Web\nyou should see Web after running the above. ls command just lists files\nls\nNow you will clone the theme you selected from GitHub in the folder of your choosing. To do this, go back to the theme’s GitHub page and find CODE button and copy the link that appears when it is clicked.\nmake sure your terminal is at the right location (see the prompt’s address). and use the git clone command\ngit clone [URL]\nTyping the ls command should show a new folder with that projects default name. We wont worry about changing the folder name for now. Let’s give our new site a test run.\nRunning Jekyll Start by changing directory into our theme folder\ncd theme-folder-name\nupdate and install jekyll plugins\nbundle update\nbundle install\nlaunch a local web server to see your site in action (only available to you)\nbundle exec jekyll serve\ngo to your web browser and go to\nhttp://127.0.0.1:4000/\nTo stop the local server CTRL + C in your terminal\nBalmy! Could not locate Gemfile Most themes have a Ruby configure file already, but if you run into this issue simply create one. We will do this through the terminal, but a note editor works the same if you save it in the folder as Gemfile\ncreate the file\nnano Gemfile paste the following configurations # Hello! This is where you manage which Jekyll version is used to run. # When you want to use a different version, change it below, save the # file and run `bundle install`. Run Jekyll with `bundle exec`, like so: # # bundle exec jekyll serve # # This will help ensure the proper Jekyll version is running. # Happy Jekylling! gem \"jekyll\", \"~\u003e 4.1.1\" # This is the default theme for new Jekyll sites. You may change this to anything you like. gem \"minima\", \"~\u003e 2.5\" # If you want to use GitHub Pages, remove the \"gem \"jekyll\"\" above and # uncomment the line below. To upgrade, run `bundle update github-pages`. # gem \"github-pages\", group: :jekyll_plugins # If you have any plugins, put them here! group :jekyll_plugins do gem \"jekyll-feed\", \"~\u003e 0.12\" end # Windows and JRuby does not include zoneinfo files, so bundle the tzinfo-data gem # and associated library. platforms :mingw, :x64_mingw, :mswin, :jruby do gem \"tzinfo\", \"~\u0026gt; 1.2\" gem \"tzinfo-data\" end # Performance-booster for watching directories on Windows gem \"wdm\", \"~\u0026gt; 0.1.1\", :platforms =\u0026gt; [:mingw, :x64_mingw, :mswin] save the Gemfile\nCTRL+x\nY\nenter Nice. Now jump back up and run both the bundle commands. Publishing your site funky site you got there. Unfortunately, if you try and type in http://127.0.0.1:4000/ on your cell phone with your Wi-Fi off you’ll get nothing.\nIn the past this is the part where you’d have to shell out for a domain name, a webserver, and set up some sort of https service. Luckily, GitHub will circumvent the past.\nGitHub Pages GitHub pages is a free service that allows you to host sites for free, but with certain limitations. Because our page is effectively a static site we won’t have to worry about those limitations, but we will need to alter our template before we can get it up and running.\nYou could edit your site to match your information, but I found it less troublesome to get the site on GitHub pages first and then make your changes incrementally in case things go awry.\nCreating the Repository login to GitHub make a new repository by clicking New Name it what you’d like your site to be called (NOT the theme name) confirm with the Create repository button Configuring to GitHub’s liking We need to change our Gemfile and our _config.yml file to satisfy these requirements.\nGemfile\nusing the terminal,\nnano Gemfile\ncomment out this line by adding a ‘#’ to the beginning\ngem \"jekyll\"\", \"~\u003e 4.1.1\"\nuncomment the following line by removing the ‘#’ from the beginning of the line\ngem \"github-pages\", group jekyll_plugins\nexit and save\nCTRL + x\ny\nenter\ncool onto _config.yml\npop the following lines into the file where you please:\nimportant: before pasting make sure your _config.yml does not already have any of these elements. if they do update them to reflect these values\nchange “[ ]” to your values\nurl: 'https://[YOUR GITHUB USERNAME].github.io' # or other github assigned domain baseurl: '/[YOUR GITHUB REPOSITORY NAME]' lsi: false safe: true source: incremental: false highlighter: rouge gist: noscript: false kramdown: math_engine: mathjax syntax_highlighter: rouge Exit and save the file as we have before. Mine looks like this now\npushing to the web\nAlmost Done. You got this.\nset your project to know what URL to send info to you can get this URL from your repository page\ngit remote set-url origin [YOUR REPOSITORY URL] upload\ngit push origin refreshing your GitHub repository page should now be populated with files. Jump to settings Scroll down to the GitHub Pages section and select Master where the None dropdown is. Save. This should generate a message and a link that looks like this.\nYour site is ready to be published at https://calmcoconut.github.io/test/. follow the link and try it out on your cellphone editing the theme for your purpose I highly recommend the tutorials offered by CloudCannon on Jekyll. They have included both video and written formats. The cover most use cases. Follow this link for the blogging setup tutorial.\nCommon Problems I am greeted with a 404 error when I click the link\nsomething has gone wrong either with your local Gemfile or _config.yml file OR you have not uploaded to GitHub.\nredo the Configuring to GitHub’s liking section then reupload to github by issuing the following commands in the terminal.\ngit remote set-url origin [YOUR REPOSITORY URL]\ngit add .\ngit commit (write any message and hit enter after running this)\ngit push origin The site loads but it has no images or looks like a 90’s website\nVery annoying problem caused by how the CSS and images are referenced. if you know anything about HTML it is a simple fix. Otherwise try the following:\nopen the _includes folder in your project find the head.html file open and edit any href tag to start with the following\n{{ site.baseurl }}\ninstead of absolute paths. for example:\n",
+  "wordCount" : "1601",
+  "inLanguage": "en",
+  "datePublished": "2020-09-08T00:00:00Z",
+  "dateModified": "2020-09-08T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"name":"Alejandro Diaz"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://diasdiaz.net/blog/jekyll-introductions/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "dias Diaz",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://diasdiaz.net/favicon.svg"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <a href="#content" class="skip-link" id="skip-link">Skip to main content</a>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var skipLink = document.getElementById("skip-link");
+        if (skipLink) {
+            skipLink.addEventListener("click", function (e) {
+                var target = document.getElementById("content");
+                if (target) {
+                    target.setAttribute("tabindex", "-1");
+                    target.focus();
+                }
+            });
+        }
+    });
+</script>
+
+<header class="header">
+    <nav class="header-nav">
+        <div class="logo">
+            <a href="https://diasdiaz.net/" accesskey="h" title="Alejandro Diaz (Alt + H)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" shape-rendering="crispEdges" aria-hidden="true" focusable="false">
+  <rect x="4" y="1" width="2" height="1" fill="#262626"/>
+  <rect x="3" y="2" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="2" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="6" y="2" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="3" width="2" height="1" fill="#262626"/>
+  <rect x="3" y="4" width="4" height="1" fill="#262626"/>
+  <rect x="3" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="5" width="2" height="1" fill="#C9822B"/>
+  <rect x="6" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="15" y="5" width="2" height="1" fill="#262626"/>
+  <rect x="3" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="6" width="2" height="1" fill="#C9822B"/>
+  <rect x="6" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="15" y="6" width="2" height="1" fill="#C85A46"/>
+  <rect x="17" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="7" width="2" height="1" fill="#C9822B"/>
+  <rect x="6" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="13" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="7" width="4" height="1" fill="#C85A46"/>
+  <rect x="18" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="8" width="4" height="1" fill="#262626"/>
+  <rect x="12" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="13" y="8" width="6" height="1" fill="#C85A46"/>
+  <rect x="19" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="9" width="8" height="1" fill="#C85A46"/>
+  <rect x="20" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="10" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="10" width="10" height="1" fill="#C85A46"/>
+  <rect x="21" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="0" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="9" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="10" y="11" width="12" height="1" fill="#9E3B29"/>
+  <rect x="22" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="0" y="12" width="24" height="1" fill="#262626"/>
+  <rect x="1" y="13" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="13" width="20" height="1" fill="#F8F5EB"/>
+  <rect x="22" y="13" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="14" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="14" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="3" y="14" width="5" height="1" fill="#262626"/>
+  <rect x="8" y="14" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="10" y="14" width="4" height="1" fill="#262626"/>
+  <rect x="14" y="14" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="16" y="14" width="5" height="1" fill="#262626"/>
+  <rect x="21" y="14" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="22" y="14" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="15" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="15" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="3" y="15" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="15" width="2" height="1" fill="#5897AB"/>
+  <rect x="6" y="15" width="1" height="1" fill="#3B7286"/>
+  <rect x="7" y="15" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="15" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="9" y="15" width="2" height="1" fill="#262626"/>
+  <rect x="11" y="15" width="2" height="1" fill="#B66F98"/>
+  <rect x="13" y="15" width="2" height="1" fill="#262626"/>
+  <rect x="15" y="15" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="16" y="15" width="1" height="1" fill="#262626"/>
+  <rect x="17" y="15" width="2" height="1" fill="#5897AB"/>
+  <rect x="19" y="15" width="1" height="1" fill="#3B7286"/>
+  <rect x="20" y="15" width="1" height="1" fill="#262626"/>
+  <rect x="21" y="15" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="22" y="15" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="16" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="16" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="3" y="16" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="16" width="1" height="1" fill="#5897AB"/>
+  <rect x="5" y="16" width="1" height="1" fill="#264E5E"/>
+  <rect x="6" y="16" width="1" height="1" fill="#3B7286"/>
+  <rect x="7" y="16" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="16" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="9" y="16" width="1" height="1" fill="#262626"/>
+  <rect x="10" y="16" width="4" height="1" fill="#8A4574"/>
+  <rect x="14" y="16" width="1" height="1" fill="#262626"/>
+  <rect x="15" y="16" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="16" y="16" width="1" height="1" fill="#262626"/>
+  <rect x="17" y="16" width="1" height="1" fill="#5897AB"/>
+  <rect x="18" y="16" width="1" height="1" fill="#264E5E"/>
+  <rect x="19" y="16" width="1" height="1" fill="#3B7286"/>
+  <rect x="20" y="16" width="1" height="1" fill="#262626"/>
+  <rect x="21" y="16" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="22" y="16" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="17" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="17" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="3" y="17" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="17" width="3" height="1" fill="#3B7286"/>
+  <rect x="7" y="17" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="17" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="9" y="17" width="1" height="1" fill="#262626"/>
+  <rect x="10" y="17" width="2" height="1" fill="#8A4574"/>
+  <rect x="12" y="17" width="1" height="1" fill="#C9822B"/>
+  <rect x="13" y="17" width="1" height="1" fill="#B66F98"/>
+  <rect x="14" y="17" width="1" height="1" fill="#262626"/>
+  <rect x="15" y="17" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="16" y="17" width="1" height="1" fill="#262626"/>
+  <rect x="17" y="17" width="3" height="1" fill="#3B7286"/>
+  <rect x="20" y="17" width="1" height="1" fill="#262626"/>
+  <rect x="21" y="17" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="22" y="17" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="18" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="18" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="3" y="18" width="5" height="1" fill="#262626"/>
+  <rect x="8" y="18" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="10" y="18" width="4" height="1" fill="#262626"/>
+  <rect x="14" y="18" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="16" y="18" width="5" height="1" fill="#262626"/>
+  <rect x="21" y="18" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="22" y="18" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="19" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="19" width="7" height="1" fill="#F8F5EB"/>
+  <rect x="9" y="19" width="1" height="1" fill="#262626"/>
+  <rect x="10" y="19" width="4" height="1" fill="#63274F"/>
+  <rect x="14" y="19" width="1" height="1" fill="#262626"/>
+  <rect x="15" y="19" width="7" height="1" fill="#F8F5EB"/>
+  <rect x="22" y="19" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="20" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="20" width="6" height="1" fill="#D4CBB9"/>
+  <rect x="8" y="20" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="9" y="20" width="1" height="1" fill="#262626"/>
+  <rect x="10" y="20" width="4" height="1" fill="#63274F"/>
+  <rect x="14" y="20" width="1" height="1" fill="#262626"/>
+  <rect x="15" y="20" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="16" y="20" width="6" height="1" fill="#D4CBB9"/>
+  <rect x="22" y="20" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="21" width="22" height="1" fill="#262626"/>
+  <rect x="2" y="22" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="22" width="18" height="1" fill="#7D501B"/>
+  <rect x="21" y="22" width="1" height="1" fill="#262626"/>
+</svg>
+
+                <span class="logo-title">Alejandro Diaz</span>
+            </a>
+        </div>
+        <div class="nav-right">
+            <ul id="menu" class="menu">
+                <li>
+                    <a href="https://diasdiaz.net/blog/" title="Blog" aria-current="page">
+                        <span class="nav-item-inner active">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true" focusable="false">
+  <rect x="2" y="1" width="12" height="1" fill="#262626"/>
+  <rect x="1" y="2" width="2" height="1" fill="#262626"/>
+  <rect x="3" y="2" width="9" height="1" fill="#B66F98"/>
+  <rect x="12" y="2" width="2" height="1" fill="#262626"/>
+  <rect x="14" y="2" width="1" height="1" fill="#9E3B29"/>
+  <rect x="15" y="2" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="3" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="3" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="3" width="9" height="1" fill="#B66F98"/>
+  <rect x="13" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="3" width="1" height="1" fill="#9E3B29"/>
+  <rect x="15" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="4" width="2" height="1" fill="#262626"/>
+  <rect x="3" y="4" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="4" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="5" y="4" width="1" height="1" fill="#8A4574"/>
+  <rect x="6" y="4" width="5" height="1" fill="#262626"/>
+  <rect x="11" y="4" width="1" height="1" fill="#8A4574"/>
+  <rect x="12" y="4" width="2" height="1" fill="#262626"/>
+  <rect x="14" y="4" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="15" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="5" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="3" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="5" width="1" height="1" fill="#8A4574"/>
+  <rect x="5" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="6" y="5" width="5" height="1" fill="#F8F5EB"/>
+  <rect x="11" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="5" width="1" height="1" fill="#8A4574"/>
+  <rect x="13" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="5" width="1" height="1" fill="#E5B052"/>
+  <rect x="15" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="6" width="2" height="1" fill="#262626"/>
+  <rect x="3" y="6" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="4" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="5" y="6" width="1" height="1" fill="#8A4574"/>
+  <rect x="6" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="6" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="8" y="6" width="3" height="1" fill="#787878"/>
+  <rect x="11" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="6" width="1" height="1" fill="#8A4574"/>
+  <rect x="13" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="6" width="1" height="1" fill="#C9822B"/>
+  <rect x="15" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="7" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="3" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="7" width="1" height="1" fill="#8A4574"/>
+  <rect x="5" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="6" y="7" width="5" height="1" fill="#F8F5EB"/>
+  <rect x="11" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="7" width="1" height="1" fill="#8A4574"/>
+  <rect x="13" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="7" width="1" height="1" fill="#C9822B"/>
+  <rect x="15" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="8" width="2" height="1" fill="#262626"/>
+  <rect x="3" y="8" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="4" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="5" y="8" width="1" height="1" fill="#8A4574"/>
+  <rect x="6" y="8" width="5" height="1" fill="#262626"/>
+  <rect x="11" y="8" width="1" height="1" fill="#8A4574"/>
+  <rect x="12" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="13" y="8" width="1" height="1" fill="#C9822B"/>
+  <rect x="14" y="8" width="1" height="1" fill="#E5B052"/>
+  <rect x="15" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="9" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="3" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="9" width="9" height="1" fill="#8A4574"/>
+  <rect x="13" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="9" width="1" height="1" fill="#C9822B"/>
+  <rect x="15" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="10" width="2" height="1" fill="#262626"/>
+  <rect x="3" y="10" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="4" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="5" y="10" width="7" height="1" fill="#8A4574"/>
+  <rect x="12" y="10" width="2" height="1" fill="#262626"/>
+  <rect x="14" y="10" width="1" height="1" fill="#C9822B"/>
+  <rect x="15" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="11" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="3" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="11" width="9" height="1" fill="#63274F"/>
+  <rect x="13" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="11" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="15" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="12" width="2" height="1" fill="#262626"/>
+  <rect x="3" y="12" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="4" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="5" y="12" width="8" height="1" fill="#63274F"/>
+  <rect x="13" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="12" width="1" height="1" fill="#1C1C1C"/>
+  <rect x="15" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="13" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="13" width="10" height="1" fill="#D4CBB9"/>
+  <rect x="13" y="13" width="2" height="1" fill="#262626"/>
+  <rect x="2" y="14" width="12" height="1" fill="#262626"/>
+</svg>
+
+                            <span class="nav-label">Blog</span>
+                        </span>
+                    </a>
+                </li>
+                <li>
+                    <a href="https://diasdiaz.net/resume/" title="Résumé">
+                        <span class="nav-item-inner">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true" focusable="false">
+  <rect x="2" y="1" width="10" height="1" fill="#262626"/>
+  <rect x="2" y="2" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="2" width="8" height="1" fill="#F8F5EB"/>
+  <rect x="11" y="2" width="2" height="1" fill="#262626"/>
+  <rect x="2" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="3" width="8" height="1" fill="#F8F5EB"/>
+  <rect x="11" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="3" width="1" height="1" fill="#3B7286"/>
+  <rect x="13" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="4" width="8" height="1" fill="#F8F5EB"/>
+  <rect x="11" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="4" width="2" height="1" fill="#3B7286"/>
+  <rect x="14" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="5" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="5" y="5" width="6" height="1" fill="#8A4574"/>
+  <rect x="11" y="5" width="4" height="1" fill="#262626"/>
+  <rect x="2" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="6" width="12" height="1" fill="#F8F5EB"/>
+  <rect x="15" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="7" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="5" y="7" width="8" height="1" fill="#787878"/>
+  <rect x="13" y="7" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="15" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="8" width="12" height="1" fill="#F8F5EB"/>
+  <rect x="15" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="9" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="5" y="9" width="8" height="1" fill="#787878"/>
+  <rect x="13" y="9" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="15" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="10" width="12" height="1" fill="#F8F5EB"/>
+  <rect x="15" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="11" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="5" y="11" width="6" height="1" fill="#787878"/>
+  <rect x="11" y="11" width="4" height="1" fill="#F8F5EB"/>
+  <rect x="15" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="12" width="12" height="1" fill="#F8F5EB"/>
+  <rect x="15" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="13" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="13" width="12" height="1" fill="#D4CBB9"/>
+  <rect x="15" y="13" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="14" width="14" height="1" fill="#262626"/>
+  <rect x="3" y="15" width="10" height="1" fill="#262626"/>
+</svg>
+
+                            <span class="nav-label">Résumé</span>
+                        </span>
+                    </a>
+                </li>
+                <li>
+                    <a href="https://diasdiaz.net/shelves/" title="Shelves">
+                        <span class="nav-item-inner">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true" focusable="false">
+  <rect x="2" y="2" width="4" height="1" fill="#262626"/>
+  <rect x="2" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="3" width="2" height="1" fill="#B66F98"/>
+  <rect x="5" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="4" width="2" height="1" fill="#8A4574"/>
+  <rect x="5" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="4" width="3" height="1" fill="#262626"/>
+  <rect x="2" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="5" width="2" height="1" fill="#8A4574"/>
+  <rect x="5" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="5" width="1" height="1" fill="#5897AB"/>
+  <rect x="9" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="5" width="3" height="1" fill="#262626"/>
+  <rect x="2" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="6" width="2" height="1" fill="#8A4574"/>
+  <rect x="5" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="6" width="1" height="1" fill="#3B7286"/>
+  <rect x="9" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="6" width="1" height="1" fill="#E5B052"/>
+  <rect x="13" y="6" width="2" height="1" fill="#262626"/>
+  <rect x="15" y="6" width="1" height="1" fill="#9E3B29"/>
+  <rect x="2" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="7" width="2" height="1" fill="#8A4574"/>
+  <rect x="5" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="7" width="1" height="1" fill="#3B7286"/>
+  <rect x="9" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="7" width="1" height="1" fill="#C9822B"/>
+  <rect x="13" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="7" width="2" height="1" fill="#9E3B29"/>
+  <rect x="2" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="8" width="2" height="1" fill="#8A4574"/>
+  <rect x="5" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="8" width="1" height="1" fill="#3B7286"/>
+  <rect x="9" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="8" width="1" height="1" fill="#C9822B"/>
+  <rect x="13" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="8" width="2" height="1" fill="#9E3B29"/>
+  <rect x="2" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="9" width="2" height="1" fill="#8A4574"/>
+  <rect x="5" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="9" width="1" height="1" fill="#3B7286"/>
+  <rect x="9" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="9" width="1" height="1" fill="#C9822B"/>
+  <rect x="13" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="9" width="2" height="1" fill="#9E3B29"/>
+  <rect x="2" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="10" width="2" height="1" fill="#63274F"/>
+  <rect x="5" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="10" width="1" height="1" fill="#264E5E"/>
+  <rect x="9" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="10" width="1" height="1" fill="#7D501B"/>
+  <rect x="13" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="10" width="2" height="1" fill="#9E3B29"/>
+  <rect x="2" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="11" width="2" height="1" fill="#63274F"/>
+  <rect x="5" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="11" width="1" height="1" fill="#264E5E"/>
+  <rect x="9" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="11" width="1" height="1" fill="#7D501B"/>
+  <rect x="13" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="11" width="2" height="1" fill="#9E3B29"/>
+  <rect x="2" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="12" width="2" height="1" fill="#63274F"/>
+  <rect x="5" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="12" width="1" height="1" fill="#264E5E"/>
+  <rect x="9" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="12" width="1" height="1" fill="#7D501B"/>
+  <rect x="13" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="12" width="2" height="1" fill="#9E3B29"/>
+  <rect x="0" y="13" width="16" height="1" fill="#262626"/>
+  <rect x="1" y="14" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="14" width="12" height="1" fill="#7D501B"/>
+  <rect x="14" y="14" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="15" width="12" height="1" fill="#262626"/>
+</svg>
+
+                            <span class="nav-label">Shelves</span>
+                        </span>
+                    </a>
+                </li>
+            </ul>
+            <div class="logo-switches">
+                <button id="theme-toggle" class="theme-toggle" accesskey="t" title="Toggle theme (Alt + T)" aria-label="Toggle theme">
+                    <svg class="moon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg class="sun" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                    <span class="theme-label">Theme</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+</header>
+<main class="main" id="content" tabindex="-1">
+<article class="post-single">
+    <header class="post-header">
+        <h1 class="post-title">GitHub Pages with Jekyll&#39;s Static Web Framework</h1>
+        <div class="post-meta">
+            <time datetime="2020-09-08">2020-09-08</time>
+            <span class="meta-sep" aria-hidden="true">·</span>
+            <span class="reading-time">8 min read</span>
+        </div>
+        <div class="post-tags">
+            <a href="/tags/wsl/" class="post-tag">#wsl</a>
+            <a href="/tags/wsl2/" class="post-tag">#wsl2</a>
+            <a href="/tags/jekyll/" class="post-tag">#jekyll</a>
+            <a href="/tags/githubpages/" class="post-tag">#githubpages</a>
+            <a href="/tags/web/" class="post-tag">#web</a>
+        </div>
+    </header>
+
+    <div class="post-content md-content">
+        <p>Jekyll is a great tool if you want the simplicity of a static website but with more complicated functionality. It offers a load of plugins and maintenance saving methods.</p>
+<p>The primary advantages are:</p>
+<ul>
+<li>templating</li>
+<li>variables and loop functionality</li>
+<li><strong>support for GitHub pages (a free webhosting platform for anyone with a GitHub account)</strong></li>
+<li>plugins, database free solutions, and niche cases</li>
+</ul>
+<p>If this is tempting strap in and I’ll describe my weekend setting up <a href="https://jekyllrb.com/">Jekyll</a>.</p>
+<h4 id="set-up">Set up</h4>
+<p>You will want to give the Jekyll [quick setup] (<a href="https://jekyllrb.com/docs/">https://jekyllrb.com/docs/</a>) page a look (For this tutorial do only steps 1 &amp; 2). Very friendly if you are on Linux or Mac, not so much on Windows.</p>
+<h5 id="windows">Windows</h5>
+<p>Lucky for you, I am on Windows which means we’re on Linux. Head over to the <a href="https://docs.microsoft.com/en-us/windows/wsl/install-win10">WSL2</a> (Windows Subsystem for Linux- what a time to be alive) page and set it up. grab a Linux distro from the Microsoft store (Ubuntu) and run these commands:</p>
+<ul>
+<li>launch WSL from command prompt<br>
+<code>wsl</code></li>
+<li>run update (sudo is like as adminastrator in windows)<br>
+<code>sudo apt update &amp;&amp; sudo apt upgrade -y</code></li>
+<li>clean system<br>
+<code>sudo apt-get autoremove</code></li>
+<li>install Ruby</li>
+<li><code>sudo apt-get ruby-full</code></li>
+<li>install GCC and Make</li>
+<li><code>sudo apt install build-essential</code></li>
+<li>follow quick start from <a href="https://jekyllrb.com/docs/">Jekyll</a> (Steps 1 &amp; 2)</li>
+</ul>
+<p>Nice, now we windows users are caught up to the Max and Linux.</p>
+<h4 id="choosing-a-theme">Choosing a theme</h4>
+<p>This is the fun part of the project. Jekyll has been around for a decent amount of time and the community is mature enough to be both helpful and provide loads of materials. Do a google search for Jekyll themes and you will find a ton. For this tutorial we will use <a href="https://jekyllthemes.io/">https://jekyllthemes.io/</a></p>
+<p>Now that you have found a theme you fancy click on the “Theme Name on GitHub” button on the right-hand side of the page. If you have never used GitHub before don’t be intimidated, it is at its core a file hosting site for developers.</p>
+<p><img src="https://images2.imgbox.com/a7/af/dUWXxup4_o.png" alt="A Screenshot of a theme" title="screenshot of a theme"></p>
+<h5 id="figuring-out-git">Figuring out Git</h5>
+<p>Ok I take it back; this next part may be a little intimidating. Open your terminal (if you are on Windows, open CMD and type WSL) and type the following git command:</p>
+<p><code>git --version</code></p>
+<p>If you are greeted with a version number, you are good to go. Otherwise give <a href="https://git-scm.com/book/en/v2/Getting-Started-Installing-Git">this article a read</a>. <strong>Use Linux / Mac instructions</strong>.</p>
+<p>Pick a folder where you’d like to work on your computer and copy the address. You can navigate to it using the cd (Change Directory) command. If you would like to follow my setup do the following:</p>
+<p>**You are going to want this in a Linux/ Mac location<br>
+<em>go to home directory</em><br>
+<code>cd ~</code><br>
+<em>create projects folder</em><br>
+<code>mkdir projects</code><br>
+<em>create web  folder inside projects</em><br>
+<code>cd projects</code><br>
+<code>mkdir Web</code><br>
+<em>you should see Web after running the above. ls command just lists files</em><br>
+<code>ls</code></p>
+<p>Now you will <em>clone</em> the theme you selected from GitHub in the folder of your choosing. To do this, go back to the theme’s GitHub page and find CODE button and copy the link that appears when it is clicked.</p>
+<p><img src="https://images2.imgbox.com/70/c8/ZoW4oZUw_o.png" alt=" " title="screenshot of code"></p>
+<p><strong>make sure your terminal is at the right location (see the prompt’s address).</strong> and use the git clone command<br>
+<code>git clone [URL]</code><br>
+Typing the ls command should show a new folder with that projects default name.  We wont worry about changing the folder name for now. Let’s give our new site a test run.</p>
+<h4 id="running-jekyll">Running Jekyll</h4>
+<p>Start by changing directory into our theme folder<br>
+<code>cd theme-folder-name</code><br>
+update and install jekyll plugins<br>
+<code>bundle update</code><br>
+<code>bundle install</code><br>
+launch a local web server to see your site in action (only available to you)<br>
+<code>bundle exec jekyll serve</code><br>
+go to your web browser and go to<br>
+<a href="http://127.0.0.1:4000/">http://127.0.0.1:4000/</a><br>
+To stop the local server CTRL + C in your terminal</p>
+<h5 id="balmy-could-not-locate-gemfile">Balmy! <em>Could not locate Gemfile</em></h5>
+<p><img src="https://images2.imgbox.com/2e/c7/HdGIL4F8_o.png" alt="" title="image of terminal"><br>
+Most themes have a Ruby configure file already, but if you run into this issue simply create one. We will do this through the terminal, but a note editor works the same if you save it in the folder as <strong>Gemfile</strong></p>
+<ul>
+<li><em>create the file</em><br>
+<code>nano Gemfile</code></li>
+<li><em>paste the following configurations</em></li>
+</ul>
+<hr>
+<pre class=" language-ruby"><code class="prism  language-ruby">	<span class="token comment"># Hello! This is where you manage which Jekyll version is used to run.</span>
+	<span class="token comment"># When you want to use a different version, change it below, save the</span>
+	<span class="token comment"># file and run `bundle install`. Run Jekyll with `bundle exec`, like so:</span>
+	<span class="token comment">#</span>
+	<span class="token comment">#     bundle exec jekyll serve</span>
+	<span class="token comment">#</span>
+	<span class="token comment"># This will help ensure the proper Jekyll version is running.</span>
+	<span class="token comment"># Happy Jekylling!</span>
+	gem <span class="token string">"jekyll"</span><span class="token punctuation">,</span> <span class="token string">"~&gt; 4.1.1"</span>
+	<span class="token comment"># This is the default theme for new Jekyll sites. You may change this to anything you like.</span>
+	gem <span class="token string">"minima"</span><span class="token punctuation">,</span> <span class="token string">"~&gt; 2.5"</span>
+	<span class="token comment"># If you want to use GitHub Pages, remove the "gem "jekyll"" above and</span>
+	<span class="token comment"># uncomment the line below. To upgrade, run `bundle update github-pages`.</span>
+	<span class="token comment"># gem "github-pages", group: :jekyll_plugins</span>
+	<span class="token comment"># If you have any plugins, put them here!</span>
+	group <span class="token symbol">:jekyll_plugins</span> <span class="token keyword">do</span>
+	  gem <span class="token string">"jekyll-feed"</span><span class="token punctuation">,</span> <span class="token string">"~&gt; 0.12"</span>
+	<span class="token keyword">end</span>
+<pre><code>&lt;span class=&quot;token comment&quot;&gt;# Windows and JRuby does not include zoneinfo files, so bundle the tzinfo-data gem&lt;/span&gt;
+&lt;span class=&quot;token comment&quot;&gt;# and associated library.&lt;/span&gt;
+platforms &lt;span class=&quot;token symbol&quot;&gt;:mingw&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token symbol&quot;&gt;:x64_mingw&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token symbol&quot;&gt;:mswin&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token symbol&quot;&gt;:jruby&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;do&lt;/span&gt;
+  gem &lt;span class=&quot;token string&quot;&gt;&quot;tzinfo&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;~&amp;gt; 1.2&quot;&lt;/span&gt;
+  gem &lt;span class=&quot;token string&quot;&gt;&quot;tzinfo-data&quot;&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;end&lt;/span&gt;
+
+&lt;span class=&quot;token comment&quot;&gt;# Performance-booster for watching directories on Windows&lt;/span&gt;
+gem &lt;span class=&quot;token string&quot;&gt;&quot;wdm&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;~&amp;gt; 0.1.1&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token symbol&quot;&gt;:platforms&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token symbol&quot;&gt;:mingw&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token symbol&quot;&gt;:x64_mingw&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token symbol&quot;&gt;:mswin&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
+</code></pre>
+<p></code></pre></p>
+<hr>
+<ul>
+<li>save the Gemfile<br>
+<code>CTRL+x</code><br>
+<code>Y</code><br>
+<code>enter</code></li>
+<li>Nice. Now jump back up and run both the bundle commands.</li>
+</ul>
+<h4 id="publishing-your-site">Publishing your site</h4>
+<p>funky site you got there. Unfortunately, if you try and type in <a href="http://127.0.0.1:4000/">http://127.0.0.1:4000/</a> on your cell phone with your Wi-Fi off you’ll get nothing.</p>
+<p>In the past this is the part where you’d have to shell out for a domain name, a webserver, and set up some sort of https service. Luckily, GitHub will circumvent the past.</p>
+<h5 id="github-pages">GitHub Pages</h5>
+<p>GitHub pages is a free service that allows you to host sites for free, but with certain limitations. Because our page is effectively a static site we won’t have to worry about those limitations, but we will need to alter our template before we can get it up and running.</p>
+<blockquote>
+<p>You could edit your site to match your information, but I found it less troublesome to get the site on GitHub pages first and then make your changes incrementally in case things go awry.</p>
+</blockquote>
+<h5 id="creating-the-repository">Creating the Repository</h5>
+<ol>
+<li>login to GitHub</li>
+<li>make a new repository by clicking <em>New</em> <br> <img src="https://images2.imgbox.com/8d/c1/x2p6EiZR_o.png" alt=" " title="screenshot of code"></li>
+<li>Name it what you’d like your site to be called (NOT the theme name)</li>
+<li>confirm with the <em>Create repository</em> button</li>
+</ol>
+<h5 id="configuring-to-githubs-liking">Configuring to GitHub’s liking</h5>
+<p>We need to change our Gemfile and our _config.yml file to satisfy these requirements.</p>
+<ul>
+<li><strong>Gemfile</strong><br>
+using the terminal,<br>
+<code>nano Gemfile</code><br>
+comment out this line by adding a ‘#’ to the beginning<br>
+<code>gem "jekyll"", "~&gt; 4.1.1"</code><br>
+uncomment the following line by removing the ‘#’ from the beginning of the line<br>
+<code>gem "github-pages", group jekyll_plugins</code><br>
+exit and save<br>
+<code>CTRL + x</code><br>
+<code>y</code><br>
+<code>enter</code><br>
+cool onto</li>
+</ul>
+<p><strong>_config.yml</strong><br>
+pop the following lines into the file where you please:</p>
+<p><em>important: before pasting make sure your _config.yml does not already have any of these elements. if they do update them to reflect these values</em><br>
+<strong>change “[ ]” to your values</strong></p>
+<pre class=" language-ruby"><code class="prism  language-ruby">url<span class="token punctuation">:</span> <span class="token string">'https://[YOUR GITHUB USERNAME].github.io'</span> <span class="token comment"># or other github assigned domain</span>
+baseurl<span class="token punctuation">:</span> <span class="token string">'/[YOUR GITHUB REPOSITORY NAME]'</span>
+lsi<span class="token punctuation">:</span> <span class="token keyword">false</span>
+safe<span class="token punctuation">:</span> <span class="token keyword">true</span>
+source<span class="token punctuation">:</span>
+incremental<span class="token punctuation">:</span> <span class="token keyword">false</span>
+highlighter<span class="token punctuation">:</span> rouge
+gist<span class="token punctuation">:</span>
+  noscript<span class="token punctuation">:</span> <span class="token keyword">false</span>
+kramdown<span class="token punctuation">:</span>
+  math_engine<span class="token punctuation">:</span> mathjax
+  syntax_highlighter<span class="token punctuation">:</span> rouge
+</code></pre>
+<p>Exit and save the file as we have before. Mine looks like this now<br>
+<img src="https://images2.imgbox.com/fa/1d/wnkO57dk_o.png" alt="" title="Screenshot of code"><br>
+<strong>pushing to the web</strong><br>
+Almost Done. You got this.</p>
+<ol>
+<li>set your project to know what URL to send info to you can get this URL from your repository page<br>
+<code>git remote set-url origin [YOUR REPOSITORY URL]</code></li>
+<li>upload<br>
+<code>git push origin</code></li>
+<li>refreshing your GitHub repository page should now be populated with files. Jump to settings</li>
+<li>Scroll down to the GitHub Pages section and select Master where the None dropdown is. Save.</li>
+<li>This should generate a message and a link that looks like this.<br>
+<img src="https://images2.imgbox.com/d3/12/lOhwkuPW_o.png" alt="" title="screenshot of GitHub Pages settings"><br>
+Your site is ready to be published at <a href="https://calmcoconut.github.io/test/">https://calmcoconut.github.io/test/</a>.</li>
+<li>follow the link and try it out on your cellphone</li>
+</ol>
+<h4 id="editing-the-theme-for-your-purpose">editing the theme for your purpose</h4>
+<p>I highly recommend the tutorials offered by <a href="%5Bhttps://learn.cloudcannon.com/%5D(https://learn.cloudcannon.com/)">CloudCannon</a> on Jekyll. They have included both video and written formats. The cover most use cases. Follow <a href="https://learn.cloudcannon.com/jekyll/introduction-to-blogging">this link</a> for the blogging setup tutorial.</p>
+<h4 id="common-problems">Common Problems</h4>
+<p><strong>I am greeted with a 404 error when I click the link</strong><br>
+something has gone wrong either with your local Gemfile or _config.yml file OR you have not uploaded to GitHub.</p>
+<ul>
+<li>redo the <em>Configuring to GitHub’s liking</em> section then reupload to github by issuing the following commands in the terminal.<br>
+<code>git remote set-url origin [YOUR REPOSITORY URL]</code><br>
+<code>git add .</code><br>
+<code>git commit</code> (write any message and hit enter after running this)<br>
+<code>git push origin</code></li>
+</ul>
+<p><strong>The site loads but it has no images or looks like a 90’s website</strong><br>
+Very annoying problem caused by how the CSS and images are referenced. if you know anything about HTML it is a simple fix. Otherwise try the following:</p>
+<ul>
+<li>open the _includes folder in your project</li>
+<li>find the head.html file</li>
+<li>open and edit any <em>href</em> tag to start with the following<br>
+<code>{{ site.baseurl }}</code><br>
+instead of absolute paths. for example:<br>
+<code>&lt;link rel="stylesheet" href="{{ site.baseurl }}/assets/css/style.css" /</code></li>
+<li>save but do not exit. push your changes by running the following commands<br>
+<code>git add .</code><br>
+<code>git commit</code> (write any message and hit enter after running this)<br>
+<code>git push origin</code></li>
+<li>clear your browser history and refresh your website (this is to clear the cache).</li>
+</ul>
+
+    </div>
+</article>
+    </main>
+    <footer class="footer">
+    <hr class="footer-divider" />
+    <nav class="footer-nav" aria-label="Footer navigation">
+        <a href="/search/" class="footer-link">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true" focusable="false">
+  <rect x="3" y="1" width="5" height="1" fill="#262626"/>
+  <rect x="2" y="2" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="2" width="5" height="1" fill="#5897AB"/>
+  <rect x="8" y="2" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="3" width="2" height="1" fill="#5897AB"/>
+  <rect x="4" y="3" width="3" height="1" fill="#F8F5EB"/>
+  <rect x="7" y="3" width="2" height="1" fill="#5897AB"/>
+  <rect x="9" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="0" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="4" width="2" height="1" fill="#5897AB"/>
+  <rect x="3" y="4" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="5" y="4" width="1" height="1" fill="#3B7286"/>
+  <rect x="6" y="4" width="4" height="1" fill="#5897AB"/>
+  <rect x="10" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="0" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="5" width="2" height="1" fill="#5897AB"/>
+  <rect x="3" y="5" width="7" height="1" fill="#3B7286"/>
+  <rect x="10" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="0" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="6" width="2" height="1" fill="#5897AB"/>
+  <rect x="3" y="6" width="7" height="1" fill="#3B7286"/>
+  <rect x="10" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="0" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="7" width="1" height="1" fill="#5897AB"/>
+  <rect x="2" y="7" width="4" height="1" fill="#3B7286"/>
+  <rect x="6" y="7" width="3" height="1" fill="#264E5E"/>
+  <rect x="9" y="7" width="1" height="1" fill="#3B7286"/>
+  <rect x="10" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="8" width="2" height="1" fill="#3B7286"/>
+  <rect x="4" y="8" width="4" height="1" fill="#264E5E"/>
+  <rect x="8" y="8" width="1" height="1" fill="#3B7286"/>
+  <rect x="9" y="8" width="2" height="1" fill="#262626"/>
+  <rect x="2" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="9" width="2" height="1" fill="#3B7286"/>
+  <rect x="5" y="9" width="2" height="1" fill="#264E5E"/>
+  <rect x="7" y="9" width="1" height="1" fill="#3B7286"/>
+  <rect x="8" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="9" y="9" width="2" height="1" fill="#C85A46"/>
+  <rect x="11" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="10" width="5" height="1" fill="#262626"/>
+  <rect x="9" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="10" y="10" width="2" height="1" fill="#9E3B29"/>
+  <rect x="12" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="10" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="11" width="2" height="1" fill="#9E3B29"/>
+  <rect x="13" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="12" width="2" height="1" fill="#9E3B29"/>
+  <rect x="14" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="13" width="1" height="1" fill="#262626"/>
+  <rect x="13" y="13" width="1" height="1" fill="#8A4574"/>
+  <rect x="14" y="13" width="1" height="1" fill="#262626"/>
+  <rect x="13" y="14" width="2" height="1" fill="#262626"/>
+</svg>
+
+            <span>Search</span>
+        </a>
+        <span class="footer-sep" aria-hidden="true">·</span>
+        <a href="/archive/" class="footer-link">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true" focusable="false">
+  <rect x="1" y="2" width="14" height="1" fill="#262626"/>
+  <rect x="0" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="3" width="14" height="1" fill="#E5B052"/>
+  <rect x="15" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="0" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="4" width="14" height="1" fill="#C9822B"/>
+  <rect x="15" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="0" y="5" width="16" height="1" fill="#262626"/>
+  <rect x="1" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="6" width="12" height="1" fill="#C9822B"/>
+  <rect x="14" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="7" width="2" height="1" fill="#C9822B"/>
+  <rect x="4" y="7" width="8" height="1" fill="#262626"/>
+  <rect x="12" y="7" width="2" height="1" fill="#C9822B"/>
+  <rect x="14" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="8" width="2" height="1" fill="#C9822B"/>
+  <rect x="4" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="5" y="8" width="6" height="1" fill="#F8F5EB"/>
+  <rect x="11" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="8" width="2" height="1" fill="#C9822B"/>
+  <rect x="14" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="9" width="2" height="1" fill="#C9822B"/>
+  <rect x="4" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="5" y="9" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="7" y="9" width="3" height="1" fill="#787878"/>
+  <rect x="10" y="9" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="11" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="9" width="2" height="1" fill="#C9822B"/>
+  <rect x="14" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="10" width="2" height="1" fill="#C9822B"/>
+  <rect x="4" y="10" width="8" height="1" fill="#262626"/>
+  <rect x="12" y="10" width="2" height="1" fill="#C9822B"/>
+  <rect x="14" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="11" width="2" height="1" fill="#C9822B"/>
+  <rect x="4" y="11" width="8" height="1" fill="#7D501B"/>
+  <rect x="12" y="11" width="2" height="1" fill="#C9822B"/>
+  <rect x="14" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="12" width="12" height="1" fill="#7D501B"/>
+  <rect x="14" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="13" width="14" height="1" fill="#262626"/>
+  <rect x="2" y="14" width="12" height="1" fill="#262626"/>
+</svg>
+
+            <span>Archive</span>
+        </a>
+        <span class="footer-sep" aria-hidden="true">·</span>
+        <a href="/tags/" class="footer-link">
+            <span>Tags</span>
+        </a>
+        <span class="footer-sep" aria-hidden="true">·</span>
+        <a href="/index.xml" class="footer-link">
+            <span>RSS</span>
+        </a>
+    </nav>
+</footer>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            var href = this.getAttribute("href");
+            if (!href || href === "#") return;
+            var id = href.substr(1);
+            var targetEl = document.getElementById(decodeURIComponent(id));
+            if (!targetEl) return;
+            e.preventDefault();
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                targetEl.scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                targetEl.scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+            if (id === "content") {
+                targetEl.setAttribute("tabindex", "-1");
+                targetEl.focus();
+            }
+        });
+    });
+</script>
+<script>
+    var themeToggle = document.getElementById("theme-toggle");
+    if (themeToggle) {
+        themeToggle.addEventListener("click", () => {
+            const html = document.querySelector("html");
+            if (html.dataset.theme === "dark") {
+                html.dataset.theme = 'light';
+                localStorage.setItem("pref-theme", 'light');
+            } else {
+                html.dataset.theme = 'dark';
+                localStorage.setItem("pref-theme", 'dark');
+            }
+        });
+    }
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', () => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { }
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode && container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode && codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+
+</body>
+
+</html>

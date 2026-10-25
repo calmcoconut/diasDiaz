@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>An Introduction to Thread Concurrency- a OS Perspective (Part 2) | dias Diaz</title>
+<meta name="keywords" content="computer, science, os, multithreading, lowlevel">
+<meta name="description" content="
+A readable summary of how an operating system facilitates multi-threading and how it works. This series of articles will cover key questions about how an Operating System works. After you read it, you will walk away knowing what the OS does behind the scenes to make your life easier when creating multi-threaded applications. You won&rsquo;t need much of any background to read this article, but it will help if you are familiar with a low-level language, like C.
+If you want to learn more, the end of this article provides my sources and what you can use in your own studies.
+Make sure to check out part one.
+">
+<meta name="author" content="map[name:Alejandro Diaz]">
+<link rel="canonical" href="https://diasdiaz.net/blog/an-introduction-to-thread-concurrency-a-os-perspective-part-2/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.9ff2c7c14ab137364c1cea68d63bbac1bd5d58a3bc15d55f9ce84b5af66de678.css" integrity="sha256-n/LHwUqxNzZMHOpo1ju6wb1dWKO8FdVfnOhLWvZt5ng=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://diasdiaz.net/favicon.svg">
+<link rel="icon" type="image/png" sizes="16x16" href="https://diasdiaz.net/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://diasdiaz.net/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://diasdiaz.net/apple-touch-icon.png">
+<link rel="mask-icon" href="https://diasdiaz.net/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="https://diasdiaz.net/blog/an-introduction-to-thread-concurrency-a-os-perspective-part-2/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><meta property="og:url" content="https://diasdiaz.net/blog/an-introduction-to-thread-concurrency-a-os-perspective-part-2/">
+  <meta property="og:site_name" content="dias Diaz">
+  <meta property="og:title" content="An Introduction to Thread Concurrency- a OS Perspective (Part 2)">
+  <meta property="og:description" content="A readable summary of how an operating system facilitates multi-threading and how it works. This series of articles will cover key questions about how an Operating System works. After you read it, you will walk away knowing what the OS does behind the scenes to make your life easier when creating multi-threaded applications. You won’t need much of any background to read this article, but it will help if you are familiar with a low-level language, like C. If you want to learn more, the end of this article provides my sources and what you can use in your own studies. Make sure to check out part one.">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="blog">
+    <meta property="article:published_time" content="2021-11-01T00:00:00+00:00">
+    <meta property="article:modified_time" content="2021-11-01T00:00:00+00:00">
+    <meta property="article:tag" content="Computer">
+    <meta property="article:tag" content="Science">
+    <meta property="article:tag" content="Os">
+    <meta property="article:tag" content="Multithreading">
+    <meta property="article:tag" content="Lowlevel">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="An Introduction to Thread Concurrency- a OS Perspective (Part 2)">
+  <meta name="twitter:description" content="A readable summary of how an operating system facilitates multi-threading and how it works. This series of articles will cover key questions about how an Operating System works. After you read it, you will walk away knowing what the OS does behind the scenes to make your life easier when creating multi-threaded applications. You won’t need much of any background to read this article, but it will help if you are familiar with a low-level language, like C. If you want to learn more, the end of this article provides my sources and what you can use in your own studies. Make sure to check out part one.">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Blog",
+      "item": "https://diasdiaz.net/blog/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "An Introduction to Thread Concurrency- a OS Perspective (Part 2)",
+      "item": "https://diasdiaz.net/blog/an-introduction-to-thread-concurrency-a-os-perspective-part-2/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "An Introduction to Thread Concurrency- a OS Perspective (Part 2)",
+  "name": "An Introduction to Thread Concurrency- a OS Perspective (Part 2)",
+  "description": " A readable summary of how an operating system facilitates multi-threading and how it works. This series of articles will cover key questions about how an Operating System works. After you read it, you will walk away knowing what the OS does behind the scenes to make your life easier when creating multi-threaded applications. You won\u0026rsquo;t need much of any background to read this article, but it will help if you are familiar with a low-level language, like C. If you want to learn more, the end of this article provides my sources and what you can use in your own studies. Make sure to check out part one.\n",
+  "keywords": [
+    "computer", "science", "os", "multithreading", "lowlevel"
+  ],
+  "articleBody": " A readable summary of how an operating system facilitates multi-threading and how it works. This series of articles will cover key questions about how an Operating System works. After you read it, you will walk away knowing what the OS does behind the scenes to make your life easier when creating multi-threaded applications. You won’t need much of any background to read this article, but it will help if you are familiar with a low-level language, like C. If you want to learn more, the end of this article provides my sources and what you can use in your own studies. Make sure to check out part one.\nProcessing a Process In part one, we used the terms “process” and “application” interchangeably. This is not entirely correct, as you will see. An application is represented as one or more processes. A process, by definition has its own resources and data, the most basic unit of work on the user level. Recall that the OS uses processes to achieve its goal of modular and isolated programs.\nNote, this article will be more in-depth than part 1. If anything looks confusing, feel free to skip it. The important stuff is the conceptual level and why things happen. You can always look up the details!\nProcesses At its core, a process represents a state of execution. The OS has to keep track of a process’s state to manage it. Each process has a corresponding Process Control Block (PCB) that the OS can track its state. A PCB has:\nProgram counter, a counter held in the CPU that tracks what line of execution the program is on A Process ID A Virtual address space, the OS will allocate each process with memory, but to the process, this allocation looks like the entire machine’s memory! In reality, the OS has abstracted and decoupled physical memory to virtual memory. The effect is simplified memory management A Stack pointer, part of a process’s state is the state of its stack. A stack is simply a place in memory that lets a program track what data it currently is using in its scope A Heap, a section of memory that holds dynamically allocated data for the process Static data/text, loaded in when the process first launches, does not change throughout the execution CPU register state, the state of registers when the process is working, may change throughout the execution It is important to remember that processes are modular. Each process has ownership of its resources. Recall that one of the operating system’s missions is to guarantee that process isolation and security.\nProcess Control Block (PCB) The OS has to track all of this information along with some scheduling information with each process. Operating system engineers came up with the process control block (PCB) to do just that. For example, the program counter is initialized to the first instruction if the process is new. These fields are updated when they change (e.g., program counter pointing to the next line). The operating system is responsible for updating the PCB.\nThe PCB is used to track the state of execution of any given process. No single process is allowed to dominate the CPU, so the OS must have the ability to save and restore a process as it gets dispatched and preempted to the CPU. The PCB enables this so-called context switch to occur.\nContext switches The operating system takes a hit to performance each time a context switch occurs. Context switches are expensive. First, The OS is obligated to use CPU cycles to store the current processes information into its PCB and load the new processes state from its PCB. Second, a context switch will result in a cold cache (see part 1), slowing down execution.\nIt is the interest of the operating system to avoid context switching whenever possible.\nWhat do you think are some policies an OS can use to avoid context switching? When would the OS be forced to context switch? Keep context switching in mind as you read the rest of the article.\nProcess lifetime Each process goes through this life cycle. Let’s discuss what each stage entails:\nnew: Process gets created; the OS allocates and creates a process control block for the process and its resources (heap, stack, PCB) ready: The scheduler decides to queue the process to the CPU. The scheduler maintains the queue. running: The process is running on the CPU. The CPU can only run one thing at a time. On an interrupt, the CPU will no longer run the process. Operations that require I/O access will result (e.g., system call like read()) in the process being moved to waiting. The scheduler decides when to context switch. waiting: Processes here are completing some longer event. Usually, this is handled by the peripheral (e.g., the OS will request the data from the hard drive). The scheduler will move the process to ready when the operation completes. terminated: A process that completes and exits or one that results in an error code. What role does the OS scheduler play? The scheduler is vital for moving processes on and off of the CPU. For this to happen, the OS needs to:\nPreempt: interrupt and save the current context of the executing process Schedule: determine what to run next, depending on the operating system’s scheduling policy Dispatch: send the chosen process to the CPU and initiate a context switch Naturally, the next question is how often should the scheduler run? The answer is it depends on the OS’s policies and the state of the process. For example, if the process blocks (i.e., waiting on something to finish like saving to a disk) and it takes less time to context switch than the blocking operation, it may make more sense to go ahead and run the scheduler for a context switch. Note this all affects CPU efficiency, or (total time doing user work)/(total time doing user work + total time doing OS work).\nCan processes communicate with each other? Recall that one of the guiding principles of OS design is the modularity of user processes. Can we keep the modularity of processes while allowing processes to communicate? Engineers designed inter-process communication (IPC) to facilitate processes to communicate. IPC mechanisms do not compromise a process’s isolation/modularity.\nThe first type of IPC is called Message-Passing. The OS opens a channel of communication for the two processes (like a shared buffer). Each process can write to and receive from the shared channel to communicate. The OS acts as a mediator and provides a user interface. The downside is that because the OS is involved, there is a hit to performance.\nThe second IPC method is called Shared Memory. Here, the OS establishes a shared channel and maps it into each of the process’s address spaces (memory). This makes communication fast, but the OS does not mediate, so it is up to each process to create its own read/write methods.\nThreads Before threading, concurrent programming occurred via multi-process applications. That is, the application makes a fork or exec call to launch a child process. Every process needs to be isolated and endowed with its resources by the OS. Processes are expensive. And it was common for applications to run copies of themselves. These copies had the same variables, code, and execution flow. With multi-threading, multi-process applications could shift to a new paradigm of concurrency.\nSun OS was one of the first operating systems built around multi-threading and multi-CPU usage. Its design continues to remain relevant and is what many modern practices can be traced back to.\nYou can think of a thread as a miniature process within a process. But unlike processes, threads share their virtual memory space with the process. Each thread is a context of execution. Threads can access common resources in a process. However, threads need to track their own:\nProgram counter CPU register state Stack Pointer You may already be seeing a similarity with process control blocks. If you did, good catch! Threads track their needed information by taking from the overall PCB into their data structure.\nThreads are super useful for several reasons. First, they enable parallelization (multi-tasking). First, Threads divide tasks to work on a problem concurrently. Second, threads enable specialization. Recall that part of the issue with context-switching was the cache going cold. In multi-threading, this issue is less severe because threads are likely to be using similar resources. So, switching between threads is less likely to result in a cold cache.\nMulti-threading generally trumps the multi-processes paradigm because a multi-threading application will have lower resource overhead, easier synchronization, and cheaper context switching.\nAre threads useful on single CPU machines too? Yes! Because threads share memory, context switching is cheaper. Furthermore, if one threads blocks by doing an expensive operation, we can hide the application’s latency by switching to another thread! Switching threads is inherently cheaper than switching processes.\nThread lifetime Threads creation is done through a parent thread (you can think of a process as a single-threaded application). The parent initializes a child thread with a function (depending on the library).\nwhere should the thread begin its point of execution?\nThe child thread will initialize with a data structure that represents the new state of execution. The child thread goes ahead and executes concurrently with the parent thread. Generally, the child thread will exit first.\nWhen the child thread finishes its work, it may go ahead and return some result. An easy way for the parent thread to get those results is to use a join call. The join function will result in the parent thread blocking (waiting) for the child thread to complete. Once completed, the result associated with the child thread is returned to the parent via the join.\nIf there is only one child thread and one parent thread, and they do not use the same resources concurrently, then this is it! We have a concurrent program. However, an application with shared a resource (e.g., an array that all the threads want to access, etc.) and concurrent access of that resource, needs to consider synchronization constructs.\nSynchronization and Parallelization Synchronization is a way of coordinating multiple points of execution. Synchronization must guarantee the correctness of a program. There exists a multitude of synchronization constructs, but today we will only discuss mutexes and conditions.\nMutexes (locks) In parallel programming, there is no guarantee of sequentiality. For example, if we told one thread to write a document, and another to read it, the reading thread will likely read incomplete data. Locks (mutexes) are a way of guaranteeing sequential, exclusive access to a shared resource. A resource that is locked is only accessible to that thread. All other threads are placed in a line to wait for their turn.\nWhat happens to another thread that tries to access a locked resource? You can think of a mutex as a lock with some handy features. It tracks if it is locked, who the “owner” of the lock is, and any threads that tried to access the lock while it was locked. Threads that encountered a locked mutex are put to sleep in a queue. When the lock is released (unlocked), the mutex will wake up the waiting thread on its queue, where it can go ahead and try to obtain the lock again. Neat!\nMutexes make managing access easy. They are cheap to initialize and guarantee exclusive access to a resource. Exclusivity essentially makes the region of code (a critical section) protected by the mutex single-threaded. Code protected by a mutex should be small, fast, and only have to do with accessing/modifying a shared resource (e.g., a data structure, shared resource, etc.). Don’t forget every lock should have a corresponding unlock!\nCheck out your language’s multi-threading library for interface specifics. C has pthreads, Java has Thread,…\nWhat happens if you have just left your friends home with their car keys and your friend has your house keys? In programming, we call this a deadlock situation. Mutexes are powerful. Powerful enough to make a program get stuck. Avoid allowing a thread to take a lock and later have to take another lock. This makes your code vulnerable to having a thread waiting for another thread to give up its lock, while that thread is waiting for the first thread to give up theirs!\nCondition variables Sometimes you only want threads to run only when a condition occurs, or another thread tells it. The condition construct signals when threads should start working. You will always want to associate a condition variable with a mutex.\nFirst, the thread has to hold the mutex. Then, we check if a condition is met (e.g., while, if). If this condition is not met, we tell the thread to wait using the mutex and condition. The thread then unlocks the mutex and is put to sleep. When the condition variable is signaled, sleeping threads can be woken to go ahead and work. There are two signals:\nsignal(condition), wake-up a single sleeping thread associated with the condition broadcast(condition), wake-up all sleeping threads associated with the mutex It is often preferable to use a while loop to check on the condition because a while loop will provide several assurances. First, the while loop can deal with multiple threads. Second, when we use signal, we can’t guarantee the order to which waking threads will access the mutex. Finally, the while loop safeguards cases where the condition can change.\nSomething to watch out for with condition variables is waking a thread, just to have it go back to sleep on the wait. This wake-immediately-sleep cycle is called a spurious wake-up. Spurious wake-ups are a waste of CPU cycles and can usually be solved by reordering mutex locks and unlocks.\n",
+  "wordCount" : "2294",
+  "inLanguage": "en",
+  "datePublished": "2021-11-01T00:00:00Z",
+  "dateModified": "2021-11-01T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"name":"Alejandro Diaz"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://diasdiaz.net/blog/an-introduction-to-thread-concurrency-a-os-perspective-part-2/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "dias Diaz",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://diasdiaz.net/favicon.svg"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <a href="#content" class="skip-link" id="skip-link">Skip to main content</a>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var skipLink = document.getElementById("skip-link");
+        if (skipLink) {
+            skipLink.addEventListener("click", function (e) {
+                var target = document.getElementById("content");
+                if (target) {
+                    target.setAttribute("tabindex", "-1");
+                    target.focus();
+                }
+            });
+        }
+    });
+</script>
+
+<header class="header">
+    <nav class="header-nav">
+        <div class="logo">
+            <a href="https://diasdiaz.net/" accesskey="h" title="Alejandro Diaz (Alt + H)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" shape-rendering="crispEdges" aria-hidden="true" focusable="false">
+  <rect x="4" y="1" width="2" height="1" fill="#262626"/>
+  <rect x="3" y="2" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="2" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="6" y="2" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="3" width="2" height="1" fill="#262626"/>
+  <rect x="3" y="4" width="4" height="1" fill="#262626"/>
+  <rect x="3" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="5" width="2" height="1" fill="#C9822B"/>
+  <rect x="6" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="15" y="5" width="2" height="1" fill="#262626"/>
+  <rect x="3" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="6" width="2" height="1" fill="#C9822B"/>
+  <rect x="6" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="15" y="6" width="2" height="1" fill="#C85A46"/>
+  <rect x="17" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="7" width="2" height="1" fill="#C9822B"/>
+  <rect x="6" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="13" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="7" width="4" height="1" fill="#C85A46"/>
+  <rect x="18" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="8" width="4" height="1" fill="#262626"/>
+  <rect x="12" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="13" y="8" width="6" height="1" fill="#C85A46"/>
+  <rect x="19" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="9" width="8" height="1" fill="#C85A46"/>
+  <rect x="20" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="10" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="10" width="10" height="1" fill="#C85A46"/>
+  <rect x="21" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="0" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="9" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="10" y="11" width="12" height="1" fill="#9E3B29"/>
+  <rect x="22" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="0" y="12" width="24" height="1" fill="#262626"/>
+  <rect x="1" y="13" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="13" width="20" height="1" fill="#F8F5EB"/>
+  <rect x="22" y="13" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="14" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="14" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="3" y="14" width="5" height="1" fill="#262626"/>
+  <rect x="8" y="14" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="10" y="14" width="4" height="1" fill="#262626"/>
+  <rect x="14" y="14" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="16" y="14" width="5" height="1" fill="#262626"/>
+  <rect x="21" y="14" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="22" y="14" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="15" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="15" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="3" y="15" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="15" width="2" height="1" fill="#5897AB"/>
+  <rect x="6" y="15" width="1" height="1" fill="#3B7286"/>
+  <rect x="7" y="15" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="15" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="9" y="15" width="2" height="1" fill="#262626"/>
+  <rect x="11" y="15" width="2" height="1" fill="#B66F98"/>
+  <rect x="13" y="15" width="2" height="1" fill="#262626"/>
+  <rect x="15" y="15" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="16" y="15" width="1" height="1" fill="#262626"/>
+  <rect x="17" y="15" width="2" height="1" fill="#5897AB"/>
+  <rect x="19" y="15" width="1" height="1" fill="#3B7286"/>
+  <rect x="20" y="15" width="1" height="1" fill="#262626"/>
+  <rect x="21" y="15" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="22" y="15" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="16" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="16" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="3" y="16" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="16" width="1" height="1" fill="#5897AB"/>
+  <rect x="5" y="16" width="1" height="1" fill="#264E5E"/>
+  <rect x="6" y="16" width="1" height="1" fill="#3B7286"/>
+  <rect x="7" y="16" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="16" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="9" y="16" width="1" height="1" fill="#262626"/>
+  <rect x="10" y="16" width="4" height="1" fill="#8A4574"/>
+  <rect x="14" y="16" width="1" height="1" fill="#262626"/>
+  <rect x="15" y="16" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="16" y="16" width="1" height="1" fill="#262626"/>
+  <rect x="17" y="16" width="1" height="1" fill="#5897AB"/>
+  <rect x="18" y="16" width="1" height="1" fill="#264E5E"/>
+  <rect x="19" y="16" width="1" height="1" fill="#3B7286"/>
+  <rect x="20" y="16" width="1" height="1" fill="#262626"/>
+  <rect x="21" y="16" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="22" y="16" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="17" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="17" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="3" y="17" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="17" width="3" height="1" fill="#3B7286"/>
+  <rect x="7" y="17" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="17" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="9" y="17" width="1" height="1" fill="#262626"/>
+  <rect x="10" y="17" width="2" height="1" fill="#8A4574"/>
+  <rect x="12" y="17" width="1" height="1" fill="#C9822B"/>
+  <rect x="13" y="17" width="1" height="1" fill="#B66F98"/>
+  <rect x="14" y="17" width="1" height="1" fill="#262626"/>
+  <rect x="15" y="17" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="16" y="17" width="1" height="1" fill="#262626"/>
+  <rect x="17" y="17" width="3" height="1" fill="#3B7286"/>
+  <rect x="20" y="17" width="1" height="1" fill="#262626"/>
+  <rect x="21" y="17" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="22" y="17" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="18" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="18" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="3" y="18" width="5" height="1" fill="#262626"/>
+  <rect x="8" y="18" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="10" y="18" width="4" height="1" fill="#262626"/>
+  <rect x="14" y="18" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="16" y="18" width="5" height="1" fill="#262626"/>
+  <rect x="21" y="18" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="22" y="18" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="19" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="19" width="7" height="1" fill="#F8F5EB"/>
+  <rect x="9" y="19" width="1" height="1" fill="#262626"/>
+  <rect x="10" y="19" width="4" height="1" fill="#63274F"/>
+  <rect x="14" y="19" width="1" height="1" fill="#262626"/>
+  <rect x="15" y="19" width="7" height="1" fill="#F8F5EB"/>
+  <rect x="22" y="19" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="20" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="20" width="6" height="1" fill="#D4CBB9"/>
+  <rect x="8" y="20" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="9" y="20" width="1" height="1" fill="#262626"/>
+  <rect x="10" y="20" width="4" height="1" fill="#63274F"/>
+  <rect x="14" y="20" width="1" height="1" fill="#262626"/>
+  <rect x="15" y="20" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="16" y="20" width="6" height="1" fill="#D4CBB9"/>
+  <rect x="22" y="20" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="21" width="22" height="1" fill="#262626"/>
+  <rect x="2" y="22" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="22" width="18" height="1" fill="#7D501B"/>
+  <rect x="21" y="22" width="1" height="1" fill="#262626"/>
+</svg>
+
+                <span class="logo-title">Alejandro Diaz</span>
+            </a>
+        </div>
+        <div class="nav-right">
+            <ul id="menu" class="menu">
+                <li>
+                    <a href="https://diasdiaz.net/blog/" title="Blog" aria-current="page">
+                        <span class="nav-item-inner active">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true" focusable="false">
+  <rect x="2" y="1" width="12" height="1" fill="#262626"/>
+  <rect x="1" y="2" width="2" height="1" fill="#262626"/>
+  <rect x="3" y="2" width="9" height="1" fill="#B66F98"/>
+  <rect x="12" y="2" width="2" height="1" fill="#262626"/>
+  <rect x="14" y="2" width="1" height="1" fill="#9E3B29"/>
+  <rect x="15" y="2" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="3" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="3" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="3" width="9" height="1" fill="#B66F98"/>
+  <rect x="13" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="3" width="1" height="1" fill="#9E3B29"/>
+  <rect x="15" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="4" width="2" height="1" fill="#262626"/>
+  <rect x="3" y="4" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="4" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="5" y="4" width="1" height="1" fill="#8A4574"/>
+  <rect x="6" y="4" width="5" height="1" fill="#262626"/>
+  <rect x="11" y="4" width="1" height="1" fill="#8A4574"/>
+  <rect x="12" y="4" width="2" height="1" fill="#262626"/>
+  <rect x="14" y="4" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="15" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="5" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="3" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="5" width="1" height="1" fill="#8A4574"/>
+  <rect x="5" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="6" y="5" width="5" height="1" fill="#F8F5EB"/>
+  <rect x="11" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="5" width="1" height="1" fill="#8A4574"/>
+  <rect x="13" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="5" width="1" height="1" fill="#E5B052"/>
+  <rect x="15" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="6" width="2" height="1" fill="#262626"/>
+  <rect x="3" y="6" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="4" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="5" y="6" width="1" height="1" fill="#8A4574"/>
+  <rect x="6" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="6" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="8" y="6" width="3" height="1" fill="#787878"/>
+  <rect x="11" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="6" width="1" height="1" fill="#8A4574"/>
+  <rect x="13" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="6" width="1" height="1" fill="#C9822B"/>
+  <rect x="15" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="7" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="3" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="7" width="1" height="1" fill="#8A4574"/>
+  <rect x="5" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="6" y="7" width="5" height="1" fill="#F8F5EB"/>
+  <rect x="11" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="7" width="1" height="1" fill="#8A4574"/>
+  <rect x="13" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="7" width="1" height="1" fill="#C9822B"/>
+  <rect x="15" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="8" width="2" height="1" fill="#262626"/>
+  <rect x="3" y="8" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="4" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="5" y="8" width="1" height="1" fill="#8A4574"/>
+  <rect x="6" y="8" width="5" height="1" fill="#262626"/>
+  <rect x="11" y="8" width="1" height="1" fill="#8A4574"/>
+  <rect x="12" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="13" y="8" width="1" height="1" fill="#C9822B"/>
+  <rect x="14" y="8" width="1" height="1" fill="#E5B052"/>
+  <rect x="15" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="9" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="3" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="9" width="9" height="1" fill="#8A4574"/>
+  <rect x="13" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="9" width="1" height="1" fill="#C9822B"/>
+  <rect x="15" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="10" width="2" height="1" fill="#262626"/>
+  <rect x="3" y="10" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="4" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="5" y="10" width="7" height="1" fill="#8A4574"/>
+  <rect x="12" y="10" width="2" height="1" fill="#262626"/>
+  <rect x="14" y="10" width="1" height="1" fill="#C9822B"/>
+  <rect x="15" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="11" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="3" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="4" y="11" width="9" height="1" fill="#63274F"/>
+  <rect x="13" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="11" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="15" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="12" width="2" height="1" fill="#262626"/>
+  <rect x="3" y="12" width="1" height="1" fill="#D4CBB9"/>
+  <rect x="4" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="5" y="12" width="8" height="1" fill="#63274F"/>
+  <rect x="13" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="12" width="1" height="1" fill="#1C1C1C"/>
+  <rect x="15" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="13" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="13" width="10" height="1" fill="#D4CBB9"/>
+  <rect x="13" y="13" width="2" height="1" fill="#262626"/>
+  <rect x="2" y="14" width="12" height="1" fill="#262626"/>
+</svg>
+
+                            <span class="nav-label">Blog</span>
+                        </span>
+                    </a>
+                </li>
+                <li>
+                    <a href="https://diasdiaz.net/resume/" title="Résumé">
+                        <span class="nav-item-inner">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true" focusable="false">
+  <rect x="2" y="1" width="10" height="1" fill="#262626"/>
+  <rect x="2" y="2" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="2" width="8" height="1" fill="#F8F5EB"/>
+  <rect x="11" y="2" width="2" height="1" fill="#262626"/>
+  <rect x="2" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="3" width="8" height="1" fill="#F8F5EB"/>
+  <rect x="11" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="3" width="1" height="1" fill="#3B7286"/>
+  <rect x="13" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="4" width="8" height="1" fill="#F8F5EB"/>
+  <rect x="11" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="4" width="2" height="1" fill="#3B7286"/>
+  <rect x="14" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="5" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="5" y="5" width="6" height="1" fill="#8A4574"/>
+  <rect x="11" y="5" width="4" height="1" fill="#262626"/>
+  <rect x="2" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="6" width="12" height="1" fill="#F8F5EB"/>
+  <rect x="15" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="7" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="5" y="7" width="8" height="1" fill="#787878"/>
+  <rect x="13" y="7" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="15" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="8" width="12" height="1" fill="#F8F5EB"/>
+  <rect x="15" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="9" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="5" y="9" width="8" height="1" fill="#787878"/>
+  <rect x="13" y="9" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="15" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="10" width="12" height="1" fill="#F8F5EB"/>
+  <rect x="15" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="11" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="5" y="11" width="6" height="1" fill="#787878"/>
+  <rect x="11" y="11" width="4" height="1" fill="#F8F5EB"/>
+  <rect x="15" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="12" width="12" height="1" fill="#F8F5EB"/>
+  <rect x="15" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="13" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="13" width="12" height="1" fill="#D4CBB9"/>
+  <rect x="15" y="13" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="14" width="14" height="1" fill="#262626"/>
+  <rect x="3" y="15" width="10" height="1" fill="#262626"/>
+</svg>
+
+                            <span class="nav-label">Résumé</span>
+                        </span>
+                    </a>
+                </li>
+                <li>
+                    <a href="https://diasdiaz.net/shelves/" title="Shelves">
+                        <span class="nav-item-inner">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true" focusable="false">
+  <rect x="2" y="2" width="4" height="1" fill="#262626"/>
+  <rect x="2" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="3" width="2" height="1" fill="#B66F98"/>
+  <rect x="5" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="4" width="2" height="1" fill="#8A4574"/>
+  <rect x="5" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="4" width="3" height="1" fill="#262626"/>
+  <rect x="2" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="5" width="2" height="1" fill="#8A4574"/>
+  <rect x="5" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="5" width="1" height="1" fill="#5897AB"/>
+  <rect x="9" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="5" width="3" height="1" fill="#262626"/>
+  <rect x="2" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="6" width="2" height="1" fill="#8A4574"/>
+  <rect x="5" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="6" width="1" height="1" fill="#3B7286"/>
+  <rect x="9" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="6" width="1" height="1" fill="#E5B052"/>
+  <rect x="13" y="6" width="2" height="1" fill="#262626"/>
+  <rect x="15" y="6" width="1" height="1" fill="#9E3B29"/>
+  <rect x="2" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="7" width="2" height="1" fill="#8A4574"/>
+  <rect x="5" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="7" width="1" height="1" fill="#3B7286"/>
+  <rect x="9" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="7" width="1" height="1" fill="#C9822B"/>
+  <rect x="13" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="7" width="2" height="1" fill="#9E3B29"/>
+  <rect x="2" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="8" width="2" height="1" fill="#8A4574"/>
+  <rect x="5" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="8" width="1" height="1" fill="#3B7286"/>
+  <rect x="9" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="8" width="1" height="1" fill="#C9822B"/>
+  <rect x="13" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="8" width="2" height="1" fill="#9E3B29"/>
+  <rect x="2" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="9" width="2" height="1" fill="#8A4574"/>
+  <rect x="5" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="9" width="1" height="1" fill="#3B7286"/>
+  <rect x="9" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="9" width="1" height="1" fill="#C9822B"/>
+  <rect x="13" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="9" width="2" height="1" fill="#9E3B29"/>
+  <rect x="2" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="10" width="2" height="1" fill="#63274F"/>
+  <rect x="5" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="10" width="1" height="1" fill="#264E5E"/>
+  <rect x="9" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="10" width="1" height="1" fill="#7D501B"/>
+  <rect x="13" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="10" width="2" height="1" fill="#9E3B29"/>
+  <rect x="2" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="11" width="2" height="1" fill="#63274F"/>
+  <rect x="5" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="11" width="1" height="1" fill="#264E5E"/>
+  <rect x="9" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="11" width="1" height="1" fill="#7D501B"/>
+  <rect x="13" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="11" width="2" height="1" fill="#9E3B29"/>
+  <rect x="2" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="12" width="2" height="1" fill="#63274F"/>
+  <rect x="5" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="7" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="8" y="12" width="1" height="1" fill="#264E5E"/>
+  <rect x="9" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="12" width="1" height="1" fill="#7D501B"/>
+  <rect x="13" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="14" y="12" width="2" height="1" fill="#9E3B29"/>
+  <rect x="0" y="13" width="16" height="1" fill="#262626"/>
+  <rect x="1" y="14" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="14" width="12" height="1" fill="#7D501B"/>
+  <rect x="14" y="14" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="15" width="12" height="1" fill="#262626"/>
+</svg>
+
+                            <span class="nav-label">Shelves</span>
+                        </span>
+                    </a>
+                </li>
+            </ul>
+            <div class="logo-switches">
+                <button id="theme-toggle" class="theme-toggle" accesskey="t" title="Toggle theme (Alt + T)" aria-label="Toggle theme">
+                    <svg class="moon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg class="sun" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                    <span class="theme-label">Theme</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+</header>
+<main class="main" id="content" tabindex="-1">
+<article class="post-single">
+    <header class="post-header">
+        <h1 class="post-title">An Introduction to Thread Concurrency- a OS Perspective (Part 2)</h1>
+        <div class="post-meta">
+            <time datetime="2021-11-01">2021-11-01</time>
+            <span class="meta-sep" aria-hidden="true">·</span>
+            <span class="reading-time">11 min read</span>
+        </div>
+        <div class="post-tags">
+            <a href="/tags/computer/" class="post-tag">#computer</a>
+            <a href="/tags/science/" class="post-tag">#science</a>
+            <a href="/tags/os/" class="post-tag">#os</a>
+            <a href="/tags/multithreading/" class="post-tag">#multithreading</a>
+            <a href="/tags/lowlevel/" class="post-tag">#lowlevel</a>
+        </div>
+    </header>
+
+    <div class="post-content md-content">
+        <blockquote>
+<p>A readable summary of how an <strong>operating system</strong> facilitates <strong>multi-threading</strong> and how it works. This series of articles will cover key questions about how an Operating System works. After you read it, you will walk away knowing what the OS does behind the scenes to make your life easier when creating multi-threaded applications. You won&rsquo;t need much of any background to read this article, but it will help if you are familiar with a low-level language, like C.
+<em>If you want to learn more, the end of this article provides my sources and what you can use in your own studies.</em>
+<em>Make sure to check out <a href="https://calmcoconut.github.io/diasDiaz/an-introduction-to-thread-concurrency-a-os-perspective-part-1/">part one</a></em>.</p>
+</blockquote>
+<h1 id="processing-a-process">Processing a Process</h1>
+<p>In <a href="https://calmcoconut.github.io/diasDiaz/An-Introduction-to-Concurrency-a-OS-Perspective/">part one</a>, we used the terms &ldquo;process&rdquo; and &ldquo;application&rdquo; interchangeably. This is not entirely correct, as you will see. An application is represented as one or more processes. A process, by definition has its own resources and data, the most basic unit of work on the user level. Recall that the OS uses processes to achieve its goal of <strong>modular</strong> and <strong>isolated</strong> programs.</p>
+<blockquote>
+<p>Note, this article will be more in-depth than part 1. If anything looks confusing, feel free to skip it. The important stuff is the conceptual level and why things happen. You can always look up the details!</p>
+</blockquote>
+<h2 id="processes">Processes</h2>
+<p>At its core, a process represents a state of execution. The OS has to keep track of a process&rsquo;s state to manage it. Each process has a corresponding <em>Process Control Block (PCB)</em> that the OS can track its state. A PCB has:</p>
+<ul>
+<li><strong>Program counter</strong>, a counter held in the CPU that tracks what line of execution the program is on</li>
+<li>A <strong>Process ID</strong></li>
+<li>A <strong>Virtual address space</strong>, the OS will allocate each process with memory, but to the process, this allocation looks like the entire machine&rsquo;s memory! In reality, the OS has abstracted and <strong>decoupled</strong> physical memory to virtual memory. The effect is simplified memory management</li>
+<li>A <strong>Stack pointer</strong>, part of a process&rsquo;s state is the state of its stack. A stack is simply a place in memory that lets a program track what data it currently is using in its scope</li>
+<li>A <strong>Heap</strong>, a section of memory that holds dynamically allocated data for the process</li>
+<li><strong>Static data/text</strong>, loaded in when the process first launches, does not change throughout the execution</li>
+<li><strong>CPU register state</strong>, the state of registers when the process is working, may change throughout the execution</li>
+</ul>
+<p>It is important to remember that processes are modular. Each process has ownership of its resources. Recall that one of the operating system&rsquo;s missions is to guarantee that process isolation and security.</p>
+<h2 id="process-control-block-pcb">Process Control Block (PCB)</h2>
+<p>The OS has to track all of this information along with some scheduling information with each process. Operating system engineers came up with the process control block (PCB) to do just that. For example, the program counter is initialized to the first instruction if the process is new. These fields are updated when they change (e.g., program counter pointing to the next line). The operating system is responsible for updating the PCB.</p>
+<p>The PCB is used to track the state of execution of any given process. No single process is allowed to dominate the CPU, so the OS must have the ability to save and restore a process as it gets dispatched and <strong>preempted</strong> to the CPU.  The PCB enables this so-called <strong>context switch</strong> to occur.</p>
+<h2 id="context-switches">Context switches</h2>
+<p>The operating system takes a hit to performance each time a context switch occurs. Context switches are expensive. First, The OS is obligated to use CPU cycles to store the current processes information into its PCB and load the new processes state from its PCB. Second, a context switch will result in a <strong>cold cache</strong> (see part 1), slowing down execution.</p>
+<p>It is the interest of the operating system to avoid context switching whenever possible.</p>
+<blockquote>
+<p>What do you think are some policies an OS can use to avoid context switching? When would the OS be forced to context switch? Keep context switching in mind as you read the rest of the article.</p>
+</blockquote>
+<h2 id="process-lifetime">Process lifetime</h2>
+<img src= "/images/20211011-an-introduction-to-concurrency-a-os-perspective/process-lifecycle.png" width="500" alt="A diagram of a process's lifecycle. Source: Introduction to Operating Systems by Ada Gavrilovska"/>
+<p>Each process goes through this life cycle. Let&rsquo;s discuss what each stage entails:</p>
+<ul>
+<li><strong>new</strong>: Process gets created; the OS allocates and creates a process control block for the process and its resources (heap, stack, PCB)</li>
+<li><strong>ready</strong>: The scheduler decides to queue the process to the CPU. The scheduler maintains the queue.</li>
+<li><strong>running</strong>: The process is running on the CPU. The CPU can only run one thing at a time. On an interrupt, the CPU will no longer run the process. Operations that require I/O access will result (e.g., system call like read()) in the process being moved to <em>waiting</em>. The scheduler decides when to context switch.</li>
+<li><strong>waiting</strong>: Processes here are completing some longer event. Usually, this is handled by the peripheral (e.g., the OS will request the data from the hard drive). The scheduler will move the process to ready when the operation completes.</li>
+<li><strong>terminated</strong>: A process that completes and exits or one that results in an error code.</li>
+</ul>
+<h2 id="what-role-does-the-os-scheduler-play">What role does the OS scheduler play?</h2>
+<p>The scheduler is vital for moving processes on and off of the CPU. For this to happen, the OS needs to:</p>
+<ul>
+<li><strong>Preempt</strong>: interrupt and save the current context of the executing process</li>
+<li><strong>Schedule</strong>: determine what to run next, depending on the operating system&rsquo;s scheduling policy</li>
+<li><strong>Dispatch</strong>: send the chosen process to the CPU and initiate a context switch</li>
+</ul>
+<blockquote>
+<p>Naturally, the next question is how often should the scheduler run? The answer is it depends on the OS&rsquo;s policies and the state of the process. For example, if the process blocks (i.e., waiting on something to finish like saving to a disk) and it takes less time to context switch than the blocking operation, it may make more sense to go ahead and run the scheduler for a context switch. Note this all affects CPU efficiency, or <em>(total time doing user work)/(total time doing user work + total time doing OS work)</em>.</p>
+</blockquote>
+<h2 id="can-processes-communicate-with-each-other">Can processes communicate with each other?</h2>
+<p>Recall that one of the guiding principles of OS design is the modularity of user processes. Can we keep the modularity of processes while allowing processes to communicate? Engineers designed <em>inter-process communication (IPC)</em>  to facilitate processes to communicate. IPC mechanisms do not compromise a process&rsquo;s isolation/modularity.</p>
+<p>The first type of IPC is called <strong>Message-Passing</strong>. The OS opens a channel of communication for the two processes (like a shared buffer). Each process can write to and receive from the shared channel to communicate. The OS acts as a mediator and provides a user interface. The downside is that because the OS is involved, there is a hit to performance.</p>
+<p>The second IPC method is called <strong>Shared Memory</strong>. Here, the OS establishes a shared channel and maps it into each of the process&rsquo;s address spaces (memory). This makes communication fast, but the OS does not mediate, so it is up to each process to create its own read/write methods.</p>
+<h1 id="threads">Threads</h1>
+<p>Before threading, concurrent programming occurred via multi-process applications. That is, the application makes a fork or exec call to launch a child process. Every process needs to be isolated and endowed with its resources by the OS. Processes are expensive. And it was common for applications to run copies of themselves. These copies had the same variables, code, and execution flow. With multi-threading, multi-process applications could shift to a new paradigm of concurrency.</p>
+<blockquote>
+<p>Sun OS was one of the first operating systems built around multi-threading and multi-CPU usage. Its design continues to remain relevant and is what many modern practices can be traced back to.</p>
+</blockquote>
+<p>You can think of a thread as a miniature process within a process. But unlike processes, threads share their virtual memory space with the process. Each thread is a context of execution. Threads can access common resources in a process. However, threads need to track their own:</p>
+<ul>
+<li>Program counter</li>
+<li>CPU register state</li>
+<li>Stack Pointer</li>
+</ul>
+<p>You may already be seeing a similarity with process control blocks. If you did, good catch! Threads track their needed information by taking from the overall PCB into their data structure.</p>
+<p>Threads are super useful for several reasons. First, they enable parallelization (multi-tasking). First, Threads divide tasks to work on a problem concurrently. Second, threads enable <strong>specialization</strong>. Recall that part of the issue with context-switching was the cache going cold.
+In multi-threading, this issue is less severe because threads are likely to be using similar resources. So, switching between threads is less likely to result in a cold cache.</p>
+<p>Multi-threading generally trumps the multi-processes paradigm because a multi-threading application will have lower resource overhead, easier synchronization, and cheaper context switching.</p>
+<blockquote>
+<p>Are threads useful on single CPU machines too? <strong>Yes</strong>! Because threads <em>share</em> memory, context switching is cheaper. Furthermore, if one threads blocks by doing an expensive operation, we can hide the application&rsquo;s latency by switching to another thread! Switching threads is inherently cheaper than switching processes.</p>
+</blockquote>
+<h3 id="thread-lifetime">Thread lifetime</h3>
+<p>Threads creation is done through a parent thread (you can think of a process as a single-threaded application). The parent initializes a child thread with a function (depending on the library).</p>
+<blockquote>
+<p>where should the thread begin its point of execution?</p>
+</blockquote>
+<p>The child thread will initialize with a data structure that represents the new state of execution. The child thread goes ahead and executes concurrently with the parent thread. Generally, the child thread will exit first.</p>
+<p>When the child thread finishes its work, it may go ahead and return some result. An easy way for the parent thread to get those results is to use a <em>join</em> call. The <em>join</em> function will result in the parent thread blocking (waiting) for the child thread to complete. Once completed, the result associated with the child thread is returned to the parent via the <em>join</em>.</p>
+<p>If there is only one child thread and one parent thread, and they do not use the same resources concurrently, then this is it! We have a concurrent program. However, an application with shared a resource (e.g., an array that all the threads want to access, etc.) and concurrent access of that resource, needs to consider synchronization constructs.</p>
+<h2 id="synchronization-and-parallelization">Synchronization and Parallelization</h2>
+<p>Synchronization is a way of coordinating multiple points of execution. Synchronization must guarantee the correctness of a program. There exists a multitude of synchronization constructs, but today we will only discuss mutexes and conditions.</p>
+<h3 id="mutexes-locks">Mutexes (locks)</h3>
+<p>In parallel programming, there is no guarantee of sequentiality. For example, if we told one thread to write a document, and another to read it, the reading thread will likely read incomplete data. Locks (mutexes) are a way of guaranteeing sequential, exclusive access to a shared resource. A resource that is locked is only accessible to that thread. All other threads are placed in a line to wait for their turn.</p>
+<blockquote>
+<p>What happens to another thread that tries to access a locked resource? You can think of a mutex as a lock with some handy features. It tracks if it is locked, who the &ldquo;owner&rdquo; of the lock is, and any threads that tried to access the lock while it was locked. Threads that encountered a locked mutex are put to sleep in a queue. When the lock is released (unlocked), the mutex will wake up the waiting thread on its queue, where it can go ahead and try to obtain the lock again. Neat!</p>
+</blockquote>
+<p>Mutexes make managing access easy. They are cheap to initialize and guarantee exclusive access to a resource. Exclusivity essentially makes the region of code  (a <em>critical section</em>) protected by the mutex single-threaded. Code protected by a mutex should be small, fast, and only have to do with accessing/modifying a shared resource (e.g., a data structure, shared resource, etc.). Don&rsquo;t forget every lock should have a corresponding unlock!</p>
+<blockquote>
+<p>Check out your language&rsquo;s multi-threading library for interface specifics. C has pthreads, Java has Thread,&hellip;</p>
+</blockquote>
+<p>What happens if you have just left your friends home with their car keys and your friend has your house keys? In programming, we call this a <strong>deadlock</strong> situation. Mutexes are powerful. Powerful enough to make a program get stuck. Avoid allowing a thread to take a lock and later have to take another lock. This makes your code vulnerable to having a thread waiting for another thread to give up its lock, while that thread is waiting for the first thread to give up theirs!</p>
+<h3 id="condition-variables">Condition variables</h3>
+<p>Sometimes you only want threads to run only when a condition occurs, or another thread tells it. The <strong>condition</strong> construct  <strong>signals</strong> when threads should start working. You will always want to associate a condition variable with a mutex.</p>
+<p>First, the thread has to hold the mutex. Then, we check if a condition is met (e.g., while, if). If this condition is not met, we tell the thread to <strong>wait</strong> using the mutex and condition. The thread then unlocks the mutex and is put to sleep. When the condition variable is signaled, sleeping threads can be woken to go ahead and work. There are two signals:</p>
+<ul>
+<li><em>signal(condition)</em>, wake-up a single sleeping thread associated with the condition</li>
+<li><em>broadcast(condition)</em>, wake-up all sleeping threads associated with the mutex</li>
+</ul>
+<blockquote>
+<p>It is often preferable to use a while loop to check on the condition because a while loop will provide several assurances. First, the while loop can deal with multiple threads. Second, when we use signal, we can&rsquo;t guarantee the order to which waking threads will access the mutex. Finally, the while loop safeguards cases where the condition can change.</p>
+</blockquote>
+<p>Something to watch out for with condition variables is waking a thread, just to have it go back to sleep on the wait. This wake-immediately-sleep cycle is called a <strong>spurious wake-up</strong>. Spurious wake-ups are a waste of CPU cycles and can usually be solved by reordering mutex locks and unlocks.</p>
+
+    </div>
+</article>
+    </main>
+    <footer class="footer">
+    <hr class="footer-divider" />
+    <nav class="footer-nav" aria-label="Footer navigation">
+        <a href="/search/" class="footer-link">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true" focusable="false">
+  <rect x="3" y="1" width="5" height="1" fill="#262626"/>
+  <rect x="2" y="2" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="2" width="5" height="1" fill="#5897AB"/>
+  <rect x="8" y="2" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="3" width="2" height="1" fill="#5897AB"/>
+  <rect x="4" y="3" width="3" height="1" fill="#F8F5EB"/>
+  <rect x="7" y="3" width="2" height="1" fill="#5897AB"/>
+  <rect x="9" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="0" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="4" width="2" height="1" fill="#5897AB"/>
+  <rect x="3" y="4" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="5" y="4" width="1" height="1" fill="#3B7286"/>
+  <rect x="6" y="4" width="4" height="1" fill="#5897AB"/>
+  <rect x="10" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="0" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="5" width="2" height="1" fill="#5897AB"/>
+  <rect x="3" y="5" width="7" height="1" fill="#3B7286"/>
+  <rect x="10" y="5" width="1" height="1" fill="#262626"/>
+  <rect x="0" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="6" width="2" height="1" fill="#5897AB"/>
+  <rect x="3" y="6" width="7" height="1" fill="#3B7286"/>
+  <rect x="10" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="0" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="7" width="1" height="1" fill="#5897AB"/>
+  <rect x="2" y="7" width="4" height="1" fill="#3B7286"/>
+  <rect x="6" y="7" width="3" height="1" fill="#264E5E"/>
+  <rect x="9" y="7" width="1" height="1" fill="#3B7286"/>
+  <rect x="10" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="8" width="2" height="1" fill="#3B7286"/>
+  <rect x="4" y="8" width="4" height="1" fill="#264E5E"/>
+  <rect x="8" y="8" width="1" height="1" fill="#3B7286"/>
+  <rect x="9" y="8" width="2" height="1" fill="#262626"/>
+  <rect x="2" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="9" width="2" height="1" fill="#3B7286"/>
+  <rect x="5" y="9" width="2" height="1" fill="#264E5E"/>
+  <rect x="7" y="9" width="1" height="1" fill="#3B7286"/>
+  <rect x="8" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="9" y="9" width="2" height="1" fill="#C85A46"/>
+  <rect x="11" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="3" y="10" width="5" height="1" fill="#262626"/>
+  <rect x="9" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="10" y="10" width="2" height="1" fill="#9E3B29"/>
+  <rect x="12" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="10" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="11" width="2" height="1" fill="#9E3B29"/>
+  <rect x="13" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="11" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="12" width="2" height="1" fill="#9E3B29"/>
+  <rect x="14" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="13" width="1" height="1" fill="#262626"/>
+  <rect x="13" y="13" width="1" height="1" fill="#8A4574"/>
+  <rect x="14" y="13" width="1" height="1" fill="#262626"/>
+  <rect x="13" y="14" width="2" height="1" fill="#262626"/>
+</svg>
+
+            <span>Search</span>
+        </a>
+        <span class="footer-sep" aria-hidden="true">·</span>
+        <a href="/archive/" class="footer-link">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true" focusable="false">
+  <rect x="1" y="2" width="14" height="1" fill="#262626"/>
+  <rect x="0" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="3" width="14" height="1" fill="#E5B052"/>
+  <rect x="15" y="3" width="1" height="1" fill="#262626"/>
+  <rect x="0" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="4" width="14" height="1" fill="#C9822B"/>
+  <rect x="15" y="4" width="1" height="1" fill="#262626"/>
+  <rect x="0" y="5" width="16" height="1" fill="#262626"/>
+  <rect x="1" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="6" width="12" height="1" fill="#C9822B"/>
+  <rect x="14" y="6" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="7" width="2" height="1" fill="#C9822B"/>
+  <rect x="4" y="7" width="8" height="1" fill="#262626"/>
+  <rect x="12" y="7" width="2" height="1" fill="#C9822B"/>
+  <rect x="14" y="7" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="8" width="2" height="1" fill="#C9822B"/>
+  <rect x="4" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="5" y="8" width="6" height="1" fill="#F8F5EB"/>
+  <rect x="11" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="8" width="2" height="1" fill="#C9822B"/>
+  <rect x="14" y="8" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="9" width="2" height="1" fill="#C9822B"/>
+  <rect x="4" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="5" y="9" width="2" height="1" fill="#F8F5EB"/>
+  <rect x="7" y="9" width="3" height="1" fill="#787878"/>
+  <rect x="10" y="9" width="1" height="1" fill="#F8F5EB"/>
+  <rect x="11" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="12" y="9" width="2" height="1" fill="#C9822B"/>
+  <rect x="14" y="9" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="10" width="2" height="1" fill="#C9822B"/>
+  <rect x="4" y="10" width="8" height="1" fill="#262626"/>
+  <rect x="12" y="10" width="2" height="1" fill="#C9822B"/>
+  <rect x="14" y="10" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="11" width="2" height="1" fill="#C9822B"/>
+  <rect x="4" y="11" width="8" height="1" fill="#7D501B"/>
+  <rect x="12" y="11" width="2" height="1" fill="#C9822B"/>
+  <rect x="14" y="11" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="2" y="12" width="12" height="1" fill="#7D501B"/>
+  <rect x="14" y="12" width="1" height="1" fill="#262626"/>
+  <rect x="1" y="13" width="14" height="1" fill="#262626"/>
+  <rect x="2" y="14" width="12" height="1" fill="#262626"/>
+</svg>
+
+            <span>Archive</span>
+        </a>
+        <span class="footer-sep" aria-hidden="true">·</span>
+        <a href="/tags/" class="footer-link">
+            <span>Tags</span>
+        </a>
+        <span class="footer-sep" aria-hidden="true">·</span>
+        <a href="/index.xml" class="footer-link">
+            <span>RSS</span>
+        </a>
+    </nav>
+</footer>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            var href = this.getAttribute("href");
+            if (!href || href === "#") return;
+            var id = href.substr(1);
+            var targetEl = document.getElementById(decodeURIComponent(id));
+            if (!targetEl) return;
+            e.preventDefault();
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                targetEl.scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                targetEl.scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+            if (id === "content") {
+                targetEl.setAttribute("tabindex", "-1");
+                targetEl.focus();
+            }
+        });
+    });
+</script>
+<script>
+    var themeToggle = document.getElementById("theme-toggle");
+    if (themeToggle) {
+        themeToggle.addEventListener("click", () => {
+            const html = document.querySelector("html");
+            if (html.dataset.theme === "dark") {
+                html.dataset.theme = 'light';
+                localStorage.setItem("pref-theme", 'light');
+            } else {
+                html.dataset.theme = 'dark';
+                localStorage.setItem("pref-theme", 'dark');
+            }
+        });
+    }
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', () => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { }
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode && container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode && codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+
+</body>
+
+</html>
