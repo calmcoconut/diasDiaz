@@ -1737,6 +1737,13 @@ details.callout[open] > summary.callout-title::after {
   margin: var(--space-element) 0;
 }
 
+/* An image embed that shares its paragraph with prose is wrapped in a span
+   (phrasing content) instead of a figure (flow content), which would be
+   invalid inside a <p>. Block display keeps it reading as a figure. */
+.obsidian-image-inline {
+  display: block;
+}
+
 .obsidian-image img {
   display: block;
   width: auto;

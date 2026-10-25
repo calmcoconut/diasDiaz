@@ -136,7 +136,19 @@
           {{- errorf "[obsidian-validate] %s: image embed \"%s\" has an invalid width \"%s\". The optional third pipe field must be a whole number of pixels, for example \"![[%s|%s|500]]\"." $srcPath $m $maxWidth $target $alt -}}
         {{- end -}}
       {{- end -}}
-      {{- $replacement = printf `<figure class="obsidian-image"><img src="%s" alt="%s"%s loading="lazy" decoding="async"%s%s></figure>` $res.RelPermalink (htmlEscape $altAttr) $roleAttr $dims $style -}}
+      {{- $imgTag := printf `<img src="%s" alt="%s"%s loading="lazy" decoding="async"%s%s>` $res.RelPermalink (htmlEscape $altAttr) $roleAttr $dims $style -}}
+      {{- /* <figure> is flow content, so it cannot sit inside an open <p>. An image
+             that shares its paragraph with prose is wrapped in a <span> (phrasing
+             content) instead; CSS makes it block so it still reads as a figure.
+             Same detection as the note cards: sibling prose next to the token. */ -}}
+      {{- $mEsc := replaceRE `([\\.^$|?*+()\[\]{}])` `\$1` $m -}}
+      {{- $proseBefore := findRE (printf `<p>[^<]+%s` $mEsc) $html -}}
+      {{- $proseAfter := findRE (printf `%s[^<]+</p>` $mEsc) $html -}}
+      {{- if or (gt (len $proseBefore) 0) (gt (len $proseAfter) 0) -}}
+        {{- $replacement = printf `<span class="obsidian-image obsidian-image-inline">%s</span>` $imgTag -}}
+      {{- else -}}
+        {{- $replacement = printf `<figure class="obsidian-image">%s</figure>` $imgTag -}}
+      {{- end -}}
     {{- end -}}
 
   {{- else if strings.Contains $target "^" -}}

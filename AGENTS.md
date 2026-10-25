@@ -331,10 +331,12 @@ adding both the asset and the allowlist entry.
 - `layouts/_default/single.html` renders **zero pages** today (blog uses `blog/single.html`;
   résumé/shelves/archive/search have dedicated layouts). It is kept as a safety net and must
   stay in sync with `blog/single.html`.
-- `![[Note]]` renders a full card only when it owns its paragraph; mid-sentence it degrades
-  to an inline wikilink, so the markup stays valid. Detection is textual (sibling prose inside
-  the `<p>`), so if the *same* target is embedded both isolated and mid-sentence in one post,
-  both render inline.
+- Block elements cannot live inside an open `<p>`, so both note cards and image embeds
+  degrade when they share a paragraph with prose: `![[Note]]` becomes an inline link and
+  `![[img.png|alt]]` becomes a `<span class="obsidian-image-inline">` rather than a `<figure>`.
+  Isolated, they render as `<aside>` and `<figure>`. Detection is textual (sibling prose
+  adjacent to the token inside the `<p>`), so if the *same* target appears both isolated and
+  mid-sentence in one post, both render the inline form. `tests/harness-site` pins both shapes.
 - `backlinks-index.html` strips `%%` comments before scanning for links, so a `%% … %%` span
   that encloses a wikilink removes the link from the *backlink index* even where the rendered
   page still shows it. Masking order is load-bearing; change it only with fixtures that cover

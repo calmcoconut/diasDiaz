@@ -35,7 +35,7 @@
   {{- $clean = replaceRE "`[^`\n]+`" "" $clean -}}
   {{- $clean = replaceRE `(?s)%%.*?%%` "" $clean -}}
   {{- /* Media embeds are not note links: drop them before scanning. */ -}}
-  {{- $clean = replaceRE `!\[\[[^\]\n]+\.(?:png|jpg|jpeg|webp|gif|svg|avif)(?:\|[^\]\n]*)?\]\]` "" $clean -}}
+  {{- $clean = replaceRE `(?i)!\[\[[^\]\n]+\.(?:png|jpg|jpeg|webp|gif|svg|avif)(?:\|[^\]\n]*)?\]\]` "" $clean -}}
 
   {{- $seenTargets := slice -}}
   {{- range $token := findRE `\[\[[^\]\n]+?\]\]` $clean -}}

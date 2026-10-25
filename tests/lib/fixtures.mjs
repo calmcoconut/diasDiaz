@@ -77,6 +77,18 @@ export const GOLDEN_FIXTURES = [
       "a golden must never enshrine it.",
   },
   {
+    key: "image-embed",
+    slug: "image-embed",
+    source: "content/blog/image-embed.md",
+    pins:
+      "Image embeds resolve through assets/attachments with a MIXED-CASE " +
+      "extension (Mixed Case.PNG) and a space in the filename. Both the content " +
+      "pass and backlinks-index.html must recognise the embed as media: they " +
+      "once disagreed, so the figure rendered while the index still treated the " +
+      "inner [[...]] as an unresolved wikilink and failed the build. Also pins " +
+      "that |decorative yields alt=\"\" role=\"presentation\".",
+  },
+  {
     key: "block-target",
     slug: "block-target",
     source: "content/blog/block-target.md",

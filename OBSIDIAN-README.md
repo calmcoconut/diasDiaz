@@ -78,9 +78,17 @@ Callout types: `note info todo abstract summary tldr`, `tip hint important check
 ## 5. Images
 
 Paste or drag an image into a note. Obsidian saves it to `content/blog/_attachments/` and
-inserts `![[image.png]]`. **Add alt text:** `![[image.png|What the image shows]]`.
+inserts `![[image.png]]`.
 
-`![[image.png|decorative]]` is accepted for purely ornamental images.
+**Obsidian's default insert carries no alt text, and the build will refuse it until you add
+some.** That is deliberate (accessibility), not an oversight:
+
+- `![[image.png|What the image shows]]` — alt text, required
+- `![[image.png|decorative]]` — accepted for purely ornamental images
+- `![[image.png|Alt text|400]]` — optional third field caps the display width in pixels
+
+Filenames may contain spaces and any letter case — Obsidian's
+`Pasted image 2026-09-15 101500.png` and `photo.PNG` both work.
 
 An image referenced only by a draft is never published.
 
