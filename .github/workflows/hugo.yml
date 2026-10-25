@@ -50,7 +50,7 @@ jobs:
         # has the custom domain configured in Pages settings, so overriding it
         # silently publishes canonicals, sitemap entries and RSS links pointing
         # at the wrong host. hugo.yaml already pins the real origin
-        # (https://diasdiaz.net/), which is the custom domain the CNAME file
+        # (https://blog.diasdiaz.net/), which is the custom domain the CNAME file
         # declares, so let the config win.
         run: hugo --minify
 

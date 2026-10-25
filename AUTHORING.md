@@ -1,4 +1,4 @@
-# Authoring and Content Guide for diasdiaz.net
+# Authoring and Content Guide for blog.diasdiaz.net
 
 This guide explains how to maintain, customize, and publish content on your Hugo site.
 

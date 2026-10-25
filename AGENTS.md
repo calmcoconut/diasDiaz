@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Architecture and design notes for `diasdiaz.net` — a personal Hugo site whose posts are
+Architecture and design notes for `blog.diasdiaz.net` — a personal Hugo site whose posts are
 authored in Obsidian and published through a static build.
 
 Read this before changing anything. The sections on **Hard invariants** and **Traps that

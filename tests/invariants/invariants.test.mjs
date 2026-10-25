@@ -1,4 +1,4 @@
-// Site invariants for diasdiaz.net.
+// Site invariants for blog.diasdiaz.net.
 //
 // These are the correctness properties from AGENTS.md §1 that can be checked
 // mechanically against a real, production-like build of the whole site. They

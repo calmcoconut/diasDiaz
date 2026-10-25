@@ -6,7 +6,7 @@ changing anything); other docs are listed in §12.
 
 ## 1. Current state
 
-A Hugo site at `diasdiaz.net` whose posts are written **in Obsidian** and published as a
+A Hugo site at `blog.diasdiaz.net` whose posts are written **in Obsidian** and published as a
 plain static build. No CMS, npm, external services or theme fork.
 
 | | |
