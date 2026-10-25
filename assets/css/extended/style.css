@@ -31,6 +31,32 @@
   --space-top-desktop: 32px;
   --space-top-mobile: 24px;
 
+  /* Sticky header band (§5). `--header-band-pad` is the vertical padding that
+     stays inside the stuck band; the air the header used to carry as padding
+     now lives in margins so it scrolls away instead of thickening the band.
+
+     `--header-rest-gap` is that resting gap below the nav. What the band's own
+     padding and rule do not already cover is `--header-content-gap`, paid by
+     `.main` as padding (§4) — a margin-bottom on the header would collapse
+     into the first element's margin-top instead of adding to it.
+
+     `--anchor-offset` is what in-page jumps clear (scroll-margin-top, §5): the
+     measured stuck band — 44px single row, 83.5px on the two-row mobile
+     layout (§14 raises it there) — plus ~12px of air. CSS cannot read an
+     element's own height, so this is the one number that must be kept in sync
+     by hand: change the band's padding or the nav's line height, then
+     re-measure it.
+
+     Two wrap states are taller than this token and get their own override below
+     §14: 601-644px, where the desktop nav drops `.nav-right` to a second row
+     (band 80px), and <=344px, where the mobile menu wraps inside its row (band
+     119.5px). Those blocks set only --anchor-offset; the single 600px
+     breakpoint still governs layout. */
+  --header-band-pad: 8px;
+  --header-rest-gap: 20px;
+  --header-content-gap: calc(var(--header-rest-gap) - var(--header-band-pad) - 1px);
+  --anchor-offset: 56px;
+
   /* Light Theme Palette (Barely cream off-white #FAF9F6) */
   --color-bg: #FAF9F6;
   --color-text: #454545;
@@ -236,11 +262,16 @@ hr, .section-divider, .footer-divider {
    4. Layout & Containers
    ========================================================================== */
 
-/* Main Centered Reading Column */
+/* Main Centered Reading Column.
+   `padding-top` is the tail of the gap the header used to hold below the nav
+   (§5, --header-content-gap): padding, unlike a margin on the header, neither
+   rides up with the sticky band nor collapses into the first element's
+   margin-top, so every page keeps its exact pre-sticky rhythm — the first
+   content lands where it always did. Print resets this to 0 (§15). */
 .main {
   max-width: var(--max-width);
   margin: 0 auto;
-  padding: 0 var(--gap);
+  padding: var(--header-content-gap) var(--gap) 0;
   min-height: calc(100vh - 220px);
 }
 
@@ -257,9 +288,51 @@ hr, .section-divider, .footer-divider {
    5. Header & Navigation
    ========================================================================== */
 
+/* Sticky Site Header: the nav band pins to the viewport top on every page, so
+   navigating a long article never means scrolling back up to reach the menu.
+
+   `position: sticky`, never `fixed`: sticky keeps the element in flow, so
+   there is no jump when it engages and no body padding to compensate for.
+
+   Why the whitespace is `margin` and not `padding`: padding is inside the
+   sticky box and rides along when the header pins, so the whole ~79px block
+   (32px of air + 27px of nav + 20px, and 106px on the two-row mobile layout)
+   would stay stuck to the top of the screen. As a margin it stays behind in
+   the page flow. The resting totals are unchanged: 32px above the nav (§14:
+   24px) and 20px below it (§14: 16px) — the last of which is split between
+   this band's own padding + rule and `--header-content-gap` on `.main` (§4),
+   because a margin-bottom here would collapse into the first heading's
+   margin-top instead of adding to it.
+
+   Background and rule are tokens, so both modes are opaque and content
+   scrolling underneath never shows through. Square corners, no shadow, no
+   blur, no gradient (AGENTS.md §10).
+
+   z-index 50 clears all page content (auto) and sits below, in order: the
+   theme's scroll-to-top link 99, the reading-progress bar 100 (§10), the
+   wikilink popover 1000, and the skip link 10000. */
 .header {
-  padding-top: var(--space-top-desktop);
-  padding-bottom: 20px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  margin-top: calc(var(--space-top-desktop) - var(--header-band-pad));
+  padding: var(--header-band-pad) 0;
+  background-color: var(--color-bg);
+  border-bottom: 1px solid var(--color-rule);
+}
+
+/* In-page anchor targets must clear the stuck band (§5).
+
+   Every `id` on this site is a potential jump destination: Goldmark's heading
+   ids, the `^block-id` anchors obsidian-content.html promotes to `block-*`,
+   wikilink `#fragment` and `[[#Heading]]` targets, and the skip link's
+   `#content`. `scroll-margin-top` applies to fragment navigation,
+   `scrollIntoView` and focus scrolling alike, so this one rule covers all of
+   them and is inert for ids nothing links to. Without it every jump lands with
+   its heading hidden under the header. The value tracks the measured stuck
+   band height (--anchor-offset, §1, raised in §14). */
+[id] {
+  scroll-margin-top: var(--anchor-offset);
 }
 
 .header-nav {
@@ -1335,10 +1408,18 @@ details.toc li {
     font-size: 17px;
   }
 
-  /* Mobile Top & Gutter Spacing */
+  /* Mobile Top & Gutter Spacing. The sticky band (§5) keeps its 24px above /
+     16px below at rest; --header-content-gap recomputes itself from the new
+     --header-rest-gap. The menu wraps onto its own row here, so the stuck band
+     is 83.5px (8px pad + 66.5px nav + 8px pad + the rule) and in-page anchors
+     need correspondingly more clearance. */
+  :root {
+    --header-rest-gap: 16px;
+    --anchor-offset: 96px;
+  }
+
   .header {
-    padding-top: var(--space-top-mobile);
-    padding-bottom: 16px;
+    margin-top: calc(var(--space-top-mobile) - var(--header-band-pad));
   }
 
   .header-nav {
@@ -1374,7 +1455,7 @@ details.toc li {
   }
 
   .main {
-    padding: 0 var(--mobile-gutter);
+    padding: var(--header-content-gap) var(--mobile-gutter) 0;
   }
 
   .footer {
@@ -1434,6 +1515,28 @@ details.toc li {
   .resume-entry-header {
     flex-direction: column;
     gap: 2px;
+  }
+}
+
+/* Anchor clearance for the two header wrap states the 600px breakpoint cannot
+   express (§1, §5). Both are narrow widths where the header grows a second row,
+   so the stuck band is taller than --anchor-offset and a jump target would land
+   with ~24px of itself under the band. These blocks set nothing but
+   --anchor-offset: no layout, no other token. Measured band heights are 80px at
+   601-644px (desktop nav drops .nav-right to its own row) and 119.5px at
+   <=344px (the menu wraps inside its row); each value is band + ~12px of air,
+   matching the rule the token documents in §1. Source order matters: both must
+   stay after the `max-width: 600px` block above, which raises the token to 96px
+   for the ordinary two-row mobile layout. */
+@media screen and (min-width: 601px) and (max-width: 644px) {
+  :root {
+    --anchor-offset: 92px;
+  }
+}
+
+@media screen and (max-width: 344px) {
+  :root {
+    --anchor-offset: 132px;
   }
 }
 
