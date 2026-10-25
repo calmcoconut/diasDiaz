@@ -11,9 +11,9 @@ hugo_stats.json
 # local environment files
 .env
 
-# Obsidian local state (keep app.json and templates/ tracked)
-.obsidian/workspace*.json
-.obsidian/plugins/
+# Obsidian local state (keep app.json, templates.json and templates/ tracked)
+**/.obsidian/workspace*.json
+**/.obsidian/plugins/
 
 # Hugo build output, produced by CI
 /public/

@@ -2,6 +2,9 @@
 
 This guide explains how to maintain, customize, and publish content on your Hugo site.
 
+If you only want to write a post, read `OBSIDIAN-README.md` first — it is the short
+version. This guide is the reference.
+
 ---
 
 ## 1. Replacing Identity and Placeholders

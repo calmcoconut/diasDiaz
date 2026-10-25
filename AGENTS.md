@@ -6,7 +6,8 @@ authored in Obsidian and published through a static build.
 Read this before changing anything. The sections on **Hard invariants** and **Traps that
 have already bitten us** encode decisions that are expensive to rediscover.
 
-- Human-facing authoring instructions: `AUTHORING.md`
+- Quickstart for authoring in Obsidian: `OBSIDIAN-README.md`
+- Human-facing authoring reference: `AUTHORING.md`
 - Why the site looks the way it does: this file, the design-token section (§1) of
   `assets/css/extended/style.css`, and the decisions recorded in `GRILL-ME.md`
 
