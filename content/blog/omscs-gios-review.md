@@ -8,7 +8,7 @@ tags:
   - "computer"
   - "science"
   - "gios"
-  - "omscs"
+  - "OMSCS"
 ---
 >### tl;dr
 >* OMSCS Graduate Introduction to Operating Systems will give you a wide breadth into modern operating systems

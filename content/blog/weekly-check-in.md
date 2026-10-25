@@ -6,7 +6,7 @@ aliases:
   - "/weekly-check-in/"
 tags:
   - "OMSCS"
-  - "c"
+  - "C"
   - "headfirst"
   - "head"
   - "first"
