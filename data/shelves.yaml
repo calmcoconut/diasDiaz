@@ -1,74 +1,18 @@
 items:
-  - id: "calvino-invisible-cities"
+  - id: "scalzi-starter-villain"
     type: "book"
-    title: "Invisible Cities"
-    creator: "Italo Calvino"
-    status: "current"
-    order: 1
-    note: "Re-reading for the descriptions of memory and desire."
-    url: "https://en.wikipedia.org/wiki/Invisible_Cities"
-    cover: "sample-book-1.svg"
-    draft: true
-
-  - id: "pratchett-guards-guards"
-    type: "book"
-    title: "Guards! Guards!"
-    creator: "Terry Pratchett"
-    status: "current"
-    order: 2
-    note: "Night Watch beginnings; warm comfort reading on rainy evenings."
-    draft: true
-
-  - id: "le-guin-dispossessed"
-    type: "book"
-    title: "The Dispossessed"
-    creator: "Ursula K. Le Guin"
+    title: "Starter Villain"
+    creator: "John Scalzi"
     status: "finished"
     order: 0
-    completed: "2026-08-15"
-    note: "An ambiguous utopia of physics, solitude, and solidarity."
-    url: "https://en.wikipedia.org/wiki/The_Dispossessed"
-    cover: "sample-book-2.svg"
-    draft: true
+    completed: "2026-10-24"
+    url: "https://en.wikipedia.org/wiki/Starter_Villain"
 
-  - id: "borges-ficciones"
-    type: "book"
-    title: "Ficciones"
-    creator: "Jorge Luis Borges"
-    status: "finished"
-    order: 0
-    note: "Labyrinths, infinite libraries, and imaginary book reviews."
-    url: "https://en.wikipedia.org/wiki/Ficciones"
-    draft: true
-
-  - id: "severance-season-1"
-    type: "series"
-    title: "Severance"
-    creator: "Dan Erickson"
-    status: "current"
-    order: 1
-    note: "Eerie corporate folklore and immaculate fluorescent geometry."
-    url: "https://en.wikipedia.org/wiki/Severance_(TV_series)"
-    cover: "sample-series-1.svg"
-    draft: true
-
-  - id: "tati-playtime"
+  - id: "bogdanovich-last-picture-show"
     type: "film"
-    title: "PlayTime"
-    creator: "Jacques Tati"
+    title: "The Last Picture Show"
+    creator: "Peter Bogdanovich"
     status: "finished"
     order: 0
-    completed: "2026-09-02"
-    note: "Towering glass monoliths and subtle architectural choreography."
-    url: "https://en.wikipedia.org/wiki/Playtime"
-    cover: "sample-film-1.svg"
-    draft: true
-
-  - id: "rohmer-green-ray"
-    type: "film"
-    title: "The Green Ray"
-    creator: "Éric Rohmer"
-    status: "finished"
-    order: 0
-    note: "Quiet summer melancholy and waiting for an elusive flash at sunset."
-    draft: true
+    completed: "2026-10-24"
+    url: "https://en.wikipedia.org/wiki/The_Last_Picture_Show"
