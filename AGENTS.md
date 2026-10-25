@@ -262,6 +262,30 @@ placement assertions become tautologies, and Playwright breaks the zero-dependen
 gets static contract checks only; CSS/WCAG is visual; mid-sentence `$$` must **not** get a
 golden, because that would enshrine the fragmented output trap 3 describes.
 
+### Hosting and domains
+
+- **Canonical host:** `https://blog.diasdiaz.net/`. It is `baseURL` in `hugo.yaml` and the
+  contents of `static/CNAME`. Change both together. The workflow deliberately does not pass
+  `--baseURL`, so `hugo.yaml` is the only source. `robots.txt` (`enableRobotsTXT`) follows
+  `baseURL`.
+- **Migration:** on 2026-10-25 the site moved from `diasdiaz.net` to `blog.diasdiaz.net`.
+- **DNS (Cloudflare):** `blog` and `www` are CNAMEs to `calmcoconut.github.io`. The apex has
+  four proxied A records to GitHub Pages (`185.199.108-111.153`). `shop` is a CNAME to the
+  apex. Email (Google MX, SPF, DKIM, DMARC) lives on the apex; do not touch it. The apex,
+  `www` and `shop` records must stay proxied, or the redirect rule will not fire.
+- **Redirects:** a Cloudflare Redirect Rule sends `diasdiaz.net`, `www.diasdiaz.net` and
+  `shop.diasdiaz.net` to `https://blog.diasdiaz.net` plus the same path (301, query string
+  kept). The `shop` redirect is intentional for now.
+- **TLS:** Cloudflare SSL mode Full (strict), Always Use HTTPS on. The edge certificate is the
+  wildcard `*.diasdiaz.net`. The GitHub Pages custom domain is `blog.diasdiaz.net`; leave
+  "Enforce HTTPS" off while Cloudflare proxies.
+- **Old URLs:** Pages cannot emit 301s, so Hugo aliases (old `/Sockets-in-C/`-style paths)
+  are meta-refresh plus canonical. Search engines replace them gradually.
+- **Search Console:** Domain property `diasdiaz.net` (verified by DNS TXT). Sitemap
+  `https://blog.diasdiaz.net/sitemap.xml`.
+- **Left unchanged:** existing posts link to `calmcoconut.github.io/diasDiaz/...` project
+  pages. This is intentional.
+
 ---
 
 ## 9. Traps that have already bitten us

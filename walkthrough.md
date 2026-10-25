@@ -16,7 +16,7 @@ plain static build. No CMS, npm, external services or theme fork.
 | Tests | 72, ~1.2 s, **zero dependencies** (`node --test tests/`) |
 | Posts | 26 published, plus 3 drafts (a sandbox, its link target, and an example post) |
 | Theme | PaperMod submodule, pinned `d3768854`, **never modified** |
-| Deploy | GitHub Actions workflow written, **never run** (§10) |
+| Deploy | GitHub Actions workflow live at `blog.diasdiaz.net` (§10) |
 
 ## 2. Starting point
 
@@ -122,9 +122,10 @@ tautologies), CSS/WCAG (visual), and mid-sentence `$$` (a golden would enshrine 
 
 ## 10. Not done
 
-1. **No git remote; the deploy has never run.** A `--baseURL` override that would have pointed
-   canonicals at the Pages URL was removed, but check canonicals, `sitemap.xml` and
-   `index.xml` on the first push.
+1. **Deploy and host.** The deploy now runs from `calmcoconut/diasDiaz` on push to `master`.
+   A `--baseURL` override that would have pointed canonicals at the Pages URL was removed.
+   The site moved to `https://blog.diasdiaz.net/` (2026-10-25), which is the canonical host in
+   `hugo.yaml` and `static/CNAME`; hosting and DNS details are in `AGENTS.md` §8.
 2. **`verify.yml` doesn't gate deploys.** It runs on push and PR with `contents: read`. To
    gate, move the job into `hugo.yml` and add it to the deploy job's `needs:`.
 3. **No published post uses the syntax yet.** Coverage is fixtures plus the draft sandbox; the
