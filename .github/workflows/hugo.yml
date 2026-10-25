@@ -2,9 +2,10 @@ name: Deploy Hugo site to Pages
 
 on:
   push:
-    # "hugo" is the staging branch used for the first cutover from the legacy
-    # Jekyll site, and remains available for previewing a deploy from a branch.
-    branches: ["master", "hugo"]
+    # Only the default branch deploys; the site was cut over from a temporary
+    # "hugo" branch, which has since been retired so a stray push cannot
+    # publish a work-in-progress branch to production.
+    branches: ["master"]
   workflow_dispatch:
 
 permissions:
