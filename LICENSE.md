@@ -2,10 +2,6 @@ MIT License
 
 Copyright (c) 2026 Alejandro Diaz
 
-This license covers the contents of this repository, both the site's source
-code (templates, partials, styles, scripts) and the written content (blog
-posts and pages).
-
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
