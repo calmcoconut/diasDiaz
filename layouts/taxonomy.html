@@ -11,8 +11,9 @@
     <ul class="terms-tags" aria-label="Tags list">
         {{- range .Data.Terms.Alphabetical }}
             {{- $count := .Count }}
+            {{- $tagName := partialCached "tag-name.html" .Name .Name }}
             <li>
-                <a href="{{ .Page.RelPermalink }}" class="tag-link"><span class="tag-name">#{{ .Page.Title }}</span> <span class="tag-count">({{ $count }})</span></a>
+                <a href="{{ .Page.RelPermalink }}" class="tag-link"><span class="tag-name">#{{ $tagName }}</span> <span class="tag-count">({{ $count }})</span></a>
             </li>
         {{- end }}
     </ul>
