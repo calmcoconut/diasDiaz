@@ -1,0 +1,6 @@
+items:
+  - id: "bad-order"
+    type: "book"
+    title: "Ordered by a word"
+    status: "current"
+    order: "first"

@@ -1,0 +1,11 @@
+items:
+  - id: "dup-id"
+    type: "book"
+    title: "First copy"
+    status: "current"
+    order: 0
+  - id: "dup-id"
+    type: "book"
+    title: "Second copy"
+    status: "current"
+    order: 1

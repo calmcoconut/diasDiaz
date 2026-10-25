@@ -1,0 +1,66 @@
+# tests/harness-site/override.yaml
+# ---------------------------------------------------------------------------
+# Config overlay for the fixture-only Hugo site in this directory.
+#
+# The harness is built with the REAL config, so markup.goldmark (typographer,
+# passthrough math delimiters, unsafe raw HTML, extras.mark) is exactly the one
+# production uses. Failures #3 (typographer rewrites the wikilink target before
+# the HTML pass) and #6 ($$ handling) only exist because of that config, so a
+# copied-and-edited hugo.yaml would silently change what is being tested.
+#
+#     hugo -s tests/harness-site \
+#          --config ../../hugo.yaml,override.yaml \
+#          -d "$TMP/out" --cleanDestinationDir \
+#          --baseURL https://fixture.test/
+#
+# NOTE: --config paths are resolved against the SOURCE dir, not the shell's
+# CWD. `--config ../../hugo.yaml,tests/harness-site/override.yaml` silently
+# loads no overlay at all (Hugo then falls back to defaults and cannot find the
+# theme) — that is why the overlay is named relative to the harness site root.
+#
+# Mounts are relative to this directory. They mount the REAL partials, REAL
+# render hooks and REAL assets, plus this site's own single template, which
+# emits the article region only. Nothing from layouts/ is copied: the harness
+# cannot drift from production.
+#
+# Site root layout (../.. = the repository root):
+#   ../../layouts/partials            -> layouts/partials
+#   ../../layouts/_default/_markup    -> layouts/_default/_markup
+#   ../../assets                      -> assets
+#   ../../themes                      -> themesDir
+themesDir: "../../themes"
+
+# Only single pages are meaningful here, and every page kind that would be
+# rendered by the theme is disabled: the harness must render zero bytes of
+# theme markup, so a theme or SEO change can never churn a golden file. This
+# also keeps the build warning-free, which lets tests/contract use
+# --panicOnWarning for its non-shelves cases.
+disableKinds:
+  - taxonomy
+  - term
+  - section
+  - RSS
+  - sitemap
+  - robotsTXT
+  - "404"
+
+outputs:
+  home:
+    - HTML
+
+module:
+  mounts:
+    - source: layouts
+      target: layouts
+    - source: "../../layouts/partials"
+      target: layouts/partials
+    - source: "../../layouts/_default/_markup"
+      target: layouts/_default/_markup
+    - source: "../../assets"
+      target: assets
+    - source: content
+      target: content
+    - source: "content/blog/_attachments"
+      target: assets/attachments
+    - source: data
+      target: data

@@ -1,0 +1,54 @@
+# Verification (non-gating) workflow.
+#
+# This is intentionally a separate workflow and does NOT block deploys. To make
+# it gate deployment, move the `verify` job into `.github/workflows/hugo.yml`
+# and add it to the deploy job's `needs:` list (e.g. `needs: [build, verify]`).
+#
+# It deliberately mirrors the Hugo install step from `hugo.yml` so the pinned
+# version cannot drift between the two workflows. Keep `HUGO_VERSION` in sync
+# with `hugo.yml` (and with local Hugo; `tests/invariants` asserts they match).
+#
+# Zero dependencies: the tests use only Node's built-in test runner. There is
+# no npm install step, no lockfile, and no cache.
+
+name: Verify
+
+on:
+  push:
+    branches: ["master"]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verify-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    env:
+      HUGO_VERSION: 0.168.0
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # themes/PaperMod is a submodule
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Install Hugo (extended)
+        run: |
+          wget -q -O "${{ runner.temp }}/hugo.deb" \
+            "https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_extended_${HUGO_VERSION}_linux-amd64.deb"
+          sudo dpkg -i "${{ runner.temp }}/hugo.deb"
+          hugo version
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Run test suite
+        run: node --test tests/

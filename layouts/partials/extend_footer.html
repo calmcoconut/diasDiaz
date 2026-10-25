@@ -3,7 +3,15 @@
   ---------------------------------------------------------------------------
   Emits the fingerprinted JavaScript for Obsidian authoring enhancements.
 
-    - js/link-preview.js          only when the page has wikilinks or backlinks
+    - js/link-preview.js          on every blog post, and on any other page kind
+                                  that set hasWikilinks or hasBacklinks
+
+  Note the deliberate asymmetry: blog posts always load it (~1.8 KB), because
+  `partialCached "footer.html"` can render with another page's Store (see
+  AGENTS.md trap 4), so relying solely on the per-page flags was fragile. The
+  script itself bails immediately when the page has no
+  `.wikilink[data-preview-title]` or `.post-backlinks-link[data-preview-title]`,
+  so the cost on a link-free post is one cached file, no DOM work.
 
   Every lookup goes through `with resources.Get`, so a missing asset degrades
   gracefully instead of failing the whole build.
@@ -12,8 +20,8 @@
   partialCached (keyed by layout/kind, not by page), so page-dependent script
   tags are emitted from the page template first, which sets the per-page
   "obsidianFooterScriptsDone" flag; the cached footer invocation then renders
-  nothing. That keeps the preview script scoped to the pages that actually
-  need it.
+  nothing, so each page emits its own script tags once rather than inheriting
+  the cached footer's (possibly wrong) page context.
 
   There is deliberately no diagram script: diagrams are static SVG embedded
   with ![[diagram.svg|Alt text]] and need no JavaScript.

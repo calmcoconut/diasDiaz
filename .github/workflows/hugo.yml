@@ -42,7 +42,14 @@ jobs:
         env:
           HUGO_ENVIRONMENT: production
           HUGO_ENV: production
-        run: hugo --minify --baseURL "${{ steps.pages.outputs.base_url }}/"
+        # Do NOT override --baseURL with steps.pages.outputs.base_url here.
+        # That value is the github.io project URL unless the repository already
+        # has the custom domain configured in Pages settings, so overriding it
+        # silently publishes canonicals, sitemap entries and RSS links pointing
+        # at the wrong host. hugo.yaml already pins the real origin
+        # (https://diasdiaz.net/), which is the custom domain the CNAME file
+        # declares, so let the config win.
+        run: hugo --minify
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

@@ -12,6 +12,11 @@
 
     fenced and inline code       removed
     %%author comments%%          removed
+    HTML comments                removed
+    HTML tags                    removed (the text they wrap is kept)
+    $$display math$$             removed
+    $inline math$                the formula, without the delimiters
+    TeX control sequences        removed (\alpha, \int, \,, ...)
     callout markers [!note]+-    removed
     leading # heading hashes     removed
     list markers                 removed
@@ -19,6 +24,18 @@
     wikilinks and embeds         alias, alt text or note name
     emphasis / pipes / quotes    a space
     whitespace runs              one space
+
+  Math policy: a preview is one line of prose, so the delimiters must go. Block
+  math is dropped outright -- a formula's TeX guts are noise in a popover and
+  the words around it carry the meaning. Inline math keeps its body ($E = mc^2$
+  reads as "E = mc^2"), because the expression is part of the sentence. TeX
+  control sequences are dropped rather than transliterated: "\frac" or "\int"
+  spelled out is a false word, and the glyph the author meant cannot be
+  reproduced in a plain-text attribute. Currency guard: `$` is shared with
+  prices, so an inline span with no TeX token that looks like prose (two or more
+  spaced words, or a trailing space, or a newline) is left verbatim. That is the
+  same rule render-passthrough.html applies, so the excerpt always agrees with
+  what the passthrough hook actually typeset.
 
   Context: a dict with a "text" key (a string is accepted too).
   Returns: string
@@ -32,19 +49,66 @@
 {{- $text = replaceRE "(?s)```[\\s\\S]*?```|~~~[\\s\\S]*?~~~" " " $text -}}
 {{- $text = replaceRE "`[^`\n]+`" " " $text -}}
 {{- $text = replaceRE `(?s)%%.*?%%` "" $text -}}
+{{- /* Raw HTML (posts migrated from Jekyll are full of it). HTML comments are
+       removed first; the tag rules would otherwise consume the comment opener
+       and leave its tail behind. A closing tag vanishes, so a full stop right
+       after an anchor keeps its place; an opening tag becomes a space, so the
+       words on either side of a line break stay separate. */ -}}
+{{- $text = replaceRE `(?s)\x3c!--.*?--\x3e` " " $text -}}
+{{- $text = replaceRE `(?i)\x3c/[a-z][^\x3c\x3e]*\x3e` "" $text -}}
+{{- $text = replaceRE `(?i)\x3c[a-z!][^\x3c\x3e]*\x3e` " " $text -}}
+{{- /* Display math is dropped whole. */ -}}
+{{- $text = replaceRE `(?s)\$\$.*?\$\$` " " $text -}}
+{{- /* Inline math: `$…$` loses its delimiters; a currency-looking span keeps
+       them. Split on "$" instead of a regex loop so the pass is linear and
+       cannot stall on a span it decides to keep. With n pieces there are n-1
+       dollars: odd ones leave the last piece unterminated, i.e. a bare "$10". */ -}}
+{{- $pieces := split $text "$" -}}
+{{- $n := len $pieces -}}
+{{- $unterminated := eq 1 (mod (sub $n 1) 2) -}}
+{{- $out := slice -}}
+{{- range $i, $piece := $pieces -}}
+  {{- if and (eq $i (sub $n 1)) $unterminated -}}
+    {{- $out = $out | append (printf "$%s" $piece) -}}
+  {{- else if eq 1 (mod $i 2) -}}
+    {{- $isProse := false -}}
+    {{- if not (findRE `\\[A-Za-z]+` $piece) -}}
+      {{- if or (ge (len (findRE `(?:^|\s)[A-Za-z]{2,}` $piece)) 2) (hasSuffix $piece " ") (strings.Contains $piece "\n") -}}
+        {{- $isProse = true -}}
+      {{- end -}}
+    {{- end -}}
+    {{- if $isProse -}}
+      {{- $out = $out | append (printf "$%s$" $piece) -}}
+    {{- else -}}
+      {{- $out = $out | append $piece -}}
+    {{- end -}}
+  {{- else -}}
+    {{- $out = $out | append $piece -}}
+  {{- end -}}
+{{- end -}}
+{{- $text = delimit $out "" -}}
+{{- /* Whatever TeX survives (control words such as \in, then the control
+       symbols and stray backslashes of a half-typed expression). */ -}}
+{{- $text = replaceRE `\\[A-Za-z]+` "" $text -}}
+{{- $text = replaceRE `\\` "" $text -}}
 {{- /* Callout markers ([!note], [!warning]-, ...) and heading hashes. */ -}}
 {{- $text = replaceRE `\[![A-Za-z-]+\][+-]?` "" $text -}}
-{{- $text = replaceRE `(?m)^[ \t]*#{1,6}[ \t]*` "" $text -}}
+{{- /* Blockquote-nested markers are real in practice ("> ### tl;dr", "> * point"):
+       strip the optional quote prefixes too, otherwise the marker survives because
+       the ">" is only turned into a space later on. */ -}}
+{{- $text = replaceRE `(?m)^[ \t]*(?:\x3e[ \t]*)*#{1,6}[ \t]*` "" $text -}}
 {{- /* Markdown links and images keep their text. */ -}}
 {{- $text = replaceRE `!\[([^\]]*)\]\([^)]*\)` "$1" $text -}}
 {{- $text = replaceRE `\[([^\]]*)\]\([^)]*\)` "$1" $text -}}
-{{- $text = replaceRE `(?m)^[ \t]*(?:[-*+]|[0-9]+\.)[ \t]*` "" $text -}}
+{{- $text = replaceRE `(?m)^[ \t]*(?:\x3e[ \t]*)*(?:[-*+]|[0-9]+\.)[ \t]*` "" $text -}}
 {{- /* Obsidian wikilinks, embeds and comments. */ -}}
 {{- $text = partial "obsidian-detoken.html" $text -}}
-{{- /* Residual Markdown emphasis, table pipes and blockquote markers. */ -}}
-{{- $text = replaceRE "[*_`\x3e~|]" " " $text -}}
+{{- /* Residual Markdown emphasis, table pipes, blockquote/HTML angle brackets. */ -}}
+{{- $text = replaceRE "[*_`\x3c\x3e~|]" " " $text -}}
 {{- $text = replaceRE `\s+` " " $text -}}
 {{- $text = strings.TrimSpace $text -}}
+{{- /* Rune-safe cut: `truncate` HTML-escapes its input, which double-escaped
+       the whole attribute; `substr` does not. */ -}}
 {{- if gt (strings.RuneCount $text) 180 -}}
   {{- $text = printf "%s..." (substr $text 0 177) -}}
 {{- end -}}

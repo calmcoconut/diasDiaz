@@ -1,0 +1,17 @@
+# Harness shelves data.
+# ---------------------------------------------------------------------------
+# Present, and valid, for two reasons:
+#   1. shelves-data.html falls back to the deprecated site.Data when
+#      hugo.Data.shelves is empty, which emits a deprecation warning and would
+#      break --panicOnWarning in the golden and contract suites.
+#   2. It is the valid baseline the contract cases overwrite with a broken
+#      data/shelves.yaml (duplicate id, bad order type) in their temp copy.
+# No item sets draft: true, so the retained .Site.BuildDrafts call in
+# shelves-data.html short-circuits and stays silent.
+items:
+  - id: "harness-probe"
+    type: "book"
+    title: "Harness Probe"
+    creator: "Nobody"
+    status: "current"
+    order: 0

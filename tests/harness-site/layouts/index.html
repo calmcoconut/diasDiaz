@@ -1,0 +1,24 @@
+{{- /*
+  tests/harness-site/layouts/index.html
+  ---------------------------------------------------------------------------
+  The harness home page. It exists for one reason: the contract suite needs a
+  rendered page that calls layouts/partials/shelves-data.html, because that
+  partial validates the whole data/shelves.yaml collection and fails the build
+  on bad input. A per-case data/shelves.yaml written by tests/contract is
+  therefore enough to exercise the shelves error contract.
+
+  The golden suite never reads this page; it pins the per-post output only.
+*/ -}}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>obsidian harness</title>
+  </head>
+  <body>
+    {{- /* Two things happen here: the partial validates data/shelves.yaml
+           (failing the build for the tests/contract shelves cases) and the
+           count below proves it returned buckets rather than bailing out. */ -}}
+    <p data-shelves-probe="{{ len (index (partial "shelves-data.html" .) "reading_current") }}"></p>
+  </body>
+</html>

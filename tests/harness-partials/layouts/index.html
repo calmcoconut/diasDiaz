@@ -1,0 +1,35 @@
+{{- /*
+  Shell for tests/harness-partials: maps the fixtures in data/fixtures.yaml
+  through the REAL partials and emits nothing but JSON.
+
+    {"excerpt": [{name, kind, input, output}, ...],
+     "key":     [{name, cases: [{input, output, idempotent}, ...]}, ...]}
+
+  Consumed by excerpt.test.mjs and key.test.mjs, which spawn
+  `hugo -s tests/harness-partials -d TEMPDIR` and parse this file.
+*/ -}}
+{{- $excerpts := slice -}}
+{{- range hugo.Data.fixtures.excerpt -}}
+  {{- $input := .input -}}
+  {{- with .repeat -}}
+    {{- $input = strings.Repeat . $input -}}
+  {{- end -}}
+  {{- $excerpts = $excerpts | append (dict
+        "name" .name
+        "kind" .kind
+        "input" $input
+        "output" (partial "obsidian-excerpt.html" (dict "text" $input))) -}}
+{{- end -}}
+{{- $keys := slice -}}
+{{- range hugo.Data.fixtures.key -}}
+  {{- $cases := slice -}}
+  {{- range .inputs -}}
+    {{- $k := partial "obsidian-key.html" . -}}
+    {{- $cases = $cases | append (dict
+          "input" .
+          "output" $k
+          "idempotent" (partial "obsidian-key.html" $k)) -}}
+  {{- end -}}
+  {{- $keys = $keys | append (dict "name" .name "cases" $cases) -}}
+{{- end -}}
+{{- dict "excerpt" $excerpts "key" $keys | jsonify -}}

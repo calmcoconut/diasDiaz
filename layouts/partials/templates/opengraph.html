@@ -5,12 +5,17 @@
             at themes/PaperMod@d3768854 (submodule, never edited).
   Re-diff against that file when bumping the theme.
 
-  One changed line, to clear the last build warning:
+  Two changed lines:
 
     15. og:locale falls back to site.Language.Locale instead of the deprecated
-        site.Language.LanguageCode (deprecated in Hugo 0.158, removed in a
-        later release). Locale yields "en-us"; the existing
-        replace . "-" "_" still produces "en_US".
+        site.Language.LanguageCode (deprecated in Hugo 0.158). That is what
+        cleared the last build warning.
+
+    16. og:locale is language_TERRITORY per the Open Graph spec ("en_US"), but
+        upstream emits the raw locale, which yields "en_us". Only the territory
+        segment is upper-cased, so a bare locale such as "en" passes through.
+        (The upstream comment claiming it produces "en_US" is wrong: its
+        `replace . "-" "_"` never upper-cases.)
 
   Everything else is byte-for-byte upstream.
 */ -}}
@@ -29,7 +34,16 @@
 {{- end }}
 
 {{- with or .Params.locale site.Language.Locale }}
-  <meta property="og:locale" content="{{ replace . `-` `_` }}">
+  {{/* og:locale is language_TERRITORY per the Open Graph spec (e.g. en_US), so the
+       territory must be upper-cased. PaperMod upstream emits the raw locale, which
+       yields "en_us"; this only adds the case normalisation. */}}
+  {{- $loc := replace . `-` `_` -}}
+  {{- $parts := split $loc "_" -}}
+  {{- $ogLocale := $loc -}}
+  {{- if gt (len $parts) 1 -}}
+    {{- $ogLocale = printf "%s_%s" (index $parts 0) (upper (index $parts 1)) -}}
+  {{- end -}}
+  <meta property="og:locale" content="{{ $ogLocale }}">
 {{- end }}
 
 {{- if .IsPage }}

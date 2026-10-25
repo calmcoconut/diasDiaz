@@ -1,0 +1,18 @@
+<article data-fixture="inline-code-documented">
+<p>This post deliberately omits <code>description</code>: every wikilink and comment token in
+it is inside code, so the front-matter scan in obsidian-lookup-map.html strips
+them and does not demand a description. If the code masking ever regresses,
+this fixture stops building.</p>
+<p>Inline code keeps the syntax literal: <code>[[syntax]]</code> and <code>%%private%%</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-markdown" data-lang="markdown"><span style="display:flex;"><span>[[Not A Note]] %%x%%
+</span></span></code></pre></div><p>The fenced sample above is documentation too, not a link.</p>
+</article>
+<aside class="post-backlinks" aria-labelledby="backlinks-heading">
+  <h2 class="post-backlinks-heading" id="backlinks-heading">Linked from (1)</h2>
+  <ul class="post-backlinks-list">
+    <li class="post-backlinks-row">
+      <a class="post-backlinks-link" href="/blog/inline-code-linker/" data-preview-title="Inline code linker" data-preview-date="2021-03-07" data-preview-excerpt="Exactly one real link, and it is the only backlink the documented post may report: inline-code-documented." title="Inline code linker (2021-03-07)">Inline code linker</a>
+      <time class="post-backlinks-date" datetime="2021-03-07">2021-03-07</time>
+    </li>
+  </ul>
+</aside>

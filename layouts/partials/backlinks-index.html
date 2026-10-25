@@ -111,15 +111,13 @@
     {{- $path = strings.TrimSuffix ".md" $path -}}
     {{- $path = partial "obsidian-key.html" $path -}}
     {{- $hits := index $byKey $path -}}
-    {{- if not $hits -}}
-      {{- errorf "[obsidian-validate] %s: unresolved wikilink \"%s\". No published blog post matches filename, slug, alias, or title \"%s\". (If %s is a draft, either publish it or keep %s as draft: true.)" $srcPath $dest $path $path $source.File.LogicalName -}}
-    {{- else if gt (len $hits) 1 -}}
-      {{- $found := slice -}}
-      {{- range $hit := $hits -}}
-        {{- $found = $found | append (printf "\"content/%s\"" $hit.File.Path) -}}
-      {{- end -}}
-      {{- errorf "[obsidian-validate] %s: ambiguous wikilink \"%s\" matches multiple posts (%s). Link by explicit slug or filename." $srcPath $dest (delimit $found " and ") -}}
-    {{- else -}}
+    {{- /* Validation for standard Markdown links belongs to render-link.html, which
+           sees the parsed link and can name its visible text ("[text](dest.md)").
+           Reporting here as well produced a second, worse message naming only the
+           tail ("](dest.md)"). Unresolved and ambiguous destinations are therefore
+           skipped silently here: the build still fails, once, with the better
+           diagnostic. This index only records backlinks for links that resolve. */ -}}
+    {{- if and $hits (eq (len $hits) 1) -}}
       {{- $targetPage := index $hits 0 -}}
       {{- if and (ne $targetPage.RelPermalink $source.RelPermalink) (not (in $seenTargets $targetPage.RelPermalink)) -}}
         {{- $seenTargets = $seenTargets | append $targetPage.RelPermalink -}}

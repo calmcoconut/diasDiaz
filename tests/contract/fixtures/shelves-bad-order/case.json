@@ -1,0 +1,11 @@
+{
+  "kind": "shelves",
+  "data": "shelves.yaml",
+  "expect": {
+    "exit": 1,
+    "contains": [
+      "shelves: item 'bad-order' has invalid field 'order'",
+      "(must be an integer)"
+    ]
+  }
+}

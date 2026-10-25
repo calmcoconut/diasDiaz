@@ -1,0 +1,11 @@
+{
+  "kind": "content",
+  "post": "post.md",
+  "expect": {
+    "exit": 1,
+    "contains": [
+      "invalid LaTeX math expression",
+      "Undefined control sequence"
+    ]
+  }
+}

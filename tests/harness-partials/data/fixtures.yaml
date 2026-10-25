@@ -1,0 +1,155 @@
+# Fixture inputs for tests/harness-partials.
+#
+# Kept out of layouts/index.html on purpose: the inputs are raw Markdown/HTML
+# source, so literal tags and ">" markers here must NOT be read as template
+# markup (and would trip an HTML linter). layouts/index.html only maps these
+# through the real partials.
+#
+# `kind` selects the assertion group in excerpt.test.mjs:
+#   math     no "$", "$$" or TeX control sequence may survive
+#   html     no "<" or ">" fragment may survive
+#   markup   callout / heading / list markers must be gone, their text kept
+#   prose    output must equal input (no over-stripping)
+#   currency "$" amounts must survive (the guard against eating prices)
+#   length   exercises the 180-rune cut
+#
+# `repeat: N` repeats `input` N times (long fixtures).
+
+excerpt:
+  - name: math-inline
+    kind: math
+    input: "Inline math $E = mc^2$ sits inside a sentence."
+
+  - name: math-display
+    kind: math
+    input: |-
+      Before.
+
+      $$
+      \int_0^1 x^2\,dx = \frac{1}{3}
+      $$
+
+      After.
+
+  - name: math-display-inline
+    kind: math
+    input: "We reduce Clique $$C \\rightarrow CIS$$ in polynomial time."
+
+  - name: math-tex-commands
+    kind: math
+    input: >-
+      Clique $\rightarrow$ CIS and $CIS\in NP$-complete, plus bare \alpha
+      and \beta tokens.
+
+  - name: math-real-post
+    kind: math
+    input: >-
+      We need to show that for any solution $S$ for an instance $I$ of CIS can
+      be verified in polynomial time.
+
+  - name: raw-html-paragraph
+    kind: html
+    input: >-
+      <p>Jekyll is a great tool if you want the simplicity of a static
+      website.</p>
+
+  - name: raw-html-nested
+    kind: html
+    input: |-
+      <h3 id="working-on">Working on</h3>
+      <ul>
+      <li>Linear algebra.</li>
+      <li>Low-level <a href="https://example.test/">C programming</a>.</li>
+      </ul>
+
+  - name: raw-html-comment
+    kind: html
+    input: "Visible prose. <!-- editorial note --> More visible prose."
+
+  - name: raw-html-inline-tags
+    kind: html
+    input: "A quick post.<br>I am <strong>alive</strong> today."
+
+  - name: callout-marker
+    kind: markup
+    input: |-
+      > [!note] Weekly note
+      > This body sentence follows the callout marker.
+
+  - name: callout-foldable
+    kind: markup
+    input: |-
+      > [!warning]- Careful here
+      > Body of the warning.
+
+  - name: heading-hash
+    kind: markup
+    input: |-
+      ## Setup steps
+      Grab a Linux distro and run the commands.
+
+  - name: list-markers
+    kind: markup
+    input: |-
+      - first item
+      - second item
+      1. numbered item
+
+  - name: prose-control
+    kind: prose
+    input: "This is plain prose with a sentence, a comma and no markup at all."
+
+  - name: prose-control-short
+    kind: prose
+    input: "Run the tests and read the log."
+
+  - name: currency-dollars
+    kind: currency
+    input: "We owe $10 on a taxable amount of $100 this year."
+
+  - name: currency-lone-dollar
+    kind: currency
+    input: "The fee is $5."
+
+  - name: long-prose
+    kind: length
+    repeat: 40
+    input: "A long sentence about nothing in particular. "
+
+  - name: long-unicode
+    kind: length
+    repeat: 200
+    input: "🎯"
+
+# Fold-symmetry contract behind obsidian-key.html. Every `input` in a group
+# must normalise to the same key, and re-normalising must be a no-op.
+key:
+  - name: curly-vs-straight-quote
+    inputs:
+      - "Jekyll’s Static Web Framework"
+      - "Jekyll's Static Web Framework"
+
+  - name: ellipsis-vs-dots
+    inputs:
+      - "Jekyll’s … site"
+      - "Jekyll's ... site"
+
+  - name: en-dash-vs-hyphen
+    inputs:
+      - "Clique–CIS"
+      - "Clique—CIS"
+      - "Clique---CIS"
+      - "Clique-CIS"
+
+  - name: case-fold
+    inputs:
+      - "Setup Steps"
+      - "setup steps"
+
+  - name: empty
+    inputs:
+      - ""
+
+  - name: idempotent
+    inputs:
+      - "  Jekyll’s …— Site  "

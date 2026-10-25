@@ -1,0 +1,8 @@
+{
+  "kind": "shelves",
+  "data": "shelves.yaml",
+  "expect": {
+    "exit": 1,
+    "contains": ["shelves: item 'dup-id' has duplicate field 'id'"]
+  }
+}

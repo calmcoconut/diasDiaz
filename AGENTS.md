@@ -232,6 +232,34 @@ Regression checking belongs against a real baseline:
 git worktree add /tmp/base HEAD && hugo -s /tmp/base -d /tmp/base-out   # then diff both
 ```
 
+### Automated checks
+
+A zero-dependency suite lives in `tests/` — **Hugo plus Node 22+, no `package.json`, no npm
+install**:
+
+```bash
+node --test tests/          # whole suite, ~1.2 s
+```
+
+`.github/workflows/verify.yml` runs it on push and pull request. It is deliberately
+**non-gating** and read-only (`contents: read`); to make it block deploys, move the job into
+`hugo.yml` and add it to the deploy job's `needs:`.
+
+| Directory | Covers |
+| --- | --- |
+| `tests/invariants/` | One real production build (`--panicOnWarning`) asserting the §1 invariants: zero warnings, no `[[`/`%%` in text output, parseable JSON-LD, blog-only `index.json`, all routes, no draft leakage, Hugo-vs-CI version pin, determinism. |
+| `tests/harness-site/` | Fixture-only site reusing the **real** partials and render hooks; pins the content pipeline into `tests/goldens/`. |
+| `tests/contract/` | One fixture per `[obsidian-validate]` failure must fail the build *with no Go internal in place of the diagnostic*. |
+| `tests/harness-partials/` | Micro-harness printing partial output as JSON (excerpt sanitising, wikilink-key folding). |
+
+Goldens are **reviewed by hand**: `node tests/lib/update.mjs` is a dry run, `--write` rewrites
+them. CI never regenerates a golden — a mismatch is a failure a human resolves.
+
+Deliberately untested, and why: `link-preview.js` needs a layout engine (jsdom has none, so
+placement assertions become tautologies, and Playwright breaks the zero-dependency rule) — it
+gets static contract checks only; CSS/WCAG is visual; mid-sentence `$$` must **not** get a
+golden, because that would enshrine the fragmented output trap 3 describes.
+
 ---
 
 ## 9. Traps that have already bitten us
@@ -306,9 +334,10 @@ adding both the asset and the allowlist entry.
   to an inline wikilink, so the markup stays valid. Detection is textual (sibling prose inside
   the `<p>`), so if the *same* target is embedded both isolated and mid-sentence in one post,
   both render inline.
-- `[text](missing.md)` reports the error twice (once from `render-link.html`, once from the
-  backlinks scan). Both messages are `[obsidian-validate]`, so the contract holds, but it is
-  noisy.
+- `backlinks-index.html` strips `%%` comments before scanning for links, so a `%% … %%` span
+  that encloses a wikilink removes the link from the *backlink index* even where the rendered
+  page still shows it. Masking order is load-bearing; change it only with fixtures that cover
+  both the render path and the index path.
 - Search JSON runs code samples through detokenisation, so a literal `` `[[x]]` `` appears as
   `x` in indexed text.
 - Page-bundle posts (`content/blog/<slug>/index.md`) are **not** supported, despite an early

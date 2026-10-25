@@ -1,0 +1,11 @@
+{
+  "kind": "content",
+  "post": "post.md",
+  "expect": {
+    "exit": 1,
+    "contains": [
+      "image embed \"![[no-such-image.png|Missing file]]\" not found",
+      "assets/attachments/no-such-image.png"
+    ]
+  }
+}

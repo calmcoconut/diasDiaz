@@ -1,0 +1,21 @@
+{{- /*
+  tests/harness-site/layouts/_default/single.html
+  ---------------------------------------------------------------------------
+  The ONLY template the harness overrides. It deliberately renders just the
+  content pipeline:
+
+    * obsidian-content.html  — the HTML post-processing pass (§3.2)
+    * backlinks.html         — the reverse index region
+
+  No HTML head, JSON-LD, site header, footer, pagination or script tags, so a
+  golden file cannot churn when the theme or the SEO templates change.
+  Everything else (partials, render hooks, assets) is mounted from the real
+  project.
+
+  data-fixture carries .File.ContentBaseName so a normalised golden names the
+  fixture it came from.
+*/ -}}
+<article data-fixture="{{ .File.ContentBaseName }}">
+{{ partial "obsidian-content.html" . }}
+</article>
+{{ partial "backlinks.html" . }}

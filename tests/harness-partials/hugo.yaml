@@ -1,0 +1,20 @@
+# Throwaway site that mounts ONLY the real site's partials, so a single partial
+# can be rendered in isolation and output asserted by node:test.
+# Not a site: every page kind except "home" is disabled, and the home template
+# emits nothing but JSON. See excerpt.test.mjs / key.test.mjs.
+baseURL: "https://unit.test/"
+disableKinds: ["taxonomy", "term", "rss", "sitemap", "404", "section", "page"]
+# No theme is loaded (no `theme:` key); themesDir is only here to document where
+# the site theme would live if a fixture ever needed one.
+themesDir: "../../themes"
+module:
+  mounts:
+    # This harness's own templates (layouts/index.html).
+    - source: layouts
+      target: layouts
+    # The real partials, mounted read-only into the harness layout tree.
+    # Paths are relative to this directory (tests/harness-partials/).
+    - source: "../../layouts/partials"
+      target: layouts/partials
+    # data/fixtures.yaml needs no mount: Hugo's default mounts for the source
+    # directory still apply, which is how it reaches hugo.Data.fixtures.
