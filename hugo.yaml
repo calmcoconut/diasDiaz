@@ -1,6 +1,6 @@
 baseURL: "https://diasdiaz.net/"
 locale: en-us
-title: "[Your Name]"
+title: "dias Diaz"
 theme: "PaperMod"
 
 enableRobotsTXT: true
@@ -33,7 +33,10 @@ menu:
       weight: 30
 
 params:
-  display_name: "[Your Name]"
+  display_name: "Alejandro Diaz"
+  description: "Notes on computer science, systems, and economics."
+  author:
+    name: "Alejandro Diaz"
   defaultTheme: "auto"
   disableThemeToggle: false
   ShowCodeCopyButtons: true
