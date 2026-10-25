@@ -1,6 +1,6 @@
 # diasdiaz
 
-Source for [diasdiaz.net](https://diasdiaz.net), a personal blog built with
+Source for [blog.diasdiaz.net](https://blog.diasdiaz.net), a personal blog built with
 [Hugo](https://gohugo.io) and the [PaperMod](https://github.com/adityatelange/hugo-PaperMod)
 theme (a git submodule — clone with `--recurse-submodules`).
 

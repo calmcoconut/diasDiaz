@@ -105,7 +105,7 @@ Change `draft: true` to `draft: false`. Draft posts are never included in produc
 
 ### Authoring in Obsidian
 
-Open `content/` as the Obsidian vault root. Posts are flat Markdown files at `content/blog/<slug>.md`, and pasted images land in `content/blog/_attachments/` (already configured in `.obsidian/app.json`).
+Open `content/` as the Obsidian vault root. Posts are flat Markdown files at `content/blog/<slug>.md`, and pasted images land in `content/blog/_attachments/` (already configured in `content/.obsidian/app.json`).
 
 `content/blog/_attachments/` is mounted into Hugo's asset pipeline, so an image is only published when a rendered, non-draft post actually references it. Images used solely by drafts never reach `public/`.
 
