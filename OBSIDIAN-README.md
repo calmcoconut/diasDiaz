@@ -1,98 +1,79 @@
 # Working in Obsidian
 
-Short version: open `content/` as your vault, write a note, flip `draft: false`, commit.
-Hugo turns the note into a page.
+**TL;DR**
 
----
+1. Open `content/` as your Obsidian vault.
+2. New post: insert the `blog-post` template. Fill in `title`, `date`, `slug` and `draft`.
+3. Write with normal Obsidian syntax: wikilinks, callouts, math, `%%comments%%`.
+4. Every image needs alt text: `![[image.png|What it shows]]`.
+5. Preview with `hugo server -D`. To publish, set `draft: false`, then commit and push.
 
-## 1. One-time setup
+If the build fails, the error names the file and the problem (see §8).
 
-1. In Obsidian: **Open folder as vault** → choose this repo's `content/` directory.
-2. Settings are already committed in `content/.obsidian/`, so they should apply automatically:
+## 1. Setup (once)
 
-   | Setting | Value | Why |
-   | --- | --- | --- |
-   | Attachments | `blog/_attachments` | keeps images out of the published bundle until used |
-   | New link format | wikilinks (`[[note]]`), not Markdown links | what the site's link resolver expects |
-   | Templates folder | `templates/` | gives you the post skeleton |
+**Open folder as vault** → this repo's `content/`. The committed `content/.obsidian/` config
+applies automatically; enable the **Templates** core plugin if prompted.
 
-3. If prompted, enable the **Templates** core plugin.
+| Setting | Value | Why |
+| --- | --- | --- |
+| Attachments | `blog/_attachments` | images stay unpublished until a post uses them |
+| New link format | wikilinks (`[[note]]`) | what the site's link resolver expects |
+| Templates folder | `templates/` | provides the post skeleton |
 
-That's it — no build step, no plugin to install. The vault is plain Markdown in the repo.
-
----
+No build step or plugins needed.
 
 ## 2. Create a post
 
-Either:
+**Cmd/Ctrl+P → "Templates: Insert template" → `blog-post`**, or `hugo new content blog/my-post.md`.
+One post is one flat file in `content/blog/` — no per-post folders.
 
-- **Cmd/Ctrl+P → "Templates: Insert template" → `blog-post`**, or
-- run `hugo new content blog/my-post.md`
-
-You get a file at `content/blog/my-post.md`. One post = one flat file. Do not create folders per post.
-
----
-
-## 3. Fill in the front matter
+## 3. Front matter
 
 | Property | Required | Notes |
 | --- | --- | --- |
-| `title` | always | Shown as the heading and in links to this post |
+| `title` | always | Heading, and text of links to this post |
 | `date` | always | ISO, e.g. `2026-01-01T00:00:00Z` |
-| `slug` | always | The permanent URL. **Set it once and leave it alone** |
+| `slug` | always | The permanent URL. **Set once, never change** |
 | `draft` | always | `true` while writing, `false` to publish |
 | `description` | if you use `[[` or `%%` | One sentence, for search and social previews |
 | `tags` | optional | Plain words; each becomes `/tags/<tag>/` |
-| `aliases` | optional | Extra URLs that redirect here, e.g. `["/old-url/"]` |
+| `aliases` | optional | Old URLs that redirect here, e.g. `["/old-url/"]` |
 
-`slug` is what makes renaming safe: change the filename or title later and existing URLs and
-`[[wikilinks]]` still work.
+Because of `slug`, you can rename the file or title later without breaking URLs or wikilinks.
 
----
-
-## 4. Write
-
-Type Obsidian syntax. The site understands:
+## 4. Syntax
 
 | You write | You get |
 | --- | --- |
 | `[[Some Post]]` | link, using that post's title |
 | `[[Some Post\|shown text]]` | link with your own text |
-| `[[Some Post#Heading]]` | link to a heading there |
+| `[[Some Post#Heading]]` | link to a heading |
 | `[[Some Post^block-id]]` | link to a paragraph marked `^block-id` |
 | `![[Some Post]]` | citation card (alone on a line) or inline link (mid-sentence) |
-| `![[diagram.svg\|Alt text]]` | image — **alt text is required** |
-| `> [!note] Title` | callout (`tip`, `warning`, `danger`, `quote`…) |
+| `![[diagram.svg\|Alt text]]` | image (see §5) |
+| `> [!note] Title` | callout |
 | `> [!tip]+ Title` / `> [!tip]- Title` | foldable callout, open / closed |
-| `==text==` | highlighted text |
-| `$E = mc^2$` / `$$\int x\,dx$$` | math, rendered at build time, no JavaScript |
-| `%%private note%%` | hidden from everything published |
+| `==text==` | highlight |
+| `$E = mc^2$` / `$$\int x\,dx$$` | math, rendered at build time |
+| `%%private note%%` | hidden from all published output |
 | `[^1]` + `[^1]: text` | footnote |
 
 Callout types: `note info todo abstract summary tldr`, `tip hint important check done success`,
 `warning caution attention question help faq`, `danger error bug fail failure missing`,
 `quote cite example`.
 
----
-
 ## 5. Images
 
-Paste or drag an image into a note. Obsidian saves it to `content/blog/_attachments/` and
-inserts `![[image.png]]`.
+Paste or drag an image in; Obsidian saves it to `content/blog/_attachments/` and inserts
+`![[image.png]]`. **The build rejects images without alt text** — deliberately, for
+accessibility — so add it:
 
-**Obsidian's default insert carries no alt text, and the build will refuse it until you add
-some.** That is deliberate (accessibility), not an oversight:
+- `![[image.png|What the image shows]]`
+- `![[image.png|decorative]]` for purely ornamental images
+- `![[image.png|Alt text|400]]` to cap display width in pixels
 
-- `![[image.png|What the image shows]]` — alt text, required
-- `![[image.png|decorative]]` — accepted for purely ornamental images
-- `![[image.png|Alt text|400]]` — optional third field caps the display width in pixels
-
-Filenames may contain spaces and any letter case — Obsidian's
-`Pasted image 2026-09-15 101500.png` and `photo.PNG` both work.
-
-An image referenced only by a draft is never published.
-
----
+Any filename works, spaces and capitals included. Images used only by drafts never publish.
 
 ## 6. Preview
 
@@ -100,55 +81,44 @@ An image referenced only by a draft is never published.
 hugo server -D
 ```
 
-Open <http://localhost:1313>. Drafts are visible here; themes, backlinks, callouts and math all
-render. Stop with Ctrl+C.
-
----
+Open <http://localhost:1313>; drafts are visible. Ctrl+C to stop.
 
 ## 7. Publish
 
-1. Set `draft: false` in the note's Properties.
-2. Commit and push. (`public/` is generated in CI; never commit it.)
-
-Check before pushing:
+Set `draft: false`, check the build, then commit and push. Never commit `public/` — CI generates it.
 
 ```bash
 hugo --panicOnWarning -d /tmp/preview --cleanDestinationDir   # must exit 0
 ```
 
----
+## 8. Build errors
 
-## 8. If the build refuses
-
-The build stops rather than publishing something wrong. The message names the file and the fix:
+The build stops rather than publish something wrong, naming the file and problem:
 
 | Message contains | Fix |
 | --- | --- |
-| `unresolved wikilink` | No published post matches that name. Fix the spelling — or the target may still be a draft. |
-| `ambiguous wikilink` | Several posts match — link using the exact `slug`. |
-| `heading anchor ... does not exist` | That `#Heading` isn't in the target post. |
-| `missing required front-matter field "description"` | Add a one-sentence `description`. |
-| `not found in "content/blog/_attachments/` | The image isn't there — re-paste it. |
-| `missing required accessible alt text` | Use `![[image.png\|alt text]]`. |
-| `unbalanced '%%'` | You opened `%%` and didn't close it. |
-| `unexpanded Obsidian plugin syntax` | Dataview/Templater blocks can't be published — replace with plain text. |
-| `Mermaid diagrams are not rendered` | Export the diagram as `.svg` and embed the file instead. |
+| `unresolved wikilink` | No published post matches — check spelling, or the target is still a draft |
+| `ambiguous wikilink` | Several posts match — link by exact `slug` |
+| `heading anchor ... does not exist` | That `#Heading` isn't in the target post |
+| `missing required front-matter field "description"` | Add a one-sentence `description` |
+| `not found in "content/blog/_attachments/` | Image missing — re-paste it |
+| `missing required accessible alt text` | Use `![[image.png\|alt text]]` |
+| `unbalanced '%%'` | Close your `%%` comment |
+| `unexpanded Obsidian plugin syntax` | Replace Dataview/Templater blocks with plain text |
+| `Mermaid diagrams are not rendered` | Export the diagram as `.svg` and embed that |
 
----
+## 9. Examples
 
-## 9. Try it first
+`content/blog/example-draft-post.md` is a short, typical post kept as a draft — copy it as a
+starting point.
 
-`content/blog/obsidian-syntax-sandbox.md` is a **draft** that uses every feature above, with a
-companion target note so backlinks have somewhere to land. Open it in Obsidian, edit it, and
-run `hugo server -D` to see what each construct turns into. Neither note ever publishes — delete
-both when you're done with them.
+`content/blog/obsidian-syntax-sandbox.md` is a draft using every feature above, plus a
+companion note for links to land on. Edit it with `hugo server -D` running to see the output.
+None of these publish; delete them when done.
 
----
+## 10. Not supported
 
-## 10. Things that won't work
-
-- Inline `#tags` in prose — put tags in Properties instead.
-- `![[Some Post^block-id]]` (transcluding a single paragraph) — link to it instead.
+- Inline `#tags` — use the `tags` property.
+- `![[Some Post^block-id]]` paragraph transclusion — link to it instead.
 - Dataview, Templater, Canvas, graph view.
-- Editing layouts or CSS is not an Obsidian job. The vault root is `content/`, so nothing else in
-  the repo is even visible from Obsidian; those files are edited in a code editor.
+- Layouts and CSS — they live outside `content/`, so edit them in a code editor.

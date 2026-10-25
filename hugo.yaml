@@ -5,6 +5,9 @@ theme: "PaperMod"
 
 enableRobotsTXT: true
 
+ignoreFiles:
+  - "content/templates/"
+
 pagination:
   pagerSize: 10
 
