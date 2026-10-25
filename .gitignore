@@ -17,3 +17,6 @@ hugo_stats.json
 
 # Hugo build output, produced by CI
 /public/
+
+# Hugo build lock (created in the site root on every build)
+.hugo_build.lock
