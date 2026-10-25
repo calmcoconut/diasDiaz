@@ -6,6 +6,7 @@ authored in Obsidian and published through a static build.
 Read this before changing anything. The sections on **Hard invariants** and **Traps that
 have already bitten us** encode decisions that are expensive to rediscover.
 
+- Progress report and context for a new engineer: `walkthrough.md`
 - Quickstart for authoring in Obsidian: `OBSIDIAN-README.md`
 - Human-facing authoring reference: `AUTHORING.md`
 - Why the site looks the way it does: this file, the design-token section (§1) of
