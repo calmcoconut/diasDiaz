@@ -106,6 +106,14 @@ Open `content/` as the Obsidian vault root. Posts are flat Markdown files at `co
 
 `content/blog/_attachments/` is mounted into Hugo's asset pipeline, so an image is only published when a rendered, non-draft post actually references it. Images used solely by drafts never reach `public/`.
 
+**Worked example:** `content/blog/obsidian-syntax-sandbox.md` is a draft note that exercises
+every feature below — all five link forms, both transclusion styles, an image, five callout
+buckets (including both foldable variants), highlight, inline and display math, a footnote, a
+private comment, and code samples. It has a companion target note
+(`obsidian-sandbox-target.md`) so backlinks have somewhere to land. Both are `draft: true` and
+never publish. Open the sandbox in Obsidian and edit it to see how changes render; delete both
+when you no longer need them.
+
 #### Required Properties
 
 Every post needs `title`, `date`, `slug`, and `draft`. `slug` is what keeps URLs stable: you can rename the `.md` file or change the title in Obsidian freely, and `/blog/<slug>/` plus every existing `[[wikilink]]` keeps working.
