@@ -5,6 +5,11 @@
 
     - js/link-preview.js          on every blog post, and on any other page kind
                                   that set hasWikilinks or hasBacklinks
+    - js/reading-progress.js      on every blog post; it returns immediately
+                                  unless the browser lacks
+                                  `animation-timeline: scroll()`, in which case
+                                  it drives the bar that style.css links to
+                                  reading-progress.html
 
   Note the deliberate asymmetry: blog posts always load it (~1.8 KB), because
   `partialCached "footer.html"` can render with another page's Store (see
@@ -12,6 +17,11 @@
   script itself bails immediately when the page has no
   `.wikilink[data-preview-title]` or `.post-backlinks-link[data-preview-title]`,
   so the cost on a link-free post is one cached file, no DOM work.
+
+  reading-progress.js follows the same asymmetry for the same reason: emitting
+  it only where a flag said "this page has the bar" would inherit the cached
+  footer's page. It is a no-op in every browser that has scroll-driven CSS
+  animations, which is most of them.
 
   Every lookup goes through `with resources.Get`, so a missing asset degrades
   gracefully instead of failing the whole build.
@@ -33,6 +43,15 @@
     {{- .Store.Set "obsidianFooterScriptsDone" true -}}
     {{- with resources.Get "js/link-preview.js" -}}
 <script defer src="{{ (. | minify | fingerprint).RelPermalink }}"></script>
+    {{- end -}}
+    {{- /* Reading progress fallback: only blog posts, and only where the CSS
+           scroll timeline is missing. The script returns immediately when
+           `animation-timeline: scroll()` is supported, so modern browsers pay
+           one cached file and no listeners. */ -}}
+    {{- if $isBlogPost -}}
+      {{- with resources.Get "js/reading-progress.js" -}}
+<script defer src="{{ (. | minify | fingerprint).RelPermalink }}"></script>
+      {{- end -}}
     {{- end -}}
   {{- end -}}
 {{- end -}}

@@ -21,6 +21,13 @@
 {{- else }}
 <body id="top">
 {{- end }}
+    {{- /* Reading progress bar: blog posts only, same predicate as
+           `$isBlogPost` in partials/extend_footer.html. Decorative and
+           JS-free (assets/css/extended/style.css §10), so it costs one
+           empty div. */}}
+    {{- if and (eq .Kind "page") (eq .Section "blog") }}
+    {{ partial "reading-progress.html" . }}
+    {{- end }}
     {{ partialCached "header.html" . .Page -}}
     <main class="main" id="content" tabindex="-1">
         {{- block "main" . }}{{ end }}

@@ -1,0 +1,20 @@
+{{- /*
+  reading-progress.html
+  ---------------------------------------------------------------------------
+  Decorative scroll-progress indicator for blog posts. Emitted by baseof.html
+  for `Kind: page` + `Section: blog` only, so nothing else in the site needs to
+  know it exists.
+
+  The element is inert on its own: `assets/css/extended/style.css` §10 hides it
+  and only reveals it inside `@supports (animation-timeline: scroll())`, so a
+  browser without scroll-driven animations shows nothing at all rather than a
+  stuck sliver at 0%.
+
+  aria-hidden="true" is deliberate. Reading position is not information the page
+  owes a screen reader — the document itself conveys it — and a live
+  role="progressbar" that updates on every scroll frame would be an ARIA noise
+  source, not an aid.
+*/ -}}
+<div class="reading-progress" aria-hidden="true"></div>
+{{- /* Trailing trim on purpose: baseof.html supplies the line break, so the
+       bar does not leave a blank line in the rendered HTML. */ -}}

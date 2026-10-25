@@ -303,4 +303,130 @@ describe("site invariants (production-like build)", () => {
     }
     assert.deepEqual(differing, [], `the two builds produced different bytes:\n${differing.join("\n")}`);
   });
+
+  it("emits the reading progress bar on blog posts and nowhere else", () => {
+    const { outDir } = buildA;
+    const files = walkFiles(outDir);
+    const markup = '<div class="reading-progress" aria-hidden="true"></div>';
+
+    // Scope guard first: the bar is emitted by baseof.html behind a
+    // `Kind: page` + `Section: blog` predicate. If that predicate is loosened
+    // (or a new layout starts inheriting it), these pages must not grow a bar.
+    const offScope = [
+      "index.html",
+      "blog/index.html",
+      "resume/index.html",
+      "shelves/index.html",
+      "archive/index.html",
+      "search/index.html",
+      "tags/index.html",
+    ];
+    const strays = offScope.filter((file) =>
+      fs.readFileSync(path.join(outDir, file), "utf8").includes("reading-progress"),
+    );
+    assert.deepEqual(strays, [], `reading-progress leaked onto non-post pages: ${strays.join(", ")}`);
+
+    const posts = files.filter((file) => /^blog\/[^/]+\/index\.html$/.test(file));
+    // An empty scan must never pass: a broken walker would silently green-light
+    // a build where the bar disappeared from every post.
+    assert.ok(posts.length > 0, `no blog post HTML found under ${outDir}`);
+
+    const problems = [];
+    for (const file of posts) {
+      const html = fs.readFileSync(path.join(outDir, file), "utf8");
+      const count = html.split(markup).length - 1;
+      if (count !== 1) problems.push(`${file}: expected exactly 1 bar, found ${count}`);
+
+      // The fallback script comes from extend_footer.html (blog posts only), and
+      // a referenced fingerprint must correspond to a published file.
+      const script = /src="(\/js\/reading-progress\.min\.[0-9a-f]+\.js)"/.exec(html);
+      if (!script) problems.push(`${file}: missing the reading-progress fallback script`);
+      else if (!fs.existsSync(path.join(outDir, script[1]))) {
+        problems.push(`${file}: ${script[1]} is referenced but was not published`);
+      }
+    }
+    assert.deepEqual(problems, [], `reading-progress markup is wrong:\n${problems.join("\n")}`);
+  });
+
+  it("keeps the reading progress CSS token-only, hidden by default and support-gated", () => {
+    const cssPath = path.join(SITE_ROOT, "assets/css/extended/style.css");
+    const css = fs.readFileSync(cssPath, "utf8");
+
+    // Slice out just the component: from its banner comment to the next
+    // numbered section banner, so neighbouring rules cannot satisfy the checks.
+    const start = css.indexOf("/* Reading Progress Bar");
+    assert.notEqual(start, -1, "reading-progress CSS block is missing (its banner comment was removed)");
+    const block = css.slice(start).split("/* ======")[0];
+    // The block's own prose names these properties, so every assertion below
+    // runs against the declarations with comments removed.
+    const code = block.replace(/\/\*[\s\S]*?\*\//g, "");
+
+    // AGENTS.md §10: colours come from tokens, never new hex literals.
+    const hex = code.match(/#[0-9a-fA-F]{3,8}\b/g) ?? [];
+    assert.deepEqual(hex, [], `reading-progress introduced raw hex colours: ${hex.join(", ")}`);
+
+    // Hidden unless a scroll-driven timeline can drive it, otherwise an
+    // unsupported browser paints a 0%-width sliver at the top of every post.
+    assert.ok(
+      /\.reading-progress\s*\{[^}]*display:\s*none/.test(code),
+      "the base .reading-progress rule must stay `display: none`",
+    );
+    assert.ok(
+      code.includes("@supports (animation-timeline: scroll())"),
+      "the bar must be gated behind @supports (animation-timeline: scroll())",
+    );
+
+    // Ordering trap (AGENTS.md §9): the `animation` shorthand resets
+    // `animation-timeline` to `auto`, so declaring them the other way round
+    // silently drops the whole effect.
+    const supportsAt = code.indexOf("@supports");
+    const supportsBody = code.slice(code.indexOf("{", supportsAt));
+    const shorthandAt = supportsBody.indexOf("animation:");
+    const timelineAt = supportsBody.indexOf("animation-timeline:");
+    assert.ok(
+      shorthandAt !== -1 && timelineAt !== -1,
+      "missing the animation shorthand or animation-timeline in the @supports rule",
+    );
+    assert.ok(
+      shorthandAt < timelineAt,
+      "`animation-timeline` must be declared after the `animation` shorthand",
+    );
+  });
+
+  it("keeps the reading progress JS a fallback that yields to the CSS timeline", () => {
+    const jsPath = path.join(SITE_ROOT, "assets/js/reading-progress.js");
+    assert.ok(fs.existsSync(jsPath), "missing assets/js/reading-progress.js");
+    const js = fs.readFileSync(jsPath, "utf8");
+    const cssCode = fs
+      .readFileSync(path.join(SITE_ROOT, "assets/css/extended/style.css"), "utf8")
+      .replace(/\/\*[\s\S]*?\*\//g, "");
+
+    // One decision expressed twice: if the JS guard and the stylesheet's
+    // @supports condition diverge, either both mechanisms write `transform`
+    // (fought over, jumpy) or neither runs (no bar at all).
+    const supportCheck = /CSS\.supports\(\s*"(animation-timeline: scroll\(\))"\s*\)/.exec(js);
+    assert.ok(
+      supportCheck,
+      'the JS must gate on CSS.supports("animation-timeline: scroll()")',
+    );
+    assert.ok(
+      cssCode.includes(`@supports (${supportCheck[1]})`),
+      `the JS support check "${supportCheck[1]}" has no matching @supports in style.css`,
+    );
+
+    // Reveal through the rule that exists, never a class with no stylesheet rule.
+    assert.ok(js.includes('"reading-progress-js"'), "the JS must add the reading-progress-js class");
+    assert.ok(
+      cssCode.includes(".reading-progress.reading-progress-js"),
+      "style.css must reveal the bar via .reading-progress.reading-progress-js",
+    );
+
+    // The bar must never be the reason scrolling feels slow.
+    assert.match(
+      js,
+      /addEventListener\("scroll",[^)]*passive:\s*true/,
+      "the scroll listener must be passive",
+    );
+    assert.ok(!js.includes("setInterval"), "polling would burn battery on every post");
+  });
 });
