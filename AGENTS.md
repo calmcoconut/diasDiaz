@@ -26,7 +26,7 @@ These are correctness properties, not preferences. Treat a violation as a shippi
 | **Blog-only scope for RSS, search JSON, archive, tags** | Enforced by *templates*, not config. `hugo.yaml` alone is not evidence. | `index.json` contains no `/resume/`, `/shelves/`, `/archive/`, `/search/`, `/tags/` URLs |
 | **Zero build warnings** | Guaranteed by overriding the one deprecated theme call (§9 trap 9). Any new warning is a regression. `.Site.BuildDrafts` in `shelves-data.html` is the only retained deprecated call and Go templates short-circuit it away unless a shelf item sets `draft: true` (§6) — with draft shelf data expect exactly that one warning. | warning count in build output |
 | **Routes never change** | `/`, `/blog/`, `/blog/<slug>/`, `/resume/`, `/shelves/`, `/tags/`, `/tags/<tag>/`, `/archive/`, `/search/`, `/index.xml` | — |
-| **Reading works without JavaScript** | JS is progressive enhancement only (the link-preview popover). Links, callouts, math, backlinks and diagrams are all server-rendered. | disable JS, or load under `CSP: script-src 'none'` |
+| **Reading works without JavaScript** | JS is progressive enhancement only (the link-preview popover; the reading progress bar is pure CSS, §10). Links, callouts, math, backlinks and diagrams are all server-rendered. | disable JS, or load under `CSP: script-src 'none'` |
 | **`public/` is generated, never committed** | It is in `.gitignore`; deployment builds fresh in CI. | `git status` shows no `public/` entries |
 
 ---
@@ -46,10 +46,15 @@ content/
 data/shelves.yaml          reading/watching records (see §6)
 layouts/                   all overrides — the theme is never touched
 assets/css/extended/       style.css, the single stylesheet (see §7)
-assets/js/                 link-preview.js — the only runtime JavaScript
+assets/js/                 link-preview.js, reading-progress.js (fallback only)
+                           — plus fastsearch.js, bundled into /search/ by the theme
 static/                    favicons, CNAME, images/ (legacy Jekyll-era post images)
 themes/PaperMod/           submodule — READ ONLY
+tests/                     node --test suite (zero dependencies, see §8)
+  e2e/                     Playwright suite — the only package.json/node_modules
 .github/workflows/hugo.yml build + GitHub Pages deploy on push to master
+.github/workflows/verify.yml  node --test tests/, non-gating
+.github/workflows/e2e.yml     Playwright, non-gating
 ```
 
 `resources/_gen/` and `public/` are gitignored build artifacts.
@@ -99,7 +104,8 @@ AST.
 | `obsidian-excerpt.html` | Sanitises preview excerpts (fences, callout markers, heading `#`, list markers). | `lookup-map`, `backlinks-index` |
 | `obsidian-key.html` | Normalises curly quotes / ellipses / dash runs so lookups match front-matter titles. | lookup + every wikilink target |
 | `obsidian-detoken.html` | Unwraps `[[Target\|Alias]]` → `Alias` for TOC and plain text. | single templates, `obsidian-plain` |
-| `extend_footer.html` | Emits fingerprinted `link-preview.js` when the page has wikilinks or backlinks. | both single templates, `footer.html` |
+| `extend_footer.html` | Emits fingerprinted `link-preview.js` when the page has wikilinks or backlinks, and `reading-progress.js` on every blog post. | both single templates, `footer.html` |
+| `reading-progress.html` | Emits the decorative article scroll bar (`aria-hidden`). The CSS scroll timeline drives it; `assets/js/reading-progress.js` is the fallback where `@supports (animation-timeline: scroll())` does not hold. | `baseof.html`, blog posts only |
 
 Caching: the lookup map and backlinks index are `partialCached` (computed once per build).
 `obsidian-content.html` is cached per `RelPermalink` so HTML and RSS share one computation.
@@ -236,16 +242,43 @@ git worktree add /tmp/base HEAD && hugo -s /tmp/base -d /tmp/base-out   # then d
 
 ### Automated checks
 
-A zero-dependency suite lives in `tests/` — **Hugo plus Node 22+, no `package.json`, no npm
-install**:
+There are **two** test surfaces, deliberately kept apart.
+
+**1. The zero-dependency suite** — `tests/`, run by `node --test tests/`. **Hugo plus Node 22+,
+no `package.json`, no npm install**:
 
 ```bash
-node --test tests/          # whole suite, ~1.2 s
+node --test tests/          # whole suite, ~1.3 s
 ```
 
-`.github/workflows/verify.yml` runs it on push and pull request. It is deliberately
-**non-gating** and read-only (`contents: read`); to make it block deploys, move the job into
-`hugo.yml` and add it to the deploy job's `needs:`.
+`.github/workflows/verify.yml` runs it on push and pull request.
+
+**2. The browser suite** — `tests/e2e/`, Playwright driving real Chromium against `hugo
+server`. It owns the only `package.json`, `package-lock.json` and `node_modules` in the
+repository:
+
+```bash
+npm ci --prefix tests/e2e
+PLAYWRIGHT_BROWSERS_PATH=0 npx --prefix tests/e2e playwright install chromium
+PLAYWRIGHT_BROWSERS_PATH=0 npx --prefix tests/e2e playwright test \
+  --config tests/e2e/playwright.config.mjs
+```
+
+Two rules make the split work, and both are load-bearing:
+
+- **Specs are `*.spec.mjs`, never `*.test.mjs`.** `node --test tests/` recurses and collects
+  `*.test.mjs`, so a `.test.mjs` file under `tests/e2e/` would try to import Playwright inside
+  the dependency-free run and break `verify.yml`.
+- **`PLAYWRIGHT_BROWSERS_PATH=0` on both the install and the test command.** Without it
+  Chromium goes to a per-user cache outside the checkout (`~/Library/Caches/ms-playwright`,
+  `~/.cache/ms-playwright`), which `git clean` does not remove and which varies per machine.
+  With it the browser lands in `tests/e2e/node_modules/`, covered by the `node_modules/`
+  ignore entry. Order matters: `npm ci` recreates `node_modules`, so the install must follow it.
+
+`.github/workflows/e2e.yml` runs the browser suite on push and pull request. Both workflows are
+deliberately **non-gating** and read-only (`contents: read`); to make either block deploys,
+move the job into `hugo.yml` and add it to the deploy job's `needs:`. Neither installs anything
+outside the checkout — no root `package.json`, never a `--global` install.
 
 | Directory | Covers |
 | --- | --- |
@@ -253,14 +286,21 @@ node --test tests/          # whole suite, ~1.2 s
 | `tests/harness-site/` | Fixture-only site reusing the **real** partials and render hooks; pins the content pipeline into `tests/goldens/`. |
 | `tests/contract/` | One fixture per `[obsidian-validate]` failure must fail the build *with no Go internal in place of the diagnostic*. |
 | `tests/harness-partials/` | Micro-harness printing partial output as JSON (excerpt sanitising, wikilink-key folding). |
+| `tests/unit/` | `node:vm` unit tests for `assets/js/reading-progress.js`: the real script is evaluated against a fake DOM, so the clamp, the divide-by-zero guard, the one-paint-per-frame coalescing and the `CSS.supports` bail-out are asserted without a browser or a refactor. |
+| `tests/e2e/` | Playwright against real Chromium and a real `hugo server`: bar scope (posts only), the CSS scroll timeline tracking 0→1, "the fallback must not fight the CSS path", print hiding, `prefers-reduced-motion`, the fallback path under a *simulated* unsupporting browser, and sticky-header anchor clearance at the three widths with distinct header bands (1280 / 620 / 320). |
 
 Goldens are **reviewed by hand**: `node tests/lib/update.mjs` is a dry run, `--write` rewrites
 them. CI never regenerates a golden — a mismatch is a failure a human resolves.
 
-Deliberately untested, and why: `link-preview.js` needs a layout engine (jsdom has none, so
-placement assertions become tautologies, and Playwright breaks the zero-dependency rule) — it
-gets static contract checks only; CSS/WCAG is visual; mid-sentence `$$` must **not** get a
-golden, because that would enshrine the fragmented output trap 3 describes.
+Deliberately untested, and why: CSS/WCAG is visual, so the browser suite asserts computed geometry
+and never pixels — a screenshot diff would fail on every font-rendering difference and teach
+nobody anything. `link-preview.js` is the one runtime script with no behavioural test; it gets
+static contract checks only. The argument that used to justify that ("needs a layout engine,
+and Playwright breaks the zero-dependency rule") is now half false: the zero-dependency rule
+survived because Playwright lives in `tests/e2e/`, and Playwright *has* real layout, so the
+popover's placement and its bail-out on link-free pages are both testable. Nobody has written
+them yet — that is debt, not an impossibility. Mid-sentence `$$` must **not** get a golden,
+because that would enshrine the fragmented output trap 3 describes.
 
 ### Hosting and domains
 
@@ -325,6 +365,26 @@ Each of these cost real debugging time. They are not hypothetical.
    path and the pinned revision (`d3768854`) in a header comment. If you add another, do the
    same, and prefer a content contract over copying a large partial (`head.html` is ~200
    lines and was explicitly rejected).
+10. **The `animation` shorthand resets `animation-timeline` to `auto`.** The reading
+    progress bar (§10 of `style.css`) is driven by `animation-timeline: scroll(root block)`,
+    so that declaration must come *after* `animation: reading-progress-fill …`. Reversed,
+    the property is silently clobbered and the bar just sits at 0%. The same rule applies to
+    any future scroll- or view-timeline animation, and `tests/invariants` asserts the order.
+11. **Whitespace inside a sticky element rides along with it, and `margin-bottom` on it
+    collapses.** The header (§5) is `position: sticky`, so the air that used to be its
+    `padding-top` had to become `margin-top` — otherwise the ~79px band stays welded to the
+    top of the viewport. The *bottom* gap is the nastier half: a `margin-bottom` there
+    collapsed into the first heading's `margin-top` and shortened the resting gap from 56px to
+    45px on every page, which no test would have caught. It is paid by `.main` as
+    `padding-top` instead (§4), because padding neither rides up nor collapses. Anything you
+    add above or below this header must be measured at rest, not assumed.
+12. **A sticky header silently swallows every in-page anchor.** TOC entries, `^block-id`
+    jumps and wikilink `#fragment` targets all land with the heading under the band unless
+    `[id] { scroll-margin-top: var(--anchor-offset) }` clears it (§5). `--anchor-offset` is
+    the one number CSS cannot derive from the element itself, so it is hand-synced to the
+    *measured* band height, with overrides after §14 for the two wrap states (601-644px and
+    ≤344px). Change the band's padding or the nav's line-height and you must re-measure it —
+    `tests/e2e` asserts a jumped-to heading is not hidden.
 
 ---
 
@@ -344,6 +404,19 @@ Rules:
 - WCAG AA in both modes is a requirement, not a nice-to-have. The five callout palettes and
   the preview popover are the highest-risk surfaces.
 - The breakpoint is `max-width: 600px`; keep new responsive rules inside it.
+- Purely decorative viewport affordances are CSS-first. The reading progress bar lives as a
+  subsection of §10 ("Article / Post Single Page") and is `display: none` unless
+  `@supports (animation-timeline: scroll())` holds — never leave an unsupported browser
+  painting a 0%-width sliver. Do not add a `transition` to it: it would fight the timeline.
+  Where the timeline is unsupported, `assets/js/reading-progress.js` takes over — its
+  `CSS.supports` guard must stay textually identical to the `@supports` condition, and
+  `tests/invariants` fails if the two ever drift apart.
+- The header is `position: sticky` (§5), never `fixed`: sticky stays in flow, so there is no
+  jump on engage and no body padding to compensate. Whitespace that must stay at the top of the
+  *page* is `margin` on the header; only what must stay *inside* the stuck band is `padding`.
+  `--anchor-offset` is derived from the measured band and lives beside it in §1 (traps 11-12).
+  Stacking order, bottom-up: page content (auto) → header 50 → theme scroll-to-top link 99 →
+  reading progress bar 100 → wikilink popover 1000 → skip link 10000.
 
 Icons are pixel-art SVGs in `assets/icons/`, rendered through `partials/icon.html`, which
 enforces a semantic allowlist and **hard-fails on an unknown name**. Adding an icon means

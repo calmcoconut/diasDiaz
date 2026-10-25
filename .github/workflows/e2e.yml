@@ -1,0 +1,106 @@
+# End-to-end verification of the reading progress bar (Playwright).
+#
+# This is a separate workflow from both `hugo.yml` (build + deploy) and
+# `verify.yml` (the zero-dependency suite). The split is deliberate:
+#
+#   * `verify.yml` runs `node --test tests/` with Hugo and Node only — no
+#     package.json, no npm install, no lockfile. That property is worth
+#     protecting, so the browser tests live in their own workflow rather than
+#     dragging a node_modules tree into the dependency-free suite.
+#   * `tests/e2e/` owns the only package.json and package-lock.json in the
+#     repository. Its specs are `*.spec.mjs`, never `*.test.mjs`, because
+#     `node --test tests/` recursively collects `*.test.mjs` and would otherwise
+#     try to import Playwright inside the dependency-free run.
+#
+# Like `verify.yml`, this workflow is non-gating and read-only
+# (`contents: read`). It does not block deploys; to make it block, move the job
+# into `hugo.yml` and add it to the deploy job's `needs:` list.
+#
+# The Hugo install step is copied verbatim from `hugo.yml`/`verify.yml` — the
+# e2e server must be the same Hugo binary the site deploys with, and
+# `tests/invariants` asserts that version pin has not drifted.
+#
+# What it covers: the bar appears on blog posts and nowhere else; the CSS
+# scroll-driven animation tracks the article from 0 to 1 in real Chromium and is
+# hidden in print; the JS fallback stays out of the way when the timeline works,
+# and tracks scroll when it does not (simulated, see fallback.spec.mjs); in-page
+# anchor jumps clear the sticky header at the three widths that have distinct
+# header bands.
+#
+# Isolation: everything this workflow installs stays inside the checkout.
+# Dependencies come from the committed lockfile via `npm ci` in tests/e2e (never
+# a root package.json, never `--global`), and `PLAYWRIGHT_BROWSERS_PATH: 0` puts
+# the Chromium build under
+# tests/e2e/node_modules/playwright-core/.local-browsers instead of the runner's
+# per-user cache. Local runs use the same variable, so a green local run and a
+# green CI run are the same installation. Because `npm ci` recreates
+# node_modules, the browser install step must stay after it.
+
+name: E2E
+
+on:
+  push:
+    branches: ["master"]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: e2e-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      HUGO_VERSION: 0.168.0
+      # Project-local browsers. See the note above: this must be set for both
+      # the install and the test step, or Playwright looks in the user cache and
+      # finds nothing. Quoted because "0" is the sentinel value, not a number.
+      PLAYWRIGHT_BROWSERS_PATH: "0"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # themes/PaperMod is a submodule
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Install Hugo (extended)
+        run: |
+          wget -q -O "${{ runner.temp }}/hugo.deb" \
+            "https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_extended_${HUGO_VERSION}_linux-amd64.deb"
+          sudo dpkg -i "${{ runner.temp }}/hugo.deb"
+          hugo version
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: tests/e2e/package-lock.json
+
+      - name: Install dependencies
+        working-directory: tests/e2e
+        run: npm ci
+
+      - name: Install Chromium
+        working-directory: tests/e2e
+        run: npx playwright install --with-deps chromium
+
+      - name: Run Playwright tests
+        working-directory: tests/e2e
+        # The suite starts its own `hugo server` on port 4399 (see
+        # playwright.config.mjs), so nothing else needs to be running.
+        run: npx playwright test
+
+      - name: Upload Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: tests/e2e/playwright-report
+          retention-days: 7
+          if-no-files-found: ignore

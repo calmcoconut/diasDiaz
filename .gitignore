@@ -21,3 +21,10 @@ hugo_stats.json
 
 # Hugo build lock (created in the site root on every build)
 .hugo_build.lock
+
+# Playwright (tests/e2e owns the only package.json in the repo; the rest of
+# tests/ stays dependency-free, and these directories are all generated)
+node_modules/
+test-results/
+playwright-report/
+blob-report/
