@@ -78,7 +78,10 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          # Same major as verify.yml, and asserted by tests/invariants: one Node
+          # version to reason about, not two. Playwright itself supports older
+          # majors, so this is about keeping the repo's own story coherent.
+          node-version: 26
           cache: npm
           cache-dependency-path: tests/e2e/package-lock.json
 

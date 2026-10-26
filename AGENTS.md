@@ -244,14 +244,20 @@ git worktree add /tmp/base HEAD && hugo -s /tmp/base -d /tmp/base-out   # then d
 
 There are **two** test surfaces, deliberately kept apart.
 
-**1. The zero-dependency suite** — `tests/`, run by `node --test tests/`. **Hugo plus Node 22+,
-no `package.json`, no npm install**:
+**1. The zero-dependency suite** — `tests/`, run by `node --test tests/`. **Hugo plus the
+pinned Node major (26), no `package.json`, no npm install**:
 
 ```bash
 node --test tests/          # whole suite, ~1.3 s
 ```
 
 `.github/workflows/verify.yml` runs it on push and pull request.
+
+Node is pinned like Hugo is, and for the same reason: `node --test tests/` takes a directory
+argument on Node 26 but not on Node 22, where it treats `tests` as a module and dies with
+`MODULE_NOT_FOUND` — invisible when you only ever run it locally. `tests/invariants` asserts
+that `verify.yml` and `e2e.yml` agree with each other and with the installed Node, so bump all
+three together.
 
 **2. The browser suite** — `tests/e2e/`, Playwright driving real Chromium against `hugo
 server`. It owns the only `package.json`, `package-lock.json` and `node_modules` in the

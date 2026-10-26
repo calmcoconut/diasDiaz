@@ -48,7 +48,12 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          # Pinned to the same major the suite is developed and verified on;
+          # `tests/invariants` fails if this drifts from the local Node or from
+          # e2e.yml. Pinning matters here: `node --test tests/` takes a directory
+          # argument on Node 26 but not on Node 22, where it dies with
+          # MODULE_NOT_FOUND — a divergence that is invisible locally.
+          node-version: 26
 
       - name: Run test suite
         run: node --test tests/

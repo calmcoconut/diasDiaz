@@ -180,6 +180,36 @@ describe("site invariants (production-like build)", () => {
     );
   });
 
+  it("installed Node matches the major pinned in the CI workflows", () => {
+    // Same invariant as the Hugo pin above, for the same reason, and this one
+    // cost a red CI run to learn: `node --test tests/` takes a directory
+    // argument on Node 26 but not on Node 22, where it treats "tests" as a
+    // module and dies with MODULE_NOT_FOUND. Working locally proved nothing.
+    const workflowDir = path.join(SITE_ROOT, ".github/workflows");
+    const pins = new Map();
+    for (const file of fs.readdirSync(workflowDir).filter((f) => f.endsWith(".yml"))) {
+      const text = fs.readFileSync(path.join(workflowDir, file), "utf8");
+      const match = /^\s*node-version:\s*["']?(\d+)["']?\s*$/m.exec(text);
+      if (match) pins.set(file, match[1]);
+    }
+
+    assert.ok(pins.size >= 2, `expected node-version pins in verify.yml and e2e.yml, found: ${[...pins.keys()].join(", ")}`);
+    const majors = new Set(pins.values());
+    assert.equal(
+      majors.size,
+      1,
+      `workflows disagree about the Node major: ${[...pins].map(([f, v]) => `${f}=${v}`).join(", ")}`,
+    );
+
+    const [pinnedMajor] = majors;
+    const installedMajor = process.versions.node.split(".")[0];
+    assert.equal(
+      installedMajor,
+      pinnedMajor,
+      `local Node ${process.version} and the CI pin (${pinnedMajor}) have diverged; bump them together`,
+    );
+  });
+
   it("builds cleanly with --panicOnWarning", () => {
     assertBuildOk(buildA, "production build");
   });

@@ -5,7 +5,8 @@ zero-dependency suite; the second is a browser suite whose dependencies are
 confined to one subdirectory.
 
 **1. Zero-dependency suite** — needs only **Hugo** (the pinned version in
-`.github/workflows/hugo.yml`) and **Node 22+**. There is no `package.json`, no
+`.github/workflows/hugo.yml`) and **Node 26** (the CI pin; `tests/invariants` fails if your local major
+drifts from it). There is no `package.json`, no
 npm install, and no lockfile anywhere outside `tests/e2e/`.
 
 ```bash
